@@ -611,22 +611,28 @@ class LineArtIconPainter extends CustomPainter {
             paint);
         break;
 
-      case 'cardio': // Running shoe sketch
-        canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.15, h * 0.65)
-              ..lineTo(w * 0.35, h * 0.65)
-              ..quadraticBezierTo(w * 0.50, h * 0.35, w * 0.70, h * 0.35)
-              ..lineTo(w * 0.85, h * 0.55)
-              ..lineTo(w * 0.85, h * 0.70)
-              ..lineTo(w * 0.15, h * 0.70)
-              ..close()
-              // shoe details
-              ..moveTo(w * 0.45, h * 0.45)
-              ..lineTo(w * 0.55, h * 0.55)
-              ..moveTo(w * 0.50, h * 0.40)
-              ..lineTo(w * 0.60, h * 0.50),
-            paint);
+      case 'cardio': // Heart with heartbeat line
+        final heartPath = Path();
+        final sx = w / 32.0;
+        final sy = h / 32.0;
+        heartPath.moveTo(16 * sx, 25 * sy);
+        heartPath.cubicTo(16 * sx, 25 * sy, (16 - 9) * sx, (25 - 5.4) * sy, 7 * sx, 12.9 * sy);
+        heartPath.cubicTo(7 * sx, (12.9 - 3) * sy, (7 + 2.2) * sx, (12.9 - 5) * sy, 12 * sx, 7.9 * sy);
+        heartPath.cubicTo((12 + 1.8) * sx, 7.9 * sy, (12 + 3.1) * sx, (7.9 + 1) * sy, 16 * sx, 10.4 * sy);
+        heartPath.cubicTo((16 + 0.9) * sx, (10.4 - 1.5) * sy, (16 + 2.2) * sx, (10.4 - 2.5) * sy, 20 * sx, 7.9 * sy);
+        heartPath.cubicTo((20 + 2.8) * sx, 7.9 * sy, 25 * sx, (7.9 + 2) * sy, 25 * sx, 12.9 * sy);
+        heartPath.cubicTo(25 * sx, (12.9 + 6.7) * sy, 16 * sx, 25 * sy, 16 * sx, 25 * sy);
+        heartPath.close();
+        canvas.drawPath(heartPath, paint);
+
+        final ecgPath = Path()
+          ..moveTo(12 * sx, 13.5 * sy)
+          ..lineTo(15 * sx, 13.5 * sy)
+          ..lineTo(16 * sx, 11.1 * sy)
+          ..lineTo(18 * sx, 17.1 * sy)
+          ..lineTo(19.3 * sx, 13.5 * sy)
+          ..lineTo(22 * sx, 13.5 * sy);
+        canvas.drawPath(ecgPath, paint);
         break;
 
       case 'sleep': // Small crescent moon
@@ -672,27 +678,26 @@ class LineArtIconPainter extends CustomPainter {
             paint);
         break;
 
-      case 'recovery': // Bandage cross
-        canvas.drawPath(
-            Path()
-              // Horizontal bar
-              ..moveTo(w * 0.15, h * 0.38)
-              ..lineTo(w * 0.85, h * 0.38)
-              ..lineTo(w * 0.85, h * 0.62)
-              ..lineTo(w * 0.15, h * 0.62)
-              ..close()
-              // Vertical bar
-              ..moveTo(w * 0.38, h * 0.15)
-              ..lineTo(w * 0.62, h * 0.15)
-              ..lineTo(w * 0.62, h * 0.85)
-              ..lineTo(w * 0.38, h * 0.85)
-              ..close()
-              // Inner stitching dots
-              ..moveTo(w * 0.25, h * 0.50)
-              ..lineTo(w * 0.30, h * 0.50)
-              ..moveTo(w * 0.70, h * 0.50)
-              ..lineTo(w * 0.75, h * 0.50),
-            paint);
+      case 'recovery': // Leaf outline
+        final sx = w / 32.0;
+        final sy = h / 32.0;
+        final leafPath = Path()
+          ..moveTo(9 * sx, 23 * sy)
+          ..cubicTo((9 + 7.4) * sx, (23 - 0.4) * sy, (9 + 12.6) * sx, (23 - 5.1) * sy, 24 * sx, 9 * sy)
+          ..cubicTo((24 - 7.5) * sx, (9 + 1) * sy, (24 - 12.3) * sx, (9 + 5.7) * sy, 9 * sx, 23 * sy)
+          ..close();
+        canvas.drawPath(leafPath, paint);
+
+        final vein1 = Path()
+          ..moveTo(9 * sx, 23 * sy)
+          ..cubicTo((9 + 1.4) * sx, (23 - 5.3) * sy, (9 + 5.7) * sx, (23 - 8.3) * sy, 19.2 * sx, 12.5 * sy);
+        canvas.drawPath(vein1, paint);
+
+        final vein2 = Path()
+          ..moveTo(8 * sx, 19.8 * sy)
+          ..cubicTo((8 - 2) * sx, (19.8 - 1.6) * sy, (8 - 2.8) * sx, (19.8 - 3.8) * sy, 5.7 * sx, 13.3 * sy)
+          ..cubicTo((5.7 + 2.5) * sx, (13.3 + 0.9) * sy, (5.7 + 4) * sx, (13.3 + 2.6) * sy, 10.2 * sx, 18.3 * sy);
+        canvas.drawPath(vein2, paint);
         break;
       
       case 'home': // Home icon outline
@@ -816,6 +821,63 @@ class LineArtIconPainter extends CustomPainter {
               ..lineTo(w * 0.35, h * 0.30)
               ..moveTo(w * 0.50, h * 0.15)
               ..lineTo(w * 0.65, h * 0.30),
+            paint);
+        break;
+
+      case 'arrow_down':
+        final sx = w / 12.0;
+        final sy = h / 12.0;
+        canvas.drawPath(
+            Path()
+              ..moveTo(3.0 * sx, 4.6 * sy)
+              ..lineTo(6.0 * sx, 7.4 * sy)
+              ..lineTo(9.0 * sx, 4.6 * sy),
+            paint);
+        break;
+
+      case 'bell':
+        final sx = w / 24.0;
+        final sy = h / 24.0;
+        canvas.drawPath(
+            Path()
+              ..moveTo(8.2 * sx, 17.4 * sy)
+              ..lineTo(15.8 * sx, 17.4 * sy),
+            paint);
+        canvas.drawPath(
+            Path()
+              ..moveTo(10.2 * sx, 19.4 * sy)
+              ..cubicTo(10.7 * sx, 20.1 * sy, 11.3 * sx, 20.4 * sy, 12.0 * sx, 20.4 * sy)
+              ..cubicTo(12.7 * sx, 20.4 * sy, 13.3 * sx, 20.1 * sy, 13.8 * sx, 19.4 * sy),
+            paint);
+        canvas.drawPath(
+            Path()
+              ..moveTo(7.8 * sx, 16.7 * sy)
+              ..cubicTo(8.7 * sx, 16.0 * sy, 8.9 * sx, 14.9 * sy, 8.9 * sx, 13.2 * sy)
+              ..lineTo(8.9 * sx, 11.4 * sy)
+              ..arcToPoint(Offset(15.1 * sx, 11.4 * sy), radius: Radius.elliptical(3.1 * sx, 3.1 * sy), clockwise: true)
+              ..lineTo(15.1 * sx, 13.2 * sy)
+              ..cubicTo(15.1 * sx, 14.9 * sy, 15.3 * sx, 16.0 * sy, 16.2 * sx, 16.7 * sy),
+            paint);
+        break;
+
+      case 'focus_doc':
+        final sx = w / 16.0;
+        final sy = h / 16.0;
+        canvas.drawPath(
+            Path()
+              ..moveTo(5.0 * sx, 4.5 * sy)
+              ..lineTo(9.3 * sx, 4.5 * sy)
+              ..lineTo(11.0 * sx, 6.2 * sy)
+              ..lineTo(11.0 * sx, 11.5 * sy)
+              ..lineTo(5.0 * sx, 11.5 * sy)
+              ..close(),
+            paint);
+        canvas.drawPath(
+            Path()
+              ..moveTo(7.0 * sx, 8.0 * sy)
+              ..lineTo(9.8 * sx, 8.0 * sy)
+              ..moveTo(7.0 * sx, 10.0 * sy)
+              ..lineTo(9.0 * sx, 10.0 * sy),
             paint);
         break;
 
