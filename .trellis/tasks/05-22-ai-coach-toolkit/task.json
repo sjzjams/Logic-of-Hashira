@@ -1,0 +1,32 @@
+{
+  "id": "ai-coach-toolkit",
+  "name": "ai-coach-toolkit",
+  "title": "Integrate Flutter AI Toolkit for AiCoachScreen",
+  "description": "Replace AiCoachScreen mock chat with Flutter AI Toolkit LlmChatView and FirebaseProvider (Gemini via Firebase AI Logic).",
+  "status": "completed",
+  "dev_type": "feature",
+  "scope": "lib/features/coach, lib/main.dart, pubspec.yaml, docs, test",
+  "package": null,
+  "priority": "P2",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-05-22",
+  "completedAt": "2026-05-22",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "lib/features/coach/ai_coach_screen.dart",
+    "lib/main.dart",
+    "pubspec.yaml",
+    "docs/CODE_WIKI.md",
+    "test/widget_test.dart"
+  ],
+  "notes": "",
+  "meta": {}
+}

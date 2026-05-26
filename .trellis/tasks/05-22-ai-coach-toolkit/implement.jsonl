@@ -1,0 +1,9 @@
+{"file": ".trellis/tasks/05-22-ai-coach-toolkit/prd.md", "reason": "Requirements and acceptance criteria"}
+{"file": ".trellis/tasks/05-22-ai-coach-toolkit/research/flutter-ai-toolkit.md", "reason": "Flutter AI Toolkit + Firebase integration research"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Where to place coach provider and new files"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Preserve hand-drawn header; LlmChatView body"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Provider lifecycle in tab IndexedStack"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "analyze and test gates"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Typed provider factory vs Map messages"}
+{"file": "docs/CODE_WIKI.md", "reason": "Update Coach module documentation after implementation"}
+{"file": "健身记录app.md", "reason": "Visual and copy reference for coach UX"}

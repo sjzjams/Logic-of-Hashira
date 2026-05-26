@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/05-22-ai-coach-toolkit/prd.md", "reason": "Verify acceptance criteria and out-of-scope"}
+{"file": ".trellis/tasks/05-22-ai-coach-toolkit/research/flutter-ai-toolkit.md", "reason": "Firebase and LlmChatView integration checklist"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Header preserved; no design system regressions"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "flutter analyze and flutter test"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "No mock chat state left; dispose controllers"}
