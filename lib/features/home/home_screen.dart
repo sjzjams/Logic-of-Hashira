@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme.dart';
 import '../../core/widgets/illustrations.dart';
-import '../future_you/future_you_screen.dart';
+import '../../core/widgets/muscle_map.dart';
 import '../nutrition/nutrition_sleep_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,256 +18,236 @@ class HomeScreen extends StatelessWidget {
       body: CustomPaint(
         painter: const HomeBackgroundPainter(),
         child: SafeArea(
-          child: Column(
-            children: [
-              // Screen container matching padding: 14px 22px 8px
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(22.0, 14.0, 22.0, 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22.0, 14.0, 22.0, 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Topbar
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Topbar
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Year Selector Pill
-                          GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              constraints: const BoxConstraints(minWidth: 80),
-                              height: 31,
-                              padding: const EdgeInsets.symmetric(horizontal: 13),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(color: const Color(0xFFE7E4F4), width: 1.0),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '2026',
-                                    style: GoogleFonts.pangolin(
-                                      fontSize: 15,
-                                      color: const Color(0xFF4D3CFF),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 7),
-                                  const SizedBox(
-                                    width: 12,
-                                    height: 12,
-                                    child: CustomPaint(
-                                      painter: LineArtIconPainter(
-                                        iconType: 'arrow_down',
-                                        color: Color(0xFF4D3CFF),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                      // Year Selector Pill
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          constraints: const BoxConstraints(minWidth: 80),
+                          height: 31,
+                          padding: const EdgeInsets.symmetric(horizontal: 13),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: const Color(0xFFE7E4F4), width: 1.0),
                           ),
-                          // Notification Bell Button
-                          GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Stay consistent, Sjzjams!',
-                                    style: GoogleFonts.pangolin(color: Colors.white),
-                                  ),
-                                  backgroundColor: const Color(0xFF4D3CFF),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '2026',
+                                style: GoogleFonts.pangolin(
+                                  fontSize: 15,
+                                  color: const Color(0xFF4D3CFF),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              width: 31,
-                              height: 31,
-                              alignment: Alignment.center,
-                              color: Colors.transparent,
-                              child: const SizedBox(
-                                width: 24,
-                                height: 24,
+                              ),
+                              const SizedBox(width: 7),
+                              const SizedBox(
+                                width: 12,
+                                height: 12,
                                 child: CustomPaint(
                                   painter: LineArtIconPainter(
-                                    iconType: 'bell',
+                                    iconType: 'arrow_down',
                                     color: Color(0xFF4D3CFF),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 34), // margin-top: 34px
-
-                      // Habits Grid Row (6 columns)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: _buildHabitItem(context, '力量', 'strength')),
-                          Expanded(child: _buildHabitItem(context, '有氧', 'cardio')),
-                          Expanded(child: _buildHabitItem(context, '睡眠', 'sleep')),
-                          Expanded(child: _buildHabitItem(context, '营养', 'nutrition')),
-                          Expanded(child: _buildHabitItem(context, '心态', 'mindset')),
-                          Expanded(child: _buildHabitItem(context, '恢复', 'recovery')),
-                        ],
-                      ),
-                      const SizedBox(height: 30), // margin-top: 30px
-
-                      // Greeting Section
-                      Column(
-                        children: [
-                          Text(
-                            '早上好！, Sjzjams',
-                            style: GoogleFonts.pangolin(
-                              fontSize: 23,
-                              color: const Color(0xFF201381),
-                              fontWeight: FontWeight.w500,
-                              height: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Your future is in progress',
-                            style: GoogleFonts.nunito(
-                              fontSize: 12,
-                              color: const Color(0xFF5D5791),
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Centered Figure Wrap
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const FutureYouScreen()),
-                            );
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.only(top: 0.0),
-                            child: Image.asset(
-                              'assets/home-body-cutout.png',
-                              width: 170,
-                              height: 345,
-                              fit: BoxFit.contain,
-                            ),
+                            ],
                           ),
                         ),
                       ),
-
-                      // Today's Focus Card
-                      Container(
-                        constraints: const BoxConstraints(minHeight: 69),
-                        margin: const EdgeInsets.only(left: 10, right: 10, bottom: 25, top: 12),
-                        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE7E4F4), width: 1.0),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x0D201381), // rgba(32, 19, 129, .05)
-                              blurRadius: 28,
-                              offset: Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            // Focus Icon Box
-                            Container(
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: const Color(0xFF7C6CFF), width: 1.5),
+                      // Notification Bell Button
+                      GestureDetector(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Stay consistent, Sjzjams!',
+                                style: GoogleFonts.pangolin(color: Colors.white),
                               ),
-                              alignment: Alignment.center,
-                              child: const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CustomPaint(
-                                  painter: LineArtIconPainter(
-                                    iconType: 'focus_doc',
-                                    color: Color(0xFF7C6CFF),
-                                  ),
-                                ),
+                              backgroundColor: const Color(0xFF4D3CFF),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 31,
+                          height: 31,
+                          alignment: Alignment.center,
+                          color: Colors.transparent,
+                          child: const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CustomPaint(
+                              painter: LineArtIconPainter(
+                                iconType: 'bell',
+                                color: Color(0xFF4D3CFF),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            // Text block
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Today's Focus",
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 12,
-                                      color: const Color(0xFF201381),
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    'Build consistency',
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 12,
-                                      color: const Color(0xFF5D5791),
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Start Button
-                            GestureDetector(
-                              onTap: () {
-                                onNavigateToTab(3);
-                              },
-                              child: Container(
-                                height: 32,
-                                width: 68,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(13),
-                                  border: Border.all(color: const Color(0xFFBCB4FF), width: 1.0),
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.white,
-                                      Color(0xFFFBFAFF),
-                                    ],
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Start',
-                                  style: GoogleFonts.pangolin(
-                                    fontSize: 12,
-                                    color: const Color(0xFF4D3CFF),
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 34), // margin-top: 34px
+
+                  // Habits Grid Row (6 columns)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: _buildHabitItem(context, '力量', 'strength')),
+                      Expanded(child: _buildHabitItem(context, '有氧', 'cardio')),
+                      Expanded(child: _buildHabitItem(context, '睡眠', 'sleep')),
+                      Expanded(child: _buildHabitItem(context, '营养', 'nutrition')),
+                      Expanded(child: _buildHabitItem(context, '心态', 'mindset')),
+                      Expanded(child: _buildHabitItem(context, '恢复', 'recovery')),
+                    ],
+                  ),
+                  const SizedBox(height: 30), // margin-top: 30px
+
+                  // Greeting Section
+                  Column(
+                    children: [
+                      Text(
+                        '早上好！, Sjzjams',
+                        style: GoogleFonts.pangolin(
+                          fontSize: 23,
+                          color: const Color(0xFF201381),
+                          fontWeight: FontWeight.w500,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Your future is in progress',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          color: const Color(0xFF5D5791),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Muscle Map 组件
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: MuscleMap(),
+                  ),
+
+                  // Today's Focus Card
+                  Container(
+                    constraints: const BoxConstraints(minHeight: 69),
+                    margin: const EdgeInsets.only(left: 10, right: 10, bottom: 25, top: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE7E4F4), width: 1.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x0D201381), // rgba(32, 19, 129, .05)
+                          blurRadius: 28,
+                          offset: Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        // Focus Icon Box
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFF7C6CFF), width: 1.5),
+                          ),
+                          alignment: Alignment.center,
+                          child: const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CustomPaint(
+                              painter: LineArtIconPainter(
+                                iconType: 'focus_doc',
+                                color: Color(0xFF7C6CFF),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Text block
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Today's Focus",
+                                style: GoogleFonts.nunito(
+                                  fontSize: 12,
+                                  color: const Color(0xFF201381),
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Build consistency',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 12,
+                                  color: const Color(0xFF5D5791),
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Start Button
+                        GestureDetector(
+                          onTap: () {
+                            onNavigateToTab(3);
+                          },
+                          child: Container(
+                            height: 32,
+                            width: 68,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(13),
+                              border: Border.all(color: const Color(0xFFBCB4FF), width: 1.0),
+                              gradient: const LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.white,
+                                  Color(0xFFFBFAFF),
+                                ],
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Start',
+                              style: GoogleFonts.pangolin(
+                                fontSize: 12,
+                                color: const Color(0xFF4D3CFF),
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -339,4 +318,3 @@ class HomeBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
