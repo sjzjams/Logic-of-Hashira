@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "HandDrawn card/button guidelines"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Standard directory layout guidelines"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Testing and static analysis guidelines"}
+{"file": ".trellis/tasks/05-26-restore-homepage/prd.md", "reason": "PRD requirements for homepage restoration"}
