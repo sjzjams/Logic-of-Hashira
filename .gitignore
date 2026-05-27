@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 prototype/
+.agents/
+.claude/
 
 # IntelliJ related
 *.iml

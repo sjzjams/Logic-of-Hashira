@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -39,11 +42,12 @@ class MuscleMap extends StatefulWidget {
   State<MuscleMap> createState() => _MuscleMapState();
 }
 
-class _MuscleMapState extends State<MuscleMap> {
+class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMixin {
   static const Duration _replayStepDuration = Duration(milliseconds: 420);
 
   late List<MuscleMapDay> _weekDays;
   late String _monthYear;
+  late AnimationController _activationController;
   int _selectedDayIndex = 5;
   BodyGender _selectedGender = BodyGender.male;
   Timer? _replayTimer;
@@ -51,6 +55,10 @@ class _MuscleMapState extends State<MuscleMap> {
   @override
   void initState() {
     super.initState();
+    _activationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    )..forward();
     _weekDays = widget.initialData?.weekDays ?? const <MuscleMapDay>[
       MuscleMapDay(weekday: 'SUN', day: 22, hasWorkout: false),
       MuscleMapDay(weekday: 'MON', day: 23, hasWorkout: true),
@@ -67,7 +75,38 @@ class _MuscleMapState extends State<MuscleMap> {
   @override
   void dispose() {
     _replayTimer?.cancel();
+    _activationController.dispose();
     super.dispose();
+  }
+
+  /// 读取当前选中日期对应的肌肉激活数据。
+  MuscleActivation get _selectedActivation {
+    final WorkoutActivity? initialData = widget.initialData;
+    final int selectedDay = _weekDays[_selectedDayIndex].day;
+    return initialData?.activationForDay(selectedDay) ?? MuscleActivation.empty;
+  }
+
+  /// 读取当前激活状态中最强的颜色，用于液态辉光过渡。
+  Color get _activationAuraColor {
+    int strongestLevel = 0;
+    for (final int level in _selectedActivation.levelsByMuscleId.values) {
+      if (level > strongestLevel) {
+        strongestLevel = level;
+      }
+    }
+
+    switch (strongestLevel) {
+      case 1:
+        return AppColors.muscleLight;
+      case 2:
+        return AppColors.muscleModerate;
+      case 3:
+        return AppColors.muscleStrong;
+      case 4:
+        return AppColors.muscleMax;
+      default:
+        return AppColors.workoutGreen;
+    }
   }
 
   /// 点击某一天时更新选中状态，并终止正在执行的回放。
@@ -76,6 +115,7 @@ class _MuscleMapState extends State<MuscleMap> {
     setState(() {
       _selectedDayIndex = index;
     });
+    _activationController.forward(from: 0);
   }
 
   /// 切换性别按钮状态。
@@ -83,6 +123,7 @@ class _MuscleMapState extends State<MuscleMap> {
     setState(() {
       _selectedGender = gender;
     });
+    _activationController.forward(from: 0);
   }
 
   /// 顺序播放一周日期选择效果，复刻原型里的 Replay 体验。
@@ -97,6 +138,7 @@ class _MuscleMapState extends State<MuscleMap> {
       setState(() {
         _selectedDayIndex = nextIndex;
       });
+      _activationController.forward(from: 0);
       nextIndex += 1;
       if (nextIndex >= _weekDays.length) {
         timer.cancel();
@@ -120,30 +162,110 @@ class _MuscleMapState extends State<MuscleMap> {
               onChanged: _selectGender,
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 360,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: _BodySvgView(
-                      assetPath: _selectedGender == BodyGender.male
-                          ? 'assets/muscle_map_front.svg'
-                          : 'assets/muscle_map_female_front.svg',
-                      semanticLabel: 'Front muscle map',
+            AnimatedBuilder(
+              animation: _activationController,
+              builder: (BuildContext context, Widget? child) {
+                final double easedProgress = Curves.easeOutCubic.transform(
+                  _activationController.value,
+                );
+                return SizedBox(
+                  height: 360,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(28),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: <Color>[
+                              Colors.white.withValues(alpha: 0.78),
+                              Colors.white.withValues(alpha: 0.52),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            width: 1.1,
+                          ),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: _activationAuraColor.withValues(
+                                alpha: _selectedActivation.levelsByMuscleId.isEmpty
+                                    ? 0.05
+                                    : 0.16 * easedProgress,
+                              ),
+                              blurRadius: 28,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: <Widget>[
+                            Positioned(
+                              left: 18,
+                              top: 32 - (8 * easedProgress),
+                              child: _BodyAura(
+                                color: _activationAuraColor,
+                                size: 120,
+                                opacity: _selectedActivation.levelsByMuscleId.isEmpty
+                                    ? 0
+                                    : 0.18 * easedProgress,
+                              ),
+                            ),
+                            Positioned(
+                              right: 12,
+                              bottom: 24 - (6 * easedProgress),
+                              child: _BodyAura(
+                                color: _activationAuraColor,
+                                size: 136,
+                                opacity: _selectedActivation.levelsByMuscleId.isEmpty
+                                    ? 0
+                                    : 0.14 * easedProgress,
+                              ),
+                            ),
+                            Transform.scale(
+                              scale: 0.985 + (0.015 * easedProgress),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: _BodySvgView(
+                                        assetPath: _selectedGender == BodyGender.male
+                                            ? 'assets/muscle_map_front.svg'
+                                            : 'assets/muscle_map_female_front.svg',
+                                        semanticLabel: 'Front muscle map',
+                                        activation: _selectedActivation,
+                                        progress: _activationController.value,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: _BodySvgView(
+                                        assetPath: _selectedGender == BodyGender.male
+                                            ? 'assets/muscle_map_back.svg'
+                                            : 'assets/muscle_map_female_back.svg',
+                                        semanticLabel: 'Back muscle map',
+                                        activation: _selectedActivation,
+                                        progress: _activationController.value,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _BodySvgView(
-                      assetPath: _selectedGender == BodyGender.male
-                          ? 'assets/muscle_map_back.svg'
-                          : 'assets/muscle_map_female_back.svg',
-                      semanticLabel: 'Back muscle map',
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -211,19 +333,146 @@ class _BodySvgView extends StatelessWidget {
   const _BodySvgView({
     required this.assetPath,
     required this.semanticLabel,
+    required this.activation,
+    required this.progress,
   });
 
   final String assetPath;
   final String semanticLabel;
+  final MuscleActivation activation;
+  final double progress;
+
+  static final Map<String, Future<String>> _assetCache = <String, Future<String>>{};
+
+  /// 根据肌肉等级返回图例对应的颜色。
+  static Color _colorForLevel(int level) {
+    switch (level.clamp(0, 4)) {
+      case 1:
+        return AppColors.muscleLight;
+      case 2:
+        return AppColors.muscleModerate;
+      case 3:
+        return AppColors.muscleStrong;
+      case 4:
+        return AppColors.muscleMax;
+      default:
+        return AppColors.muscleNotWorked;
+    }
+  }
+
+  /// 将 Flutter 颜色转换成 SVG 可识别的十六进制字符串。
+  static String _colorToSvgHex(Color color) {
+    final String argb = color.toARGB32().toRadixString(16).padLeft(8, '0');
+    return '#${argb.substring(2)}';
+  }
+
+  /// 按 `data-muscle-id` 重写 SVG 路径颜色，并做逐块点亮过渡。
+  static String _buildAnimatedSvg(
+    String rawSvg,
+    MuscleActivation activation,
+    double progress,
+  ) {
+    final RegExp pathPattern = RegExp(
+      r'<path\b[^>]*?data-muscle-id="([^"]+)"[^>]*?>',
+      caseSensitive: false,
+    );
+    int order = 0;
+    return rawSvg.replaceAllMapped(pathPattern, (Match match) {
+      final String pathTag = match.group(0)!;
+      final String muscleId = match.group(1)!;
+      final int level = activation.levelFor(muscleId);
+      final double stagger = math.min(order * 0.018, 0.55);
+      final double localProgress = level == 0
+          ? 1
+          : ((progress - stagger) / 0.35).clamp(0.0, 1.0);
+      final Color targetColor = _colorForLevel(level);
+      final Color animatedColor = Color.lerp(
+        AppColors.muscleNotWorked,
+        targetColor,
+        localProgress,
+      )!;
+      order += 1;
+
+      if (RegExp(r'fill="[^"]*"', caseSensitive: false).hasMatch(pathTag)) {
+        return pathTag.replaceFirst(
+          RegExp(r'fill="[^"]*"', caseSensitive: false),
+          'fill="${_colorToSvgHex(animatedColor)}"',
+        );
+      }
+      return pathTag.replaceFirst(
+        '<path',
+        '<path fill="${_colorToSvgHex(animatedColor)}"',
+      );
+    });
+  }
+
+  /// 缓存 SVG 文本，避免动画帧反复读取磁盘资源。
+  static Future<String> _loadSvg(String assetPath) {
+    return _assetCache.putIfAbsent(
+      assetPath,
+      () => rootBundle.loadString(assetPath),
+    );
+  }
 
   /// 构建人体 SVG 内容。
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      assetPath,
-      fit: BoxFit.contain,
-      alignment: Alignment.topCenter,
-      semanticsLabel: semanticLabel,
+    return FutureBuilder<String>(
+      future: _loadSvg(assetPath),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox.expand(
+            child: Center(
+              child: CircularProgressIndicator(strokeWidth: 1.5),
+            ),
+          );
+        }
+
+        final String rawSvg = snapshot.data!;
+        return SvgPicture.string(
+          _buildAnimatedSvg(rawSvg, activation, progress),
+          fit: BoxFit.contain,
+          alignment: Alignment.topCenter,
+          semanticsLabel: semanticLabel,
+        );
+      },
+    );
+  }
+}
+
+/// 肌肉图底部的液态辉光层。
+class _BodyAura extends StatelessWidget {
+  const _BodyAura({
+    required this.color,
+    required this.size,
+    required this.opacity,
+  });
+
+  final Color color;
+  final double size;
+  final double opacity;
+
+  /// 构建一层模糊的径向辉光，用于营造液态感和空间层次。
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: <Color>[
+                color.withValues(alpha: opacity),
+                color.withValues(alpha: opacity * 0.32),
+                color.withValues(alpha: 0),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
