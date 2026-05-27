@@ -11,6 +11,25 @@ class AppColors {
   static const Color grayText = Color(0xFF6E7191);
   static const Color softGray = Color(0xFFF8FAFC);
   static const Color activeGauge = Color(0xFF6366F1);
+
+  // Muscle Map Heatmap
+  static const Color muscleNotWorked = Color(0xFFD8DDDA);
+  static const Color muscleLight = Color(0xFFF3D85F);
+  static const Color muscleModerate = Color(0xFFB9E66E);
+  static const Color muscleStrong = Color(0xFF54C45F);
+  static const Color muscleMax = Color(0xFF15803D);
+
+  // UI Components
+  static const Color panelBackground = Color(0xFFECEDEB);
+  static const Color weekButtonBackground = Color(0xFFE3E3DF);
+  static const Color weekButtonText = Color(0xFFB1B1AD);
+  static const Color accentRed = Color(0xFFFF3B30);
+  static const Color workoutGreen = Color(0xFF14C53A);
+  static const Color badgeBackground = Color(0xFFF4F4F2);
+  static const Color switchBackground = Color(0xFFE4E4E4);
+  static const Color lightBorder = Color(0xFFE7E4F4);
+  static const Color focusAccent = Color(0xFF7C6CFF);
+  static const Color softBlue = Color(0xFFFBFAFF);
 }
 
 class AppTheme {
@@ -21,9 +40,8 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.inkBlue,
-        background: AppColors.canvas,
-        primary: AppColors.inkBlue,
         surface: AppColors.canvas,
+        primary: AppColors.inkBlue,
       ),
       scaffoldBackgroundColor: AppColors.canvas,
       appBarTheme: const AppBarTheme(

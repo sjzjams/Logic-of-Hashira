@@ -29,25 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fitness Record App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          iconTheme: IconThemeData(color: AppColors.inkText),
-          titleTextStyle: TextStyle(
-            color: AppColors.inkText,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.inkBlue,
-          primary: AppColors.inkBlue,
-          background: Colors.white,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: const LayoutShell(),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/illustrations.dart';
 import '../../core/widgets/muscle_map.dart';
 import '../nutrition/nutrition_sleep_screen.dart';
@@ -39,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: const Color(0xFFE7E4F4), width: 1.0),
+                            border: Border.all(color: AppColors.lightBorder, width: 1.0),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                                 '2026',
                                 style: GoogleFonts.pangolin(
                                   fontSize: 15,
-                                  color: const Color(0xFF4D3CFF),
+                                  color: AppColors.inkBlue,
                                 ),
                               ),
                               const SizedBox(width: 7),
@@ -59,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                                 child: CustomPaint(
                                   painter: LineArtIconPainter(
                                     iconType: 'arrow_down',
-                                    color: Color(0xFF4D3CFF),
+                                    color: AppColors.inkBlue,
                                   ),
                                 ),
                               ),
@@ -76,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                                 'Stay consistent, Sjzjams!',
                                 style: GoogleFonts.pangolin(color: Colors.white),
                               ),
-                              backgroundColor: const Color(0xFF4D3CFF),
+                              backgroundColor: AppColors.inkBlue,
                             ),
                           );
                         },
@@ -91,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                             child: CustomPaint(
                               painter: LineArtIconPainter(
                                 iconType: 'bell',
-                                color: Color(0xFF4D3CFF),
+                                color: AppColors.inkBlue,
                               ),
                             ),
                           ),
@@ -122,7 +123,7 @@ class HomeScreen extends StatelessWidget {
                         '早上好！, Sjzjams',
                         style: GoogleFonts.pangolin(
                           fontSize: 23,
-                          color: const Color(0xFF201381),
+                          color: AppColors.inkText,
                           fontWeight: FontWeight.w500,
                           height: 1.2,
                         ),
@@ -132,7 +133,7 @@ class HomeScreen extends StatelessWidget {
                         'Your future is in progress',
                         style: GoogleFonts.nunito(
                           fontSize: 12,
-                          color: const Color(0xFF5D5791),
+                          color: AppColors.grayText,
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -153,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE7E4F4), width: 1.0),
+                      border: Border.all(color: AppColors.lightBorder, width: 1.0),
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x0D201381), // rgba(32, 19, 129, .05)
@@ -170,7 +171,7 @@ class HomeScreen extends StatelessWidget {
                           height: 24,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFF7C6CFF), width: 1.5),
+                            border: Border.all(color: AppColors.focusAccent, width: 1.5),
                           ),
                           alignment: Alignment.center,
                           child: const SizedBox(
@@ -179,7 +180,7 @@ class HomeScreen extends StatelessWidget {
                             child: CustomPaint(
                               painter: LineArtIconPainter(
                                 iconType: 'focus_doc',
-                                color: Color(0xFF7C6CFF),
+                                color: AppColors.focusAccent,
                               ),
                             ),
                           ),
@@ -195,7 +196,7 @@ class HomeScreen extends StatelessWidget {
                                 "Today's Focus",
                                 style: GoogleFonts.nunito(
                                   fontSize: 12,
-                                  color: const Color(0xFF201381),
+                                  color: AppColors.inkText,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -204,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                                 'Build consistency',
                                 style: GoogleFonts.nunito(
                                   fontSize: 12,
-                                  color: const Color(0xFF5D5791),
+                                  color: AppColors.grayText,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -221,13 +222,13 @@ class HomeScreen extends StatelessWidget {
                             width: 68,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(13),
-                              border: Border.all(color: const Color(0xFFBCB4FF), width: 1.0),
+                              border: Border.all(color: AppColors.lightInk, width: 1.0),
                               gradient: const LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.white,
-                                  Color(0xFFFBFAFF),
+                                  AppColors.softBlue,
                                 ],
                               ),
                             ),
@@ -236,7 +237,7 @@ class HomeScreen extends StatelessWidget {
                               'Start',
                               style: GoogleFonts.pangolin(
                                 fontSize: 12,
-                                color: const Color(0xFF4D3CFF),
+                                color: AppColors.inkBlue,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
@@ -271,7 +272,7 @@ class HomeScreen extends StatelessWidget {
                 'Opening $label category...',
                 style: GoogleFonts.pangolin(color: Colors.white),
               ),
-              backgroundColor: const Color(0xFF4D3CFF),
+              backgroundColor: AppColors.inkBlue,
             ),
           );
         }
@@ -286,7 +287,7 @@ class HomeScreen extends StatelessWidget {
             child: CustomPaint(
               painter: LineArtIconPainter(
                 iconType: iconType,
-                color: const Color(0xFF4D3CFF),
+                color: AppColors.inkBlue,
               ),
             ),
           ),
@@ -295,7 +296,7 @@ class HomeScreen extends StatelessWidget {
             label,
             style: GoogleFonts.pangolin(
               fontSize: 10,
-              color: const Color(0xFF201381),
+              color: AppColors.inkText,
               height: 1.0,
             ),
           ),
@@ -311,7 +312,7 @@ class HomeBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // 白底为主 — White panel background matching .phone { background: var(--panel) }
-    final basePaint = Paint()..color = const Color(0xFFFFFFFF);
+    final basePaint = Paint()..color = AppColors.canvas;
     canvas.drawRect(Offset.zero & size, basePaint);
   }
 

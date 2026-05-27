@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../theme.dart';
+
 /// 性别枚举。
 enum BodyGender { male, female }
 
@@ -21,19 +23,21 @@ class _MuscleMapDay {
     required this.weekday,
     required this.day,
     required this.hasWorkout,
+    this.isToday = false,
   });
 
   final String weekday;
   final int day;
   final bool hasWorkout;
+  final bool isToday;
 }
 
 const List<_LegendItemData> _legendItems = <_LegendItemData>[
-  _LegendItemData('Not worked', Color(0xFFD8DDDA)),
-  _LegendItemData('Light', Color(0xFFF3D85F)),
-  _LegendItemData('Moderate', Color(0xFFB9E66E)),
-  _LegendItemData('Strong', Color(0xFF54C45F)),
-  _LegendItemData('Max', Color(0xFF15803D)),
+  _LegendItemData('Not worked', AppColors.muscleNotWorked),
+  _LegendItemData('Light', AppColors.muscleLight),
+  _LegendItemData('Moderate', AppColors.muscleModerate),
+  _LegendItemData('Strong', AppColors.muscleStrong),
+  _LegendItemData('Max', AppColors.muscleMax),
 ];
 
 const List<_MuscleMapDay> _weekDays = <_MuscleMapDay>[
@@ -41,7 +45,7 @@ const List<_MuscleMapDay> _weekDays = <_MuscleMapDay>[
   _MuscleMapDay(weekday: 'MON', day: 23, hasWorkout: true),
   _MuscleMapDay(weekday: 'TUE', day: 24, hasWorkout: true),
   _MuscleMapDay(weekday: 'WED', day: 25, hasWorkout: false),
-  _MuscleMapDay(weekday: 'THU', day: 26, hasWorkout: true),
+  _MuscleMapDay(weekday: 'THU', day: 26, hasWorkout: true, isToday: true),
   _MuscleMapDay(weekday: 'FRI', day: 27, hasWorkout: true),
   _MuscleMapDay(weekday: 'SAT', day: 28, hasWorkout: true),
 ];
@@ -57,7 +61,7 @@ class MuscleMap extends StatefulWidget {
 class _MuscleMapState extends State<MuscleMap> {
   static const Duration _replayStepDuration = Duration(milliseconds: 420);
 
-  int _selectedDayIndex = 4;
+  int _selectedDayIndex = 5;
   BodyGender _selectedGender = BodyGender.male;
   Timer? _replayTimer;
 
@@ -158,10 +162,10 @@ class _MuscleMapState extends State<MuscleMap> {
   Widget _buildCalendarCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(12.69, 14.27, 12.69, 14.27),
+      padding: const EdgeInsets.fromLTRB(16, 15, 16, 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFECEDEB),
-        borderRadius: BorderRadius.circular(19.03),
+        color: AppColors.panelBackground,
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -172,17 +176,17 @@ class _MuscleMapState extends State<MuscleMap> {
                 child: Text(
                   'March, 2026',
                   style: GoogleFonts.nunito(
-                    fontSize: 19.03,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    height: 23.79 / 19.03,
-                    color: Colors.black,
+                    height: 1.2,
+                    color: AppColors.inkText,
                   ),
                 ),
               ),
               _WeekButton(onReplay: _replayWeek),
             ],
           ),
-          const SizedBox(height: 14.27),
+          const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List<Widget>.generate(
@@ -234,10 +238,10 @@ class _WeekButton extends StatelessWidget {
     return GestureDetector(
       onTap: onReplay,
       child: Container(
-        height: 32,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        height: 28,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: const Color.fromRGBO(0, 0, 0, 0.045),
+          color: AppColors.weekButtonBackground,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
@@ -245,16 +249,16 @@ class _WeekButton extends StatelessWidget {
           children: <Widget>[
             const Icon(
               Icons.calendar_view_week_rounded,
-              size: 14,
-              color: Color.fromRGBO(0, 0, 0, 0.42),
+              size: 12,
+              color: AppColors.weekButtonText,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
             Text(
               'Week',
               style: GoogleFonts.nunito(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: const Color.fromRGBO(0, 0, 0, 0.42),
+                color: AppColors.weekButtonText,
               ),
             ),
           ],
@@ -279,28 +283,28 @@ class _DayButton extends StatelessWidget {
   /// 构建顶部英文星期与底部日期徽标。
   @override
   Widget build(BuildContext context) {
-    final Color topLabelColor = selected
-        ? const Color(0xFFFF0000)
-        : const Color.fromRGBO(0, 0, 0, 0.4);
+    final Color topLabelColor = day.isToday
+        ? AppColors.accentRed
+        : AppColors.grayText;
 
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 32.71,
+        width: 39,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
               day.weekday,
               style: GoogleFonts.nunito(
-                fontSize: 9.51,
+                fontSize: 10,
                 fontWeight: FontWeight.w700,
-                height: 11 / 9.51,
-                letterSpacing: 0.2,
+                height: 1.1,
+                letterSpacing: 0.3,
                 color: topLabelColor,
               ),
             ),
-            const SizedBox(height: 5.55),
+            const SizedBox(height: 6),
             _DayNumberBadge(
               value: day.day.toString(),
               selected: selected,
@@ -330,63 +334,73 @@ class _DayNumberBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!workoutDay) {
       return Container(
-        width: 32.71,
-        height: 33.3,
+        width: 34,
+        height: 34,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
+          color: AppColors.badgeBackground,
           border: Border.all(
-            color: const Color.fromRGBO(255, 255, 255, 0.65),
-            width: 0.79,
+            color: AppColors.border,
+            width: 1,
           ),
         ),
         child: Text(
           value,
           style: GoogleFonts.nunito(
-            fontSize: 13.48,
+            fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: Colors.black,
+            height: 1,
+            color: AppColors.inkText,
           ),
         ),
       );
     }
 
     return Container(
-      width: 28.5,
-      height: 29,
+      width: 34,
+      height: 34,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFF00C300), width: 2),
-        color: selected ? const Color(0xFF00C300) : Colors.transparent,
+        shape: BoxShape.circle,
+        color: selected ? AppColors.workoutGreen : AppColors.badgeBackground,
+        border: Border.all(
+          color: AppColors.workoutGreen,
+          width: selected ? 0 : 1.6,
+        ),
         boxShadow: selected
             ? const <BoxShadow>[
                 BoxShadow(
-                  color: Color.fromRGBO(0, 195, 0, 0.28),
-                  blurRadius: 14,
+                  color: Color.fromRGBO(20, 197, 58, 0.18),
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
                 ),
               ]
             : null,
       ),
       child: Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: Clip.hardEdge,
         alignment: Alignment.center,
         children: <Widget>[
           Positioned(
-            top: 4,
-            child: Icon(
-              Icons.bolt_rounded,
-              size: 14,
-              color: selected ? Colors.white : const Color(0xFF00C300),
+            top: 3,
+            child: Transform.rotate(
+              angle: -0.16,
+              child: Icon(
+                Icons.bolt_rounded,
+                size: 12,
+                color: selected ? Colors.white : AppColors.workoutGreen,
+              ),
             ),
           ),
           Positioned(
-            bottom: -7,
+            top: 16,
             child: Text(
               value,
               style: GoogleFonts.nunito(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w600,
-                color: selected ? Colors.white : const Color(0xFF239A2D),
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                height: 1,
+                color: selected ? Colors.white : AppColors.workoutGreen,
               ),
             ),
           ),
@@ -414,7 +428,7 @@ class _GenderSwitch extends StatelessWidget {
       height: 44,
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: const Color(0xFFE4E4E4),
+        color: AppColors.switchBackground,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Stack(
@@ -488,8 +502,8 @@ class _GenderSwitchLabel extends StatelessWidget {
             fontSize: 14,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             color: selected
-                ? const Color(0xFF111111)
-                : const Color.fromRGBO(0, 0, 0, 0.48),
+                ? AppColors.inkText
+                : AppColors.grayText,
           ),
         ),
       ),
