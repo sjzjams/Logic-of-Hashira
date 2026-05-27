@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../features/home/models.dart';
 import '../theme.dart';
 
 /// 性别枚举。
@@ -17,21 +18,6 @@ class _LegendItemData {
   final Color color;
 }
 
-/// 周视图中的单日数据。
-class _MuscleMapDay {
-  const _MuscleMapDay({
-    required this.weekday,
-    required this.day,
-    required this.hasWorkout,
-    this.isToday = false,
-  });
-
-  final String weekday;
-  final int day;
-  final bool hasWorkout;
-  final bool isToday;
-}
-
 const List<_LegendItemData> _legendItems = <_LegendItemData>[
   _LegendItemData('Not worked', AppColors.muscleNotWorked),
   _LegendItemData('Light', AppColors.muscleLight),
@@ -40,19 +26,14 @@ const List<_LegendItemData> _legendItems = <_LegendItemData>[
   _LegendItemData('Max', AppColors.muscleMax),
 ];
 
-const List<_MuscleMapDay> _weekDays = <_MuscleMapDay>[
-  _MuscleMapDay(weekday: 'SUN', day: 22, hasWorkout: false),
-  _MuscleMapDay(weekday: 'MON', day: 23, hasWorkout: true),
-  _MuscleMapDay(weekday: 'TUE', day: 24, hasWorkout: true),
-  _MuscleMapDay(weekday: 'WED', day: 25, hasWorkout: false),
-  _MuscleMapDay(weekday: 'THU', day: 26, hasWorkout: true, isToday: true),
-  _MuscleMapDay(weekday: 'FRI', day: 27, hasWorkout: true),
-  _MuscleMapDay(weekday: 'SAT', day: 28, hasWorkout: true),
-];
-
 /// 首页使用的 Muscle Map 区域，仅保留原型中的核心区域。
 class MuscleMap extends StatefulWidget {
-  const MuscleMap({super.key});
+  const MuscleMap({
+    super.key,
+    this.initialData,
+  });
+
+  final WorkoutActivity? initialData;
 
   @override
   State<MuscleMap> createState() => _MuscleMapState();
@@ -61,9 +42,26 @@ class MuscleMap extends StatefulWidget {
 class _MuscleMapState extends State<MuscleMap> {
   static const Duration _replayStepDuration = Duration(milliseconds: 420);
 
+  late List<MuscleMapDay> _weekDays;
+  late String _monthYear;
   int _selectedDayIndex = 5;
   BodyGender _selectedGender = BodyGender.male;
   Timer? _replayTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _weekDays = widget.initialData?.weekDays ?? const <MuscleMapDay>[
+      MuscleMapDay(weekday: 'SUN', day: 22, hasWorkout: false),
+      MuscleMapDay(weekday: 'MON', day: 23, hasWorkout: true),
+      MuscleMapDay(weekday: 'TUE', day: 24, hasWorkout: true),
+      MuscleMapDay(weekday: 'WED', day: 25, hasWorkout: false),
+      MuscleMapDay(weekday: 'THU', day: 26, hasWorkout: true, isToday: true),
+      MuscleMapDay(weekday: 'FRI', day: 27, hasWorkout: true),
+      MuscleMapDay(weekday: 'SAT', day: 28, hasWorkout: true),
+    ];
+    _monthYear = widget.initialData?.monthYear ?? 'March, 2026';
+  }
 
   /// 释放回放定时器，避免组件销毁后继续更新状态。
   @override
@@ -174,7 +172,7 @@ class _MuscleMapState extends State<MuscleMap> {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  'March, 2026',
+                  _monthYear,
                   style: GoogleFonts.nunito(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -276,7 +274,7 @@ class _DayButton extends StatelessWidget {
     required this.onTap,
   });
 
-  final _MuscleMapDay day;
+  final MuscleMapDay day;
   final bool selected;
   final VoidCallback onTap;
 

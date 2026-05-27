@@ -4,6 +4,8 @@ import '../../core/theme.dart';
 import '../../core/widgets/illustrations.dart';
 import '../../core/widgets/muscle_map.dart';
 import '../nutrition/nutrition_sleep_screen.dart';
+import 'mock_service.dart';
+import 'models.dart';
 
 class HomeScreen extends StatelessWidget {
   final Function(int) onNavigateToTab;
@@ -15,6 +17,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final WorkoutActivity workoutData = HomeMockService.getMockWorkoutActivity();
+
     return Scaffold(
       body: CustomPaint(
         painter: const HomeBackgroundPainter(),
@@ -141,9 +145,9 @@ class HomeScreen extends StatelessWidget {
                   ),
 
                   // Muscle Map 组件
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: MuscleMap(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: MuscleMap(initialData: workoutData),
                   ),
 
                   // Today's Focus Card
