@@ -124,17 +124,21 @@ class _MuscleMapState extends State<MuscleMap> {
               height: 360,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
+                children: <Widget>[
                   Expanded(
                     child: _BodySvgView(
-                      assetPath: 'assets/muscle_map_front.svg',
+                      assetPath: _selectedGender == BodyGender.male
+                          ? 'assets/muscle_map_front.svg'
+                          : 'assets/muscle_map_female_front.svg',
                       semanticLabel: 'Front muscle map',
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: _BodySvgView(
-                      assetPath: 'assets/muscle_map_back.svg',
+                      assetPath: _selectedGender == BodyGender.male
+                          ? 'assets/muscle_map_back.svg'
+                          : 'assets/muscle_map_female_back.svg',
                       semanticLabel: 'Back muscle map',
                     ),
                   ),
