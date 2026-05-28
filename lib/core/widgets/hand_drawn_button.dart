@@ -42,7 +42,7 @@ class HandDrawnButton extends StatelessWidget {
       case HandDrawnButtonStyle.chip:
         bg = AppColors.softLilac;
         textColor = AppColors.inkBlue;
-        border = Border.all(color: AppColors.inkBlue.withOpacity(0.3), width: 1.0);
+        border = Border.all(color: AppColors.inkBlue.withValues(alpha: 0.3), width: 1.0);
         break;
     }
 
@@ -79,7 +79,7 @@ class HandDrawnButton extends StatelessWidget {
         boxShadow: style == HandDrawnButtonStyle.primary
             ? [
                 BoxShadow(
-                  color: AppColors.inkBlue.withOpacity(0.2),
+                  color: AppColors.inkBlue.withValues(alpha: 0.2),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

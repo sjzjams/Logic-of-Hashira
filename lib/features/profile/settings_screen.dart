@@ -86,7 +86,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'Daily Workout Reminders',
                     trailing: Switch.adaptive(
                       value: _gymReminders,
-                      activeColor: AppColors.inkBlue,
+                      activeThumbColor: AppColors.inkBlue,
+                      activeTrackColor: AppColors.inkBlue.withValues(alpha: 0.5),
                       onChanged: (val) => setState(() => _gymReminders = val),
                     ),
                   ),
@@ -95,7 +96,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'Sleep Reminders',
                     trailing: Switch.adaptive(
                       value: _sleepReminders,
-                      activeColor: AppColors.inkBlue,
+                      activeThumbColor: AppColors.inkBlue,
+                      activeTrackColor: AppColors.inkBlue.withValues(alpha: 0.5),
                       onChanged: (val) => setState(() => _sleepReminders = val),
                     ),
                   ),
@@ -113,7 +115,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Link Google Fit',
                 trailing: Switch.adaptive(
                   value: _googleFitLinked,
-                  activeColor: AppColors.inkBlue,
+                  activeThumbColor: AppColors.inkBlue,
+                  activeTrackColor: AppColors.inkBlue.withValues(alpha: 0.5),
                   onChanged: (val) => setState(() => _googleFitLinked = val),
                 ),
               ),

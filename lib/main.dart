@@ -1,23 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'core/theme.dart';
 import 'features/layout_shell.dart';
-import 'firebase_options.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (error) {
-    if (error is UnsupportedError) {
-      debugPrint('Firebase init skipped: ${error.message}');
-    } else {
-      rethrow;
-    }
-  }
   runApp(const MyApp());
 }
 

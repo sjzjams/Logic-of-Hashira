@@ -42,12 +42,13 @@ class MuscleMap extends StatefulWidget {
   State<MuscleMap> createState() => _MuscleMapState();
 }
 
-class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMixin {
+class _MuscleMapState extends State<MuscleMap> with TickerProviderStateMixin {
   static const Duration _replayStepDuration = Duration(milliseconds: 420);
 
   late List<MuscleMapDay> _weekDays;
   late String _monthYear;
   late AnimationController _activationController;
+  late AnimationController _pulseController;
   int _selectedDayIndex = 5;
   BodyGender _selectedGender = BodyGender.male;
   Timer? _replayTimer;
@@ -59,6 +60,10 @@ class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMix
       vsync: this,
       duration: const Duration(milliseconds: 650),
     )..forward();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat(reverse: true);
     _weekDays = widget.initialData?.weekDays ?? const <MuscleMapDay>[
       MuscleMapDay(weekday: 'SUN', day: 22, hasWorkout: false),
       MuscleMapDay(weekday: 'MON', day: 23, hasWorkout: true),
@@ -76,6 +81,7 @@ class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMix
   void dispose() {
     _replayTimer?.cancel();
     _activationController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -168,12 +174,17 @@ class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMix
                 final double easedProgress = Curves.easeOutCubic.transform(
                   _activationController.value,
                 );
+                final double auraProgress = Curves.easeOutQuart.transform(
+                  ((_activationController.value - 0.08) / 0.82).clamp(0.0, 1.0),
+                );
+                final bool hasActivation = _selectedActivation.levelsByMuscleId.isNotEmpty;
+                final double activationProgress = _activationController.value;
                 return SizedBox(
                   height: 360,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(28),
                     child: BackdropFilter(
-                      filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                      filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(28),
@@ -192,9 +203,7 @@ class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMix
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: _activationAuraColor.withValues(
-                                alpha: _selectedActivation.levelsByMuscleId.isEmpty
-                                    ? 0.05
-                                    : 0.16 * easedProgress,
+                                alpha: hasActivation ? 0.16 * auraProgress : 0.05,
                               ),
                               blurRadius: 28,
                               spreadRadius: 2,
@@ -208,23 +217,37 @@ class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMix
                             Positioned(
                               left: 18,
                               top: 32 - (8 * easedProgress),
-                              child: _BodyAura(
-                                color: _activationAuraColor,
-                                size: 120,
-                                opacity: _selectedActivation.levelsByMuscleId.isEmpty
-                                    ? 0
-                                    : 0.18 * easedProgress,
+                              child: AnimatedBuilder(
+                                animation: _pulseController,
+                                builder: (BuildContext context, Widget? child) {
+                                  final double pulseProgress = Curves.easeInOutSine.transform(
+                                    _pulseController.value,
+                                  );
+                                  final double auraPulse = hasActivation ? (0.88 + (pulseProgress * 0.12)) : 0;
+                                  return _BodyAura(
+                                    color: _activationAuraColor,
+                                    size: 120,
+                                    opacity: hasActivation ? 0.18 * auraProgress * auraPulse : 0,
+                                  );
+                                },
                               ),
                             ),
                             Positioned(
                               right: 12,
                               bottom: 24 - (6 * easedProgress),
-                              child: _BodyAura(
-                                color: _activationAuraColor,
-                                size: 136,
-                                opacity: _selectedActivation.levelsByMuscleId.isEmpty
-                                    ? 0
-                                    : 0.14 * easedProgress,
+                              child: AnimatedBuilder(
+                                animation: _pulseController,
+                                builder: (BuildContext context, Widget? child) {
+                                  final double pulseProgress = Curves.easeInOutSine.transform(
+                                    _pulseController.value,
+                                  );
+                                  final double auraPulse = hasActivation ? (0.88 + (pulseProgress * 0.12)) : 0;
+                                  return _BodyAura(
+                                    color: _activationAuraColor,
+                                    size: 136,
+                                    opacity: hasActivation ? 0.14 * auraProgress * auraPulse : 0,
+                                  );
+                                },
                               ),
                             ),
                             Transform.scale(
@@ -235,24 +258,66 @@ class _MuscleMapState extends State<MuscleMap> with SingleTickerProviderStateMix
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     Expanded(
-                                      child: _BodySvgView(
-                                        assetPath: _selectedGender == BodyGender.male
-                                            ? 'assets/muscle_map_front.svg'
-                                            : 'assets/muscle_map_female_front.svg',
-                                        semanticLabel: 'Front muscle map',
-                                        activation: _selectedActivation,
-                                        progress: _activationController.value,
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: <Widget>[
+                                          _BodySvgView(
+                                            assetPath: _selectedGender == BodyGender.male
+                                                ? 'assets/muscle_map_front.svg'
+                                                : 'assets/muscle_map_female_front.svg',
+                                            semanticLabel: 'Front muscle map',
+                                            activation: _selectedActivation,
+                                            progress: activationProgress,
+                                          ),
+                                          AnimatedBuilder(
+                                            animation: _pulseController,
+                                            builder: (BuildContext context, Widget? child) {
+                                              final double pulseProgress = Curves.easeInOutSine.transform(
+                                                _pulseController.value,
+                                              );
+                                              return RepaintBoundary(
+                                                child: _LocalizedRippleOverlay(
+                                                  activation: _selectedActivation,
+                                                  progress: activationProgress,
+                                                  pulseProgress: pulseProgress,
+                                                  anchorsByMuscleId: _BodySvgView._frontRippleAnchors,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     const SizedBox(width: 10),
                                     Expanded(
-                                      child: _BodySvgView(
-                                        assetPath: _selectedGender == BodyGender.male
-                                            ? 'assets/muscle_map_back.svg'
-                                            : 'assets/muscle_map_female_back.svg',
-                                        semanticLabel: 'Back muscle map',
-                                        activation: _selectedActivation,
-                                        progress: _activationController.value,
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: <Widget>[
+                                          _BodySvgView(
+                                            assetPath: _selectedGender == BodyGender.male
+                                                ? 'assets/muscle_map_back.svg'
+                                                : 'assets/muscle_map_female_back.svg',
+                                            semanticLabel: 'Back muscle map',
+                                            activation: _selectedActivation,
+                                            progress: activationProgress,
+                                          ),
+                                          AnimatedBuilder(
+                                            animation: _pulseController,
+                                            builder: (BuildContext context, Widget? child) {
+                                              final double pulseProgress = Curves.easeInOutSine.transform(
+                                                _pulseController.value,
+                                              );
+                                              return RepaintBoundary(
+                                                child: _LocalizedRippleOverlay(
+                                                  activation: _selectedActivation,
+                                                  progress: activationProgress,
+                                                  pulseProgress: pulseProgress,
+                                                  anchorsByMuscleId: _BodySvgView._backRippleAnchors,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -343,6 +408,124 @@ class _BodySvgView extends StatelessWidget {
   final double progress;
 
   static final Map<String, Future<String>> _assetCache = <String, Future<String>>{};
+  static final Map<String, List<_RippleAnchor>> _frontRippleAnchors =
+      <String, List<_RippleAnchor>>{
+    '1': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.22, -0.76), 42),
+      _RippleAnchor(Alignment(0.22, -0.76), 42),
+    ],
+    '3': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.38, -0.46), 44),
+      _RippleAnchor(Alignment(0.38, -0.46), 44),
+    ],
+    '5': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.16, -0.50), 44),
+      _RippleAnchor(Alignment(0.16, -0.50), 44),
+    ],
+    '6': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.34, -0.16), 38),
+      _RippleAnchor(Alignment(0.34, -0.16), 38),
+    ],
+    '7': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, -0.34), 50),
+    ],
+    '8': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, -0.14), 46),
+    ],
+    '9': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, 0.08), 42),
+    ],
+    '10': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.20, 0.24), 46),
+      _RippleAnchor(Alignment(0.20, 0.24), 46),
+    ],
+    '11': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, 0.34), 34),
+    ],
+    '12': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.20, 0.52), 38),
+      _RippleAnchor(Alignment(0.20, 0.52), 38),
+    ],
+    '13': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.20, 0.74), 30),
+      _RippleAnchor(Alignment(0.20, 0.74), 30),
+    ],
+    '14': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.44, 0.02), 28),
+      _RippleAnchor(Alignment(0.44, 0.02), 28),
+    ],
+    '15': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.10, 0.56), 28),
+      _RippleAnchor(Alignment(0.10, 0.56), 28),
+    ],
+    '16': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.20, 0.40), 44),
+      _RippleAnchor(Alignment(0.20, 0.40), 44),
+    ],
+    '17': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.16, 0.88), 24),
+      _RippleAnchor(Alignment(0.16, 0.88), 24),
+    ],
+  };
+  static final Map<String, List<_RippleAnchor>> _backRippleAnchors =
+      <String, List<_RippleAnchor>>{
+    '1': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.22, -0.76), 42),
+      _RippleAnchor(Alignment(0.22, -0.76), 42),
+    ],
+    '3': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.36, -0.44), 42),
+      _RippleAnchor(Alignment(0.36, -0.44), 42),
+    ],
+    '5': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.18, -0.54), 42),
+      _RippleAnchor(Alignment(0.18, -0.54), 42),
+    ],
+    '6': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.34, -0.12), 36),
+      _RippleAnchor(Alignment(0.34, -0.12), 36),
+    ],
+    '7': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, -0.38), 52),
+    ],
+    '8': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, -0.12), 48),
+    ],
+    '9': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.20, -0.06), 46),
+      _RippleAnchor(Alignment(0.20, -0.06), 46),
+    ],
+    '10': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, 0.12), 42),
+    ],
+    '11': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(0, 0.28), 44),
+    ],
+    '12': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.18, 0.40), 40),
+      _RippleAnchor(Alignment(0.18, 0.40), 40),
+    ],
+    '13': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.18, 0.70), 30),
+      _RippleAnchor(Alignment(0.18, 0.70), 30),
+    ],
+    '14': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.42, -0.04), 26),
+      _RippleAnchor(Alignment(0.42, -0.04), 26),
+    ],
+    '15': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.10, 0.28), 34),
+      _RippleAnchor(Alignment(0.10, 0.28), 34),
+    ],
+    '16': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.18, 0.52), 42),
+      _RippleAnchor(Alignment(0.18, 0.52), 42),
+    ],
+    '17': const <_RippleAnchor>[
+      _RippleAnchor(Alignment(-0.16, 0.86), 22),
+      _RippleAnchor(Alignment(0.16, 0.86), 22),
+    ],
+  };
 
   /// 根据肌肉等级返回图例对应的颜色。
   static Color _colorForLevel(int level) {
@@ -376,22 +559,46 @@ class _BodySvgView extends StatelessWidget {
       r'<path\b[^>]*?data-muscle-id="([^"]+)"[^>]*?>',
       caseSensitive: false,
     );
-    int order = 0;
+    final List<String> orderedMuscleIds = <String>[];
+    final Set<String> seenMuscleIds = <String>{};
+    for (final Match match in pathPattern.allMatches(rawSvg)) {
+      final String muscleId = match.group(1)!;
+      if (seenMuscleIds.add(muscleId)) {
+        orderedMuscleIds.add(muscleId);
+      }
+    }
+
+    final Map<String, int> groupOrder = <String, int>{
+      for (int index = 0; index < orderedMuscleIds.length; index += 1)
+        orderedMuscleIds[index]: index,
+    };
+    final int activeGroupCount = orderedMuscleIds
+        .where((String muscleId) => activation.levelFor(muscleId) > 0)
+        .length;
+
     return rawSvg.replaceAllMapped(pathPattern, (Match match) {
       final String pathTag = match.group(0)!;
       final String muscleId = match.group(1)!;
       final int level = activation.levelFor(muscleId);
-      final double stagger = math.min(order * 0.018, 0.55);
+      final int order = groupOrder[muscleId] ?? 0;
+      final double normalizedOrder = orderedMuscleIds.isEmpty
+          ? 0
+          : order / orderedMuscleIds.length;
+      final double stagger = level == 0
+          ? 0
+          : math.min(normalizedOrder * (activeGroupCount <= 3 ? 0.42 : 0.56), 0.58);
       final double localProgress = level == 0
           ? 1
-          : ((progress - stagger) / 0.35).clamp(0.0, 1.0);
+          : Curves.easeOutCubic.transform(
+              ((progress - stagger) / 0.28).clamp(0.0, 1.0),
+            );
       final Color targetColor = _colorForLevel(level);
-      final Color animatedColor = Color.lerp(
+      final Color baseColor = Color.lerp(
         AppColors.muscleNotWorked,
         targetColor,
         localProgress,
       )!;
-      order += 1;
+      final Color animatedColor = baseColor;
 
       if (RegExp(r'fill="[^"]*"', caseSensitive: false).hasMatch(pathTag)) {
         return pathTag.replaceFirst(
@@ -429,11 +636,13 @@ class _BodySvgView extends StatelessWidget {
         }
 
         final String rawSvg = snapshot.data!;
-        return SvgPicture.string(
-          _buildAnimatedSvg(rawSvg, activation, progress),
-          fit: BoxFit.contain,
-          alignment: Alignment.topCenter,
-          semanticsLabel: semanticLabel,
+        return RepaintBoundary(
+          child: SvgPicture.string(
+            _buildAnimatedSvg(rawSvg, activation, progress),
+            fit: BoxFit.contain,
+            alignment: Alignment.topCenter,
+            semanticsLabel: semanticLabel,
+          ),
         );
       },
     );
@@ -457,7 +666,7 @@ class _BodyAura extends StatelessWidget {
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        imageFilter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: Container(
           width: size,
           height: size,
@@ -470,6 +679,108 @@ class _BodyAura extends StatelessWidget {
                 color.withValues(alpha: 0),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 单个肌群的扩散锚点定义。
+class _RippleAnchor {
+  const _RippleAnchor(this.alignment, this.baseSize);
+
+  final Alignment alignment;
+  final double baseSize;
+}
+
+/// 人体局部扩散波纹层，仅作用于已激活肌群附近。
+class _LocalizedRippleOverlay extends StatelessWidget {
+  const _LocalizedRippleOverlay({
+    required this.activation,
+    required this.progress,
+    required this.pulseProgress,
+    required this.anchorsByMuscleId,
+  });
+
+  final MuscleActivation activation;
+  final double progress;
+  final double pulseProgress;
+  final Map<String, List<_RippleAnchor>> anchorsByMuscleId;
+
+  /// 构建与 SVG 肌群对应的局部扩散波纹。
+  @override
+  Widget build(BuildContext context) {
+    final List<String> activeMuscleIds = activation.levelsByMuscleId.entries
+        .where((MapEntry<String, int> entry) => entry.value > 0)
+        .map((MapEntry<String, int> entry) => entry.key)
+        .toList(growable: false);
+    if (activeMuscleIds.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return IgnorePointer(
+      child: Stack(
+        fit: StackFit.expand,
+        children: List<Widget>.generate(activeMuscleIds.length, (int groupIndex) {
+          final String muscleId = activeMuscleIds[groupIndex];
+          final int level = activation.levelFor(muscleId);
+          final List<_RippleAnchor> anchors = anchorsByMuscleId[muscleId] ?? const <_RippleAnchor>[];
+          final Color rippleColor = _BodySvgView._colorForLevel(level);
+          final double reveal = Curves.easeOut.transform(
+            ((progress - (groupIndex * 0.04)) / 0.34).clamp(0.0, 1.0),
+          );
+
+          return Stack(
+            fit: StackFit.expand,
+            children: anchors.map((anchor) {
+              final double phase = (pulseProgress + (groupIndex * 0.08)) % 1.0;
+              final double rippleScale = 0.82 + (phase * 0.72);
+              final double opacity = (1 - phase) * 0.18 * reveal;
+              return Align(
+                alignment: anchor.alignment,
+                child: _RipplePulse(
+                  color: rippleColor,
+                  size: anchor.baseSize * rippleScale,
+                  opacity: opacity,
+                ),
+              );
+            }).toList(growable: false),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+/// 单个局部波纹，使用模糊径向渐变营造扩散感。
+class _RipplePulse extends StatelessWidget {
+  const _RipplePulse({
+    required this.color,
+    required this.size,
+    required this.opacity,
+  });
+
+  final Color color;
+  final double size;
+  final double opacity;
+
+  /// 构建局部肌群波纹。
+  @override
+  Widget build(BuildContext context) {
+    return ImageFiltered(
+      imageFilter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: <Color>[
+              color.withValues(alpha: opacity * 0.55),
+              color.withValues(alpha: opacity * 0.28),
+              color.withValues(alpha: 0),
+            ],
           ),
         ),
       ),

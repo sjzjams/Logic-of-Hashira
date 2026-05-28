@@ -278,7 +278,7 @@ class MountainTrailPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final fillPaint = Paint()
-      ..color = AppColors.softLilac.withOpacity(0.2)
+      ..color = AppColors.softLilac.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
 
     final w = size.width;
@@ -389,7 +389,7 @@ class MoonAndStarsPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final fillPaint = Paint()
-      ..color = AppColors.softLilac.withOpacity(0.3)
+      ..color = AppColors.softLilac.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     final w = size.width;

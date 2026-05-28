@@ -36,7 +36,7 @@ class HandDrawnCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.inkBlue.withOpacity(0.03),
+            color: AppColors.inkBlue.withValues(alpha: 0.03),
             blurRadius: 12 + elevation,
             offset: Offset(0, 4 + elevation),
           ),

@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme.dart';
 import '../../core/widgets/illustrations.dart';
+import '../../firebase_options.dart';
 import 'ai_coach_chat_style.dart';
 import 'ai_coach_provider.dart';
 
@@ -15,16 +17,46 @@ class AiCoachScreen extends StatefulWidget {
 }
 
 class _AiCoachScreenState extends State<AiCoachScreen> {
-  late final LlmProvider _provider;
+  LlmProvider? _provider;
+  bool _isInitializing = true;
 
   @override
   void initState() {
     super.initState();
-    _provider = createAiCoachProvider();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    if (!mounted) {
+      return;
+    }
+
+    try {
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+    } catch (error) {
+      if (error is UnsupportedError) {
+        debugPrint('Firebase init skipped: ${error.message}');
+      } else {
+        debugPrint('Firebase init failed: $error');
+      }
+    }
+
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _provider = createAiCoachProvider();
+      _isInitializing = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final LlmProvider? provider = _provider;
     return Column(
       children: [
         Padding(
@@ -69,7 +101,7 @@ class _AiCoachScreenState extends State<AiCoachScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Always here to help',
+                          _isInitializing ? 'Connecting...' : 'Always here to help',
                           style: GoogleFonts.nunito(
                             fontSize: 12,
                             color: AppColors.grayText,
@@ -86,14 +118,16 @@ class _AiCoachScreenState extends State<AiCoachScreen> {
         ),
         Container(height: 1.2, color: AppColors.border),
         Expanded(
-          child: LlmChatView(
-            provider: _provider,
-            style: aiCoachChatViewStyle(),
-            welcomeMessage: aiCoachWelcomeMessage,
-            suggestions: aiCoachSuggestions,
-            enableAttachments: false,
-            enableVoiceNotes: false,
-          ),
+          child: provider == null
+              ? const Center(child: CircularProgressIndicator(strokeWidth: 1.5))
+              : LlmChatView(
+                  provider: provider,
+                  style: aiCoachChatViewStyle(),
+                  welcomeMessage: aiCoachWelcomeMessage,
+                  suggestions: aiCoachSuggestions,
+                  enableAttachments: false,
+                  enableVoiceNotes: false,
+                ),
         ),
       ],
     );

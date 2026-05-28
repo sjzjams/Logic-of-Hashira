@@ -20,22 +20,37 @@ class LayoutShell extends StatefulWidget {
 class _LayoutShellState extends State<LayoutShell> {
   int _currentIndex = 0;
 
-  late final List<Widget> _screens;
+  final Map<int, Widget> _screenCache = <int, Widget>{};
 
   @override
   void initState() {
     super.initState();
-    _screens = [
-      HomeScreen(onNavigateToTab: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      }),
-      const ProgressScreen(),
-      const AiCoachScreen(),
-      const WorkoutPlanScreen(),
-      const ProfileScreen(),
-    ];
+    _screenCache[0] = HomeScreen(onNavigateToTab: _setTabIndex);
+  }
+
+  void _setTabIndex(int index) {
+    if (_currentIndex == index) {
+      return;
+    }
+    setState(() {
+      _currentIndex = index;
+      _screenCache.putIfAbsent(index, () {
+        switch (index) {
+          case 0:
+            return HomeScreen(onNavigateToTab: _setTabIndex);
+          case 1:
+            return const ProgressScreen();
+          case 2:
+            return const AiCoachScreen();
+          case 3:
+            return const WorkoutPlanScreen();
+          case 4:
+            return const ProfileScreen();
+          default:
+            return const SizedBox.shrink();
+        }
+      });
+    });
   }
 
   @override
@@ -44,7 +59,13 @@ class _LayoutShellState extends State<LayoutShell> {
       body: SafeArea(
         child: IndexedStack(
           index: _currentIndex,
-          children: _screens,
+          children: List<Widget>.generate(5, (int index) {
+            final Widget child = _screenCache[index] ?? const SizedBox.shrink();
+            return TickerMode(
+              enabled: _currentIndex == index,
+              child: child,
+            );
+          }),
         ),
       ),
       bottomNavigationBar: Container(
@@ -79,9 +100,7 @@ class _LayoutShellState extends State<LayoutShell> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            _currentIndex = index;
-          });
+          _setTabIndex(index);
         },
         behavior: HitTestBehavior.opaque,
         child: Column(
