@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 2
-- **Last Active**: 2026-05-26
+- **Total Sessions**: 3
+- **Last Active**: 2026-06-02
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~69 | Active |
+| `journal-1.md` | ~105 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 3 | 2026-06-02 | 复刻原型 UI（Home/Progress/Plan/Profile/Nutrition-Sleep/Coach/Workout Detail） | `da3a6c8`, `48431f8`, `9a51860`, `2250f24` | `main` |
 | 2 | 2026-05-26 | Refine Home Screen with 1:1 Prototype Styles | - | `main` |
 | 1 | 2026-05-26 | Restore Prototype Home Screen | - | `main` |
 <!-- @@@/auto:session-history -->
