@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   flutter_svg: ^2.0.10-hotfix.1
-  path_drawing: ^1.0.1
   flutter_ai_toolkit: ^1.0.0
   firebase_core: ^4.9.0
   firebase_ai: ^3.12.1
