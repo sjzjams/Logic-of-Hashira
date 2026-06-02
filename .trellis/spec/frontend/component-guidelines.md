@@ -85,6 +85,9 @@ const WorkoutDetailScreen({
 | `HandDrawnButton` | `hand_drawn_button.dart` | Primary CTA, chips (`HandDrawnButtonStyle`) |
 | `HandDrawnIllustration` | `illustrations.dart` | Hero `CustomPainter` with fixed size |
 | `LineArtIconPainter` | `illustrations.dart` | Icons via `CustomPaint(painter: LineArtIconPainter(iconType: 'strength'))` |
+| `PrototypePage` | `prototype_page.dart` | Prototype-style page scaffold: `AppColors.canvas` background + scrollable `Column` with shared padding |
+| `PrototypeHeader` | `prototype_page.dart` | Prototype-style page title + optional kicker + optional trailing action; pass `center: true` for centered headers |
+| `PrototypeIconButton` | `prototype_page.dart` | 40×40 white rounded icon button using `LineArtIconPainter`; default for header trailing actions |
 
 ### HandDrawnCard defaults
 
