@@ -69,6 +69,7 @@ flutter:
     - assets/muscle_map_back.svg
     - assets/muscle_map_female_front.svg
     - assets/muscle_map_female_back.svg
+    - assets/illustrations/cutouts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

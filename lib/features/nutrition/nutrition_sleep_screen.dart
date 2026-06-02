@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../core/theme.dart';
 import '../../core/widgets/hand_drawn_card.dart';
 import '../../core/widgets/illustrations.dart';
 
 class NutritionSleepScreen extends StatefulWidget {
-  final int initialTab; // 0 for Nutrition, 1 for Sleep
+  const NutritionSleepScreen({super.key, this.initialTab = 0});
 
-  const NutritionSleepScreen({
-    super.key,
-    this.initialTab = 0,
-  });
+  final int initialTab;
 
   @override
   State<NutritionSleepScreen> createState() => _NutritionSleepScreenState();
@@ -28,16 +25,18 @@ class _NutritionSleepScreenState extends State<NutritionSleepScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.canvas,
       appBar: AppBar(
+        backgroundColor: AppColors.canvas,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           _selectedTab == 0 ? 'Nutrition' : 'Sleep',
-          style: GoogleFonts.pangolin(
+          style: AppTypography.title(
             fontSize: 22,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: AppColors.inkText,
           ),
         ),
@@ -45,141 +44,143 @@ class _NutritionSleepScreenState extends State<NutritionSleepScreen> {
       ),
       body: Column(
         children: [
-          // Hand-drawn Styled Custom Segmented Tab Bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+            padding: const EdgeInsets.fromLTRB(22, 8, 22, 16),
             child: Container(
-              height: 48,
+              height: 45,
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border, width: 1.2),
+                color: AppColors.softLilac,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.border),
               ),
               child: Row(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedTab = 0),
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _selectedTab == 0 ? AppColors.inkBlue : Colors.transparent,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(14),
-                            bottomLeft: Radius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          'Nutrition',
-                          style: GoogleFonts.pangolin(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: _selectedTab == 0 ? Colors.white : AppColors.inkText,
-                          ),
-                        ),
-                      ),
-                    ),
+                  _SegmentTab(
+                    label: 'Nutrition',
+                    selected: _selectedTab == 0,
+                    onTap: () => setState(() => _selectedTab = 0),
                   ),
-                  Container(width: 1.2, color: AppColors.border),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedTab = 1),
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _selectedTab == 1 ? AppColors.inkBlue : Colors.transparent,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(14),
-                            bottomRight: Radius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          'Sleep',
-                          style: GoogleFonts.pangolin(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: _selectedTab == 1 ? Colors.white : AppColors.inkText,
-                          ),
-                        ),
-                      ),
-                    ),
+                  _SegmentTab(
+                    label: 'Sleep',
+                    selected: _selectedTab == 1,
+                    onTap: () => setState(() => _selectedTab = 1),
                   ),
                 ],
               ),
             ),
           ),
-
-          // Main Tab Content
           Expanded(
             child: _selectedTab == 0
-                ? _buildNutritionContent()
-                : _buildSleepContent(),
+                ? const _NutritionContent()
+                : const _SleepContent(),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildNutritionContent() {
+class _SegmentTab extends StatelessWidget {
+  const _SegmentTab({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? AppColors.inkBlue : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Text(
+            label,
+            style: AppTypography.title(
+              fontSize: 15,
+              color: selected ? Colors.white : AppColors.inkText,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NutritionContent extends StatelessWidget {
+  const _NutritionContent();
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             'Fuel your body',
-            style: GoogleFonts.nunito(
-              fontSize: 16,
-              color: AppColors.grayText,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTypography.body(fontSize: 14, color: AppColors.grayText),
           ),
-          const SizedBox(height: 12),
-
-          // Macros Gauges List
-          _buildMacroGauge('Calories', 1680, 2200, 'kcal'),
-          const SizedBox(height: 10),
-          _buildMacroGauge('Protein', 120, 160, 'g'),
-          const SizedBox(height: 10),
-          _buildMacroGauge('Carbs', 180, 250, 'g'),
-          const SizedBox(height: 10),
-          _buildMacroGauge('Fat', 60, 80, 'g'),
-          const SizedBox(height: 16),
-
-          // Cute Foods Grid
-          Text(
-            'Nutrient Sources Today',
-            style: GoogleFonts.pangolin(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.inkText,
-            ),
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildFoodIconCard('avocado'),
-              _buildFoodIconCard('meat'),
-              _buildFoodIconCard('broccoli'),
-              _buildFoodIconCard('nutrition'),
+            children: const [
+              _FoodIcon(assetId: 'nutrition_bowl'),
+              _FoodIcon(assetId: 'nutrition_avocado'),
+              _FoodIcon(assetId: 'nutrition_chicken'),
+              _FoodIcon(assetId: 'nutrition_broccoli'),
             ],
           ),
-          const SizedBox(height: 16),
-
-          // Meals Logged status card
+          const SizedBox(height: 24),
+          const _MacroRow(
+            label: 'Calories',
+            current: 1680,
+            target: 2200,
+            unit: 'kcal',
+          ),
+          const _MacroRow(
+            label: 'Protein',
+            current: 120,
+            target: 160,
+            unit: 'g',
+          ),
+          const _MacroRow(label: 'Carbs', current: 180, target: 250, unit: 'g'),
+          const _MacroRow(label: 'Fat', current: 60, target: 80, unit: 'g'),
+          const SizedBox(height: 8),
           HandDrawnCard(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             child: Row(
               children: [
+                Expanded(
+                  child: Text(
+                    "Today's Meals\n3 / 3 logged",
+                    style: AppTypography.title(
+                      fontSize: 17,
+                      height: 1.45,
+                      color: AppColors.inkText,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 34,
+                  height: 34,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.inkBlue, width: 1.5),
                     color: AppColors.softLilac,
+                    border: Border.all(color: AppColors.inkBlue, width: 1.4),
                   ),
                   child: const Icon(
                     Icons.check,
@@ -187,29 +188,6 @@ class _NutritionSleepScreenState extends State<NutritionSleepScreen> {
                     size: 18,
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Today's Meals",
-                        style: GoogleFonts.pangolin(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.inkText,
-                        ),
-                      ),
-                      Text(
-                        '3 of 3 meals logged successfully',
-                        style: GoogleFonts.nunito(
-                          fontSize: 13,
-                          color: AppColors.grayText,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
@@ -217,224 +195,272 @@ class _NutritionSleepScreenState extends State<NutritionSleepScreen> {
       ),
     );
   }
+}
 
-  Widget _buildSleepContent() {
+class _SleepContent extends StatelessWidget {
+  const _SleepContent();
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Sleep well. Recover better.',
+            style: AppTypography.body(fontSize: 14, color: AppColors.grayText),
+          ),
+          const SizedBox(height: 18),
+          const Center(
+            child: PrototypeIllustration(
+              assetId: 'sleep_moon_scene',
+              width: 154,
+              height: 60,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: const [
+              _SleepStat(label: 'Last night', value: '6h 30m'),
+              _SleepStat(
+                label: 'Sleep quality',
+                value: 'Good  78%',
+                green: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 22),
+          Text(
+            'Sleep Stages',
+            style: AppTypography.title(fontSize: 18, color: AppColors.inkText),
+          ),
+          const SizedBox(height: 12),
+          const _SleepStage(
+            label: 'Awake',
+            value: '0h 30m',
+            percent: .08,
+            color: Color(0xFFBDAEFF),
+          ),
+          const _SleepStage(
+            label: 'REM',
+            value: '1h 30m',
+            percent: .28,
+            color: Color(0xFFC9BFFF),
+          ),
+          const _SleepStage(
+            label: 'Light',
+            value: '3h 10m',
+            percent: .82,
+            color: AppColors.inkBlue,
+          ),
+          const _SleepStage(
+            label: 'Deep',
+            value: '1h 00m',
+            percent: .47,
+            color: Color(0xFF3923B8),
+          ),
+          const SizedBox(height: 14),
+          const SizedBox(
+            height: 84,
+            child: PrototypeIllustration(
+              assetId: 'sleep_peeking_face',
+              width: 225,
+              height: 84,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FoodIcon extends StatelessWidget {
+  const _FoodIcon({required this.assetId});
+
+  final String assetId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 58,
+      height: 58,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: PrototypeIllustration(assetId: assetId, fit: BoxFit.contain),
+    );
+  }
+}
+
+class _MacroRow extends StatelessWidget {
+  const _MacroRow({
+    required this.label,
+    required this.current,
+    required this.target,
+    required this.unit,
+  });
+
+  final String label;
+  final int current;
+  final int target;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = (current / target).clamp(0.0, 1.0);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'Sleep well. Recover better.',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
+                '$label\n$current / $target$unit',
+                style: AppTypography.body(
+                  fontSize: 12,
+                  height: 1.35,
                   color: AppColors.grayText,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(
-                width: 24,
-                height: 24,
-                child: CustomPaint(
-                  painter: LineArtIconPainter(iconType: 'flame', color: AppColors.inkBlue),
+              Text(
+                '${(percent * 100).round()}%',
+                style: AppTypography.title(
+                  fontSize: 17,
+                  color: AppColors.inkText,
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-
-          // Large crescent moon and stars custom painter
-          const Center(
-            child: HandDrawnIllustration(
-              width: 110,
-              height: 110,
-              painter: MoonAndStarsPainter(),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Sleep Quality statistics
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Last Night',
-                    style: GoogleFonts.nunito(fontSize: 12, color: AppColors.grayText, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '6h 30m',
-                    style: GoogleFonts.pangolin(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.inkText),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Sleep Quality',
-                    style: GoogleFonts.nunito(fontSize: 12, color: AppColors.grayText, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Good (78%)',
-                    style: GoogleFonts.pangolin(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.inkText),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Sleep Stages Horizontal Stacked Bar Chart
-          Text(
-            'Sleep Stages',
-            style: GoogleFonts.pangolin(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.inkText,
-            ),
           ),
           const SizedBox(height: 8),
-          // Custom stacked bar
           Container(
-            height: 16,
+            height: 13,
+            alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.border, width: 1.2),
+              color: AppColors.softLilac,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: AppColors.border),
             ),
-            clipBehavior: Clip.antiAlias,
-            child: Row(
-              children: [
-                Expanded(flex: 10, child: Container(color: Colors.amber[200])), // Awake
-                Expanded(flex: 20, child: Container(color: AppColors.softLilac)), // REM
-                Expanded(flex: 45, child: Container(color: Colors.indigo[200])), // Light
-                Expanded(flex: 25, child: Container(color: AppColors.inkBlue)), // Deep
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Legends
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildLegend('Awake (10%)', Colors.amber[300]!),
-              _buildLegend('REM (20%)', AppColors.softLilac),
-              _buildLegend('Light (45%)', Colors.indigo[200]!),
-              _buildLegend('Deep (25%)', AppColors.inkBlue),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Peeking Sleeper Custom Painter at the bottom
-          const SizedBox(
-            height: 70,
-            width: double.infinity,
-            child: CustomPaint(
-              painter: PeekingSleeperPainter(),
+            child: FractionallySizedBox(
+              widthFactor: percent,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.inkBlue,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildMacroGauge(String label, int current, int target, String unit) {
-    final double percentage = (current / target).clamp(0.0, 1.0);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
+class _SleepStat extends StatelessWidget {
+  const _SleepStat({
+    required this.label,
+    required this.value,
+    this.green = false,
+  });
+
+  final String label;
+  final String value;
+  final bool green;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppTypography.body(fontSize: 12, color: AppColors.grayText),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            value,
+            style: AppTypography.title(
+              fontSize: 22,
+              color: green ? AppColors.green : AppColors.inkText,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SleepStage extends StatelessWidget {
+  const _SleepStage({
+    required this.label,
+    required this.value,
+    required this.percent,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final double percent;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 46,
+            child: Text(
               label,
-              style: GoogleFonts.pangolin(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.inkText,
-              ),
-            ),
-            Text(
-              '$current / $target $unit',
-              style: GoogleFonts.nunito(
-                fontSize: 14,
+              style: AppTypography.body(
+                fontSize: 12,
                 color: AppColors.grayText,
-                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        // Custom hand-drawn outline progress bar
-        Container(
-          height: 14,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: AppColors.border, width: 1.2),
-            color: Colors.white,
           ),
-          padding: const EdgeInsets.all(1.5),
-          alignment: Alignment.centerLeft,
-          child: FractionallySizedBox(
-            widthFactor: percentage,
+          Expanded(
             child: Container(
+              height: 12,
+              alignment: Alignment.centerLeft,
               decoration: BoxDecoration(
-                color: AppColors.inkBlue,
-                borderRadius: BorderRadius.circular(4),
+                color: AppColors.softLilac,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: FractionallySizedBox(
+                widthFactor: percent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFoodIconCard(String iconType) {
-    return Container(
-      width: 52,
-      height: 52,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        color: Colors.white,
-      ),
-      child: CustomPaint(
-        painter: LineArtIconPainter(
-          iconType: iconType,
-          color: AppColors.inkBlue,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLegend(String text, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
+          SizedBox(
+            width: 56,
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: AppTypography.body(
+                fontSize: 11,
+                color: AppColors.grayText,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: GoogleFonts.nunito(
-            fontSize: 10,
-            color: AppColors.grayText,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -17,29 +17,14 @@ class HomeMockService {
       activationsByDay: <int, MuscleActivation>{
         22: MuscleActivation.empty,
         23: MuscleActivation(
-          levelsByMuscleId: <String, int>{
-            '1': 2,
-            '5': 3,
-            '7': 4,
-            '9': 2,
-          },
+          levelsByMuscleId: <String, int>{'1': 2, '5': 3, '7': 4, '9': 2},
         ),
         24: MuscleActivation(
-          levelsByMuscleId: <String, int>{
-            '3': 4,
-            '6': 3,
-            '10': 2,
-            '12': 2,
-          },
+          levelsByMuscleId: <String, int>{'3': 4, '6': 3, '10': 2, '12': 2},
         ),
         25: MuscleActivation.empty,
         26: MuscleActivation(
-          levelsByMuscleId: <String, int>{
-            '8': 4,
-            '11': 3,
-            '13': 2,
-            '16': 3,
-          },
+          levelsByMuscleId: <String, int>{'8': 4, '11': 3, '13': 2, '16': 3},
         ),
         27: MuscleActivation(
           levelsByMuscleId: <String, int>{

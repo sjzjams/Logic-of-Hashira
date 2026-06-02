@@ -20,10 +20,41 @@ class HandDrawnIllustration extends StatelessWidget {
     return SizedBox(
       width: width,
       height: height,
-      child: CustomPaint(
-        painter: painter,
-      ),
+      child: CustomPaint(painter: painter),
     );
+  }
+}
+
+class PrototypeIllustration extends StatelessWidget {
+  const PrototypeIllustration({
+    super.key,
+    required this.assetId,
+    this.width,
+    this.height,
+    this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
+  });
+
+  final String assetId;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      _assetPath(assetId),
+      width: width,
+      height: height,
+      fit: fit,
+      alignment: alignment,
+      filterQuality: FilterQuality.high,
+    );
+  }
+
+  static String _assetPath(String assetId) {
+    return 'assets/illustrations/cutouts/$assetId.png';
   }
 }
 
@@ -53,8 +84,20 @@ class ChestPortraitPainter extends CustomPainter {
     canvas.drawPath(facePath, paint);
 
     // 2. Draw ears
-    canvas.drawArc(Rect.fromLTWH(w * 0.39, h * 0.26, w * 0.04, h * 0.04), -math.pi / 2, -math.pi, false, paint);
-    canvas.drawArc(Rect.fromLTWH(w * 0.57, h * 0.26, w * 0.04, h * 0.04), -math.pi / 2, math.pi, false, paint);
+    canvas.drawArc(
+      Rect.fromLTWH(w * 0.39, h * 0.26, w * 0.04, h * 0.04),
+      -math.pi / 2,
+      -math.pi,
+      false,
+      paint,
+    );
+    canvas.drawArc(
+      Rect.fromLTWH(w * 0.57, h * 0.26, w * 0.04, h * 0.04),
+      -math.pi / 2,
+      math.pi,
+      false,
+      paint,
+    );
 
     // 3. Draw hair (hand-drawn messy style)
     final hairPath = Path()
@@ -70,22 +113,67 @@ class ChestPortraitPainter extends CustomPainter {
     canvas.drawPath(hairPath, paint);
 
     // 4. Draw eyes & eyebrows & mouth
-    canvas.drawPath(Path()..moveTo(w * 0.45, h * 0.26)..quadraticBezierTo(w * 0.47, h * 0.25, w * 0.49, h * 0.26), paint); // eye L
-    canvas.drawPath(Path()..moveTo(w * 0.51, h * 0.26)..quadraticBezierTo(w * 0.53, h * 0.25, w * 0.55, h * 0.26), paint); // eye R
-    canvas.drawPath(Path()..moveTo(w * 0.44, h * 0.23)..quadraticBezierTo(w * 0.47, h * 0.22, w * 0.48, h * 0.24), paint); // eyebrow L
-    canvas.drawPath(Path()..moveTo(w * 0.52, h * 0.24)..quadraticBezierTo(w * 0.53, h * 0.22, w * 0.56, h * 0.23), paint); // eyebrow R
-    canvas.drawPath(Path()..moveTo(w * 0.49, h * 0.27)..lineTo(w * 0.50, h * 0.29)..lineTo(w * 0.49, h * 0.30), paint); // nose
-    canvas.drawPath(Path()..moveTo(w * 0.47, h * 0.33)..quadraticBezierTo(w * 0.50, h * 0.35, w * 0.53, h * 0.33), paint); // mouth
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.45, h * 0.26)
+        ..quadraticBezierTo(w * 0.47, h * 0.25, w * 0.49, h * 0.26),
+      paint,
+    ); // eye L
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.51, h * 0.26)
+        ..quadraticBezierTo(w * 0.53, h * 0.25, w * 0.55, h * 0.26),
+      paint,
+    ); // eye R
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.44, h * 0.23)
+        ..quadraticBezierTo(w * 0.47, h * 0.22, w * 0.48, h * 0.24),
+      paint,
+    ); // eyebrow L
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.52, h * 0.24)
+        ..quadraticBezierTo(w * 0.53, h * 0.22, w * 0.56, h * 0.23),
+      paint,
+    ); // eyebrow R
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.49, h * 0.27)
+        ..lineTo(w * 0.50, h * 0.29)
+        ..lineTo(w * 0.49, h * 0.30),
+      paint,
+    ); // nose
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.47, h * 0.33)
+        ..quadraticBezierTo(w * 0.50, h * 0.35, w * 0.53, h * 0.33),
+      paint,
+    ); // mouth
 
     // 5. Draw neck & shoulders
     final bodyPath = Path()
       ..moveTo(w * 0.45, h * 0.35)
       ..lineTo(w * 0.45, h * 0.41) // Neck L
-      ..cubicTo(w * 0.41, h * 0.42, w * 0.25, h * 0.46, w * 0.18, h * 0.58) // Shoulder L
+      ..cubicTo(
+        w * 0.41,
+        h * 0.42,
+        w * 0.25,
+        h * 0.46,
+        w * 0.18,
+        h * 0.58,
+      ) // Shoulder L
       ..lineTo(w * 0.18, h * 0.88)
       ..moveTo(w * 0.55, h * 0.35)
       ..lineTo(w * 0.55, h * 0.41) // Neck R
-      ..cubicTo(w * 0.59, h * 0.42, w * 0.75, h * 0.46, w * 0.82, h * 0.58) // Shoulder R
+      ..cubicTo(
+        w * 0.59,
+        h * 0.42,
+        w * 0.75,
+        h * 0.46,
+        w * 0.82,
+        h * 0.58,
+      ) // Shoulder R
       ..lineTo(w * 0.82, h * 0.88);
     canvas.drawPath(bodyPath, paint);
 
@@ -149,7 +237,7 @@ class BodyComparisonPainter extends CustomPainter {
     final midX = w * 0.5;
 
     // Draw solid left side and dashed right side of the body
-    
+
     // Left Half Face & Head
     final headLeft = Path()
       ..moveTo(midX, h * 0.15)
@@ -217,7 +305,12 @@ class BodyComparisonPainter extends CustomPainter {
     // Chest & Abs lines (Left solid, right dashed)
     final anatomyL = Path()
       ..moveTo(w * 0.45, h * 0.36)
-      ..quadraticBezierTo(w * 0.39, h * 0.38, w * 0.35, h * 0.40) // collarbone L
+      ..quadraticBezierTo(
+        w * 0.39,
+        h * 0.38,
+        w * 0.35,
+        h * 0.40,
+      ) // collarbone L
       ..moveTo(midX, h * 0.48)
       ..quadraticBezierTo(w * 0.42, h * 0.48, w * 0.36, h * 0.47) // Pec L
       ..moveTo(midX, h * 0.58)
@@ -226,7 +319,12 @@ class BodyComparisonPainter extends CustomPainter {
 
     final anatomyR = Path()
       ..moveTo(w * 0.55, h * 0.36)
-      ..quadraticBezierTo(w * 0.61, h * 0.38, w * 0.65, h * 0.40) // collarbone R
+      ..quadraticBezierTo(
+        w * 0.61,
+        h * 0.38,
+        w * 0.65,
+        h * 0.40,
+      ) // collarbone R
       ..moveTo(midX, h * 0.48)
       ..quadraticBezierTo(w * 0.58, h * 0.48, w * 0.64, h * 0.47) // Pec R
       ..moveTo(midX, h * 0.58)
@@ -234,7 +332,13 @@ class BodyComparisonPainter extends CustomPainter {
     _drawDashedPath(canvas, anatomyR, dashedPaint, 4.0, 3.0);
   }
 
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint, double dashLength, double gapLength) {
+  void _drawDashedPath(
+    Canvas canvas,
+    Path path,
+    Paint paint,
+    double dashLength,
+    double gapLength,
+  ) {
     final metrics = path.computeMetrics();
     for (final metric in metrics) {
       double start = 0.0;
@@ -314,10 +418,11 @@ class MountainTrailPainter extends CustomPainter {
 
     // Ground line
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.02, h * 0.90)
-          ..quadraticBezierTo(w * 0.50, h * 0.92, w * 0.98, h * 0.90),
-        peakPaint);
+      Path()
+        ..moveTo(w * 0.02, h * 0.90)
+        ..quadraticBezierTo(w * 0.50, h * 0.92, w * 0.98, h * 0.90),
+      peakPaint,
+    );
 
     // 3. Draw Flag on Peak
     final flagPath = Path()
@@ -327,7 +432,12 @@ class MountainTrailPainter extends CustomPainter {
       ..lineTo(w * 0.55, h * 0.12) // flag bottom
       ..close();
     canvas.drawPath(flagPath, peakPaint);
-    canvas.drawPath(flagPath, Paint()..color = AppColors.inkBlue..style = PaintingStyle.fill);
+    canvas.drawPath(
+      flagPath,
+      Paint()
+        ..color = AppColors.inkBlue
+        ..style = PaintingStyle.fill,
+    );
 
     // 4. Draw Trail Path (Winding)
     final trailPath = Path()
@@ -337,7 +447,7 @@ class MountainTrailPainter extends CustomPainter {
       ..quadraticBezierTo(w * 0.38, h * 0.60, w * 0.50, h * 0.50)
       ..quadraticBezierTo(w * 0.60, h * 0.42, w * 0.52, h * 0.35)
       ..lineTo(w * 0.55, h * 0.18);
-    
+
     // Draw dashed trail
     final metrics = trailPath.computeMetrics();
     for (final metric in metrics) {
@@ -352,20 +462,25 @@ class MountainTrailPainter extends CustomPainter {
     // 5. Draw Walker on Path (roughly at x=0.50, y=0.50 on mountain)
     final walkerX = w * 0.48;
     final walkerY = h * 0.52;
-    canvas.drawCircle(Offset(walkerX, walkerY - 6), 3.0, Paint()..color = inkColor); // head
+    canvas.drawCircle(
+      Offset(walkerX, walkerY - 6),
+      3.0,
+      Paint()..color = inkColor,
+    ); // head
     canvas.drawPath(
-        Path()
-          ..moveTo(walkerX, walkerY - 3)
-          ..lineTo(walkerX, walkerY + 4) // torso
-          ..moveTo(walkerX, walkerY + 1)
-          ..lineTo(walkerX - 4, walkerY - 1) // arm L
-          ..moveTo(walkerX, walkerY + 1)
-          ..lineTo(walkerX + 4, walkerY + 3) // arm R
-          ..moveTo(walkerX, walkerY + 4)
-          ..lineTo(walkerX - 3, walkerY + 9) // leg L
-          ..moveTo(walkerX, walkerY + 4)
-          ..lineTo(walkerX + 2, walkerY + 9), // leg R
-        peakPaint..strokeWidth = 1.5);
+      Path()
+        ..moveTo(walkerX, walkerY - 3)
+        ..lineTo(walkerX, walkerY + 4) // torso
+        ..moveTo(walkerX, walkerY + 1)
+        ..lineTo(walkerX - 4, walkerY - 1) // arm L
+        ..moveTo(walkerX, walkerY + 1)
+        ..lineTo(walkerX + 4, walkerY + 3) // arm R
+        ..moveTo(walkerX, walkerY + 4)
+        ..lineTo(walkerX - 3, walkerY + 9) // leg L
+        ..moveTo(walkerX, walkerY + 4)
+        ..lineTo(walkerX + 2, walkerY + 9), // leg R
+      peakPaint..strokeWidth = 1.5,
+    );
   }
 
   @override
@@ -400,8 +515,22 @@ class MoonAndStarsPainter extends CustomPainter {
     // 1. Draw Crescent Moon
     final moonPath = Path()
       ..moveTo(midX + 20, midY - 40)
-      ..cubicTo(midX - 25, midY - 40, midX - 25, midY + 40, midX + 20, midY + 40) // Outer Curve
-      ..cubicTo(midX + 1, midY + 30, midX + 1, midY - 30, midX + 20, midY - 40) // Inner Curve
+      ..cubicTo(
+        midX - 25,
+        midY - 40,
+        midX - 25,
+        midY + 40,
+        midX + 20,
+        midY + 40,
+      ) // Outer Curve
+      ..cubicTo(
+        midX + 1,
+        midY + 30,
+        midX + 1,
+        midY - 30,
+        midX + 20,
+        midY - 40,
+      ) // Inner Curve
       ..close();
     canvas.drawPath(moonPath, fillPaint);
     canvas.drawPath(moonPath, paint);
@@ -413,23 +542,36 @@ class MoonAndStarsPainter extends CustomPainter {
     _drawStar(canvas, Offset(midX - 20, midY + 60), 3, paint);
 
     // Dots/particles
-    canvas.drawCircle(Offset(midX - 35, midY + 30), 1.5, Paint()..color = moonColor);
-    canvas.drawCircle(Offset(midX + 45, midY - 20), 1.0, Paint()..color = moonColor);
-    canvas.drawCircle(Offset(midX - 10, midY - 60), 1.5, Paint()..color = moonColor);
+    canvas.drawCircle(
+      Offset(midX - 35, midY + 30),
+      1.5,
+      Paint()..color = moonColor,
+    );
+    canvas.drawCircle(
+      Offset(midX + 45, midY - 20),
+      1.0,
+      Paint()..color = moonColor,
+    );
+    canvas.drawCircle(
+      Offset(midX - 10, midY - 60),
+      1.5,
+      Paint()..color = moonColor,
+    );
   }
 
   void _drawStar(Canvas canvas, Offset center, double size, Paint paint) {
     canvas.drawPath(
-        Path()
-          ..moveTo(center.dx, center.dy - size)
-          ..lineTo(center.dx, center.dy + size)
-          ..moveTo(center.dx - size, center.dy)
-          ..lineTo(center.dx + size, center.dy)
-          ..moveTo(center.dx - size * 0.6, center.dy - size * 0.6)
-          ..lineTo(center.dx + size * 0.6, center.dy + size * 0.6)
-          ..moveTo(center.dx - size * 0.6, center.dy + size * 0.6)
-          ..lineTo(center.dx + size * 0.6, center.dy - size * 0.6),
-        paint..strokeWidth = 1.2);
+      Path()
+        ..moveTo(center.dx, center.dy - size)
+        ..lineTo(center.dx, center.dy + size)
+        ..moveTo(center.dx - size, center.dy)
+        ..lineTo(center.dx + size, center.dy)
+        ..moveTo(center.dx - size * 0.6, center.dy - size * 0.6)
+        ..lineTo(center.dx + size * 0.6, center.dy + size * 0.6)
+        ..moveTo(center.dx - size * 0.6, center.dy + size * 0.6)
+        ..lineTo(center.dx + size * 0.6, center.dy - size * 0.6),
+      paint..strokeWidth = 1.2,
+    );
   }
 
   @override
@@ -457,11 +599,12 @@ class PeekingSleeperPainter extends CustomPainter {
 
     // Blanket horizontal line
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.05, h * 0.80)
-          ..quadraticBezierTo(w * 0.30, h * 0.77, w * 0.50, h * 0.81)
-          ..quadraticBezierTo(w * 0.75, h * 0.83, w * 0.95, h * 0.80),
-        paint);
+      Path()
+        ..moveTo(w * 0.05, h * 0.80)
+        ..quadraticBezierTo(w * 0.30, h * 0.77, w * 0.50, h * 0.81)
+        ..quadraticBezierTo(w * 0.75, h * 0.83, w * 0.95, h * 0.80),
+      paint,
+    );
 
     // Draw peeking head outline
     final head = Path()
@@ -471,15 +614,17 @@ class PeekingSleeperPainter extends CustomPainter {
 
     // Draw closed eyes (curved lines)
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.44, h * 0.70)
-          ..quadraticBezierTo(w * 0.46, h * 0.68, w * 0.48, h * 0.70),
-        paint);
+      Path()
+        ..moveTo(w * 0.44, h * 0.70)
+        ..quadraticBezierTo(w * 0.46, h * 0.68, w * 0.48, h * 0.70),
+      paint,
+    );
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.52, h * 0.70)
-          ..quadraticBezierTo(w * 0.54, h * 0.68, w * 0.56, h * 0.70),
-        paint);
+      Path()
+        ..moveTo(w * 0.52, h * 0.70)
+        ..quadraticBezierTo(w * 0.54, h * 0.68, w * 0.56, h * 0.70),
+      paint,
+    );
 
     // Messy sleeping hair outline
     final hair = Path()
@@ -526,45 +671,62 @@ class RobotCoachPainter extends CustomPainter {
 
     // Antenna
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.50, h * 0.25)
-          ..lineTo(w * 0.50, h * 0.12),
-        paint);
-    canvas.drawCircle(Offset(w * 0.50, h * 0.09), 3.0, Paint()..color = inkColor);
+      Path()
+        ..moveTo(w * 0.50, h * 0.25)
+        ..lineTo(w * 0.50, h * 0.12),
+      paint,
+    );
+    canvas.drawCircle(
+      Offset(w * 0.50, h * 0.09),
+      3.0,
+      Paint()..color = inkColor,
+    );
 
     // Ears
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.20, h * 0.48)
-          ..quadraticBezierTo(w * 0.12, h * 0.48, w * 0.15, h * 0.52)
-          ..lineTo(w * 0.20, h * 0.56)
-          ..moveTo(w * 0.80, h * 0.48)
-          ..quadraticBezierTo(w * 0.88, h * 0.48, w * 0.85, h * 0.52)
-          ..lineTo(w * 0.80, h * 0.56),
-        paint);
+      Path()
+        ..moveTo(w * 0.20, h * 0.48)
+        ..quadraticBezierTo(w * 0.12, h * 0.48, w * 0.15, h * 0.52)
+        ..lineTo(w * 0.20, h * 0.56)
+        ..moveTo(w * 0.80, h * 0.48)
+        ..quadraticBezierTo(w * 0.88, h * 0.48, w * 0.85, h * 0.52)
+        ..lineTo(w * 0.80, h * 0.56),
+      paint,
+    );
 
     // Eyes
-    canvas.drawCircle(Offset(w * 0.38, h * 0.48), 3.5, Paint()..color = inkColor);
-    canvas.drawCircle(Offset(w * 0.62, h * 0.48), 3.5, Paint()..color = inkColor);
+    canvas.drawCircle(
+      Offset(w * 0.38, h * 0.48),
+      3.5,
+      Paint()..color = inkColor,
+    );
+    canvas.drawCircle(
+      Offset(w * 0.62, h * 0.48),
+      3.5,
+      Paint()..color = inkColor,
+    );
 
     // Cheeks
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.30, h * 0.58)
-          ..quadraticBezierTo(w * 0.32, h * 0.57, w * 0.34, h * 0.58),
-        paint..strokeWidth = 1.0);
+      Path()
+        ..moveTo(w * 0.30, h * 0.58)
+        ..quadraticBezierTo(w * 0.32, h * 0.57, w * 0.34, h * 0.58),
+      paint..strokeWidth = 1.0,
+    );
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.66, h * 0.58)
-          ..quadraticBezierTo(w * 0.68, h * 0.57, w * 0.70, h * 0.58),
-        paint..strokeWidth = 1.0);
+      Path()
+        ..moveTo(w * 0.66, h * 0.58)
+        ..quadraticBezierTo(w * 0.68, h * 0.57, w * 0.70, h * 0.58),
+      paint..strokeWidth = 1.0,
+    );
 
     // Smile/mouth
     canvas.drawPath(
-        Path()
-          ..moveTo(w * 0.45, h * 0.62)
-          ..quadraticBezierTo(w * 0.50, h * 0.68, w * 0.55, h * 0.62),
-        paint);
+      Path()
+        ..moveTo(w * 0.45, h * 0.62)
+        ..quadraticBezierTo(w * 0.50, h * 0.68, w * 0.55, h * 0.62),
+      paint,
+    );
   }
 
   @override
@@ -578,7 +740,10 @@ class LineArtIconPainter extends CustomPainter {
   final String iconType;
   final Color color;
 
-  const LineArtIconPainter({required this.iconType, this.color = AppColors.inkBlue});
+  const LineArtIconPainter({
+    required this.iconType,
+    this.color = AppColors.inkBlue,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -595,20 +760,21 @@ class LineArtIconPainter extends CustomPainter {
     switch (iconType.toLowerCase()) {
       case 'strength': // Dumbbell
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.20, h * 0.50)
-              ..lineTo(w * 0.80, h * 0.50) // Barbell handle
-              // Left weights
-              ..moveTo(w * 0.20, h * 0.30)
-              ..lineTo(w * 0.20, h * 0.70)
-              ..moveTo(w * 0.12, h * 0.20)
-              ..lineTo(w * 0.12, h * 0.80)
-              // Right weights
-              ..moveTo(w * 0.80, h * 0.30)
-              ..lineTo(w * 0.80, h * 0.70)
-              ..moveTo(w * 0.88, h * 0.20)
-              ..lineTo(w * 0.88, h * 0.80),
-            paint);
+          Path()
+            ..moveTo(w * 0.20, h * 0.50)
+            ..lineTo(w * 0.80, h * 0.50) // Barbell handle
+            // Left weights
+            ..moveTo(w * 0.20, h * 0.30)
+            ..lineTo(w * 0.20, h * 0.70)
+            ..moveTo(w * 0.12, h * 0.20)
+            ..lineTo(w * 0.12, h * 0.80)
+            // Right weights
+            ..moveTo(w * 0.80, h * 0.30)
+            ..lineTo(w * 0.80, h * 0.70)
+            ..moveTo(w * 0.88, h * 0.20)
+            ..lineTo(w * 0.88, h * 0.80),
+          paint,
+        );
         break;
 
       case 'cardio': // Heart with heartbeat line
@@ -616,12 +782,54 @@ class LineArtIconPainter extends CustomPainter {
         final sx = w / 32.0;
         final sy = h / 32.0;
         heartPath.moveTo(16 * sx, 25 * sy);
-        heartPath.cubicTo(16 * sx, 25 * sy, (16 - 9) * sx, (25 - 5.4) * sy, 7 * sx, 12.9 * sy);
-        heartPath.cubicTo(7 * sx, (12.9 - 3) * sy, (7 + 2.2) * sx, (12.9 - 5) * sy, 12 * sx, 7.9 * sy);
-        heartPath.cubicTo((12 + 1.8) * sx, 7.9 * sy, (12 + 3.1) * sx, (7.9 + 1) * sy, 16 * sx, 10.4 * sy);
-        heartPath.cubicTo((16 + 0.9) * sx, (10.4 - 1.5) * sy, (16 + 2.2) * sx, (10.4 - 2.5) * sy, 20 * sx, 7.9 * sy);
-        heartPath.cubicTo((20 + 2.8) * sx, 7.9 * sy, 25 * sx, (7.9 + 2) * sy, 25 * sx, 12.9 * sy);
-        heartPath.cubicTo(25 * sx, (12.9 + 6.7) * sy, 16 * sx, 25 * sy, 16 * sx, 25 * sy);
+        heartPath.cubicTo(
+          16 * sx,
+          25 * sy,
+          (16 - 9) * sx,
+          (25 - 5.4) * sy,
+          7 * sx,
+          12.9 * sy,
+        );
+        heartPath.cubicTo(
+          7 * sx,
+          (12.9 - 3) * sy,
+          (7 + 2.2) * sx,
+          (12.9 - 5) * sy,
+          12 * sx,
+          7.9 * sy,
+        );
+        heartPath.cubicTo(
+          (12 + 1.8) * sx,
+          7.9 * sy,
+          (12 + 3.1) * sx,
+          (7.9 + 1) * sy,
+          16 * sx,
+          10.4 * sy,
+        );
+        heartPath.cubicTo(
+          (16 + 0.9) * sx,
+          (10.4 - 1.5) * sy,
+          (16 + 2.2) * sx,
+          (10.4 - 2.5) * sy,
+          20 * sx,
+          7.9 * sy,
+        );
+        heartPath.cubicTo(
+          (20 + 2.8) * sx,
+          7.9 * sy,
+          25 * sx,
+          (7.9 + 2) * sy,
+          25 * sx,
+          12.9 * sy,
+        );
+        heartPath.cubicTo(
+          25 * sx,
+          (12.9 + 6.7) * sy,
+          16 * sx,
+          25 * sy,
+          16 * sx,
+          25 * sy,
+        );
         heartPath.close();
         canvas.drawPath(heartPath, paint);
 
@@ -646,36 +854,43 @@ class LineArtIconPainter extends CustomPainter {
 
       case 'nutrition': // Bowl of food
         canvas.drawPath(
-            Path()
-              ..arcTo(Rect.fromLTWH(w * 0.15, h * 0.25, w * 0.70, h * 0.60), math.pi, -math.pi, false)
-              ..lineTo(w * 0.85, h * 0.55)
-              ..lineTo(w * 0.15, h * 0.55)
-              // veggies sticking out
-              ..moveTo(w * 0.30, h * 0.55)
-              ..quadraticBezierTo(w * 0.25, h * 0.35, w * 0.38, h * 0.40)
-              ..moveTo(w * 0.50, h * 0.55)
-              ..quadraticBezierTo(w * 0.55, h * 0.30, w * 0.65, h * 0.38)
-              ..moveTo(w * 0.70, h * 0.55)
-              ..quadraticBezierTo(w * 0.75, h * 0.42, w * 0.80, h * 0.48),
-            paint);
+          Path()
+            ..arcTo(
+              Rect.fromLTWH(w * 0.15, h * 0.25, w * 0.70, h * 0.60),
+              math.pi,
+              -math.pi,
+              false,
+            )
+            ..lineTo(w * 0.85, h * 0.55)
+            ..lineTo(w * 0.15, h * 0.55)
+            // veggies sticking out
+            ..moveTo(w * 0.30, h * 0.55)
+            ..quadraticBezierTo(w * 0.25, h * 0.35, w * 0.38, h * 0.40)
+            ..moveTo(w * 0.50, h * 0.55)
+            ..quadraticBezierTo(w * 0.55, h * 0.30, w * 0.65, h * 0.38)
+            ..moveTo(w * 0.70, h * 0.55)
+            ..quadraticBezierTo(w * 0.75, h * 0.42, w * 0.80, h * 0.48),
+          paint,
+        );
         break;
 
       case 'mindset': // Lotus flower / brain style outline
         canvas.drawPath(
-            Path()
-              // Central petal
-              ..moveTo(w * 0.50, h * 0.80)
-              ..quadraticBezierTo(w * 0.35, h * 0.50, w * 0.50, h * 0.20)
-              ..quadraticBezierTo(w * 0.65, h * 0.50, w * 0.50, h * 0.80)
-              // Left petal
-              ..moveTo(w * 0.50, h * 0.80)
-              ..quadraticBezierTo(w * 0.15, h * 0.60, w * 0.30, h * 0.35)
-              ..quadraticBezierTo(w * 0.45, h * 0.55, w * 0.50, h * 0.80)
-              // Right petal
-              ..moveTo(w * 0.50, h * 0.80)
-              ..quadraticBezierTo(w * 0.85, h * 0.60, w * 0.70, h * 0.35)
-              ..quadraticBezierTo(w * 0.55, h * 0.55, w * 0.50, h * 0.80),
-            paint);
+          Path()
+            // Central petal
+            ..moveTo(w * 0.50, h * 0.80)
+            ..quadraticBezierTo(w * 0.35, h * 0.50, w * 0.50, h * 0.20)
+            ..quadraticBezierTo(w * 0.65, h * 0.50, w * 0.50, h * 0.80)
+            // Left petal
+            ..moveTo(w * 0.50, h * 0.80)
+            ..quadraticBezierTo(w * 0.15, h * 0.60, w * 0.30, h * 0.35)
+            ..quadraticBezierTo(w * 0.45, h * 0.55, w * 0.50, h * 0.80)
+            // Right petal
+            ..moveTo(w * 0.50, h * 0.80)
+            ..quadraticBezierTo(w * 0.85, h * 0.60, w * 0.70, h * 0.35)
+            ..quadraticBezierTo(w * 0.55, h * 0.55, w * 0.50, h * 0.80),
+          paint,
+        );
         break;
 
       case 'recovery': // Leaf outline
@@ -683,100 +898,145 @@ class LineArtIconPainter extends CustomPainter {
         final sy = h / 32.0;
         final leafPath = Path()
           ..moveTo(9 * sx, 23 * sy)
-          ..cubicTo((9 + 7.4) * sx, (23 - 0.4) * sy, (9 + 12.6) * sx, (23 - 5.1) * sy, 24 * sx, 9 * sy)
-          ..cubicTo((24 - 7.5) * sx, (9 + 1) * sy, (24 - 12.3) * sx, (9 + 5.7) * sy, 9 * sx, 23 * sy)
+          ..cubicTo(
+            (9 + 7.4) * sx,
+            (23 - 0.4) * sy,
+            (9 + 12.6) * sx,
+            (23 - 5.1) * sy,
+            24 * sx,
+            9 * sy,
+          )
+          ..cubicTo(
+            (24 - 7.5) * sx,
+            (9 + 1) * sy,
+            (24 - 12.3) * sx,
+            (9 + 5.7) * sy,
+            9 * sx,
+            23 * sy,
+          )
           ..close();
         canvas.drawPath(leafPath, paint);
 
         final vein1 = Path()
           ..moveTo(9 * sx, 23 * sy)
-          ..cubicTo((9 + 1.4) * sx, (23 - 5.3) * sy, (9 + 5.7) * sx, (23 - 8.3) * sy, 19.2 * sx, 12.5 * sy);
+          ..cubicTo(
+            (9 + 1.4) * sx,
+            (23 - 5.3) * sy,
+            (9 + 5.7) * sx,
+            (23 - 8.3) * sy,
+            19.2 * sx,
+            12.5 * sy,
+          );
         canvas.drawPath(vein1, paint);
 
         final vein2 = Path()
           ..moveTo(8 * sx, 19.8 * sy)
-          ..cubicTo((8 - 2) * sx, (19.8 - 1.6) * sy, (8 - 2.8) * sx, (19.8 - 3.8) * sy, 5.7 * sx, 13.3 * sy)
-          ..cubicTo((5.7 + 2.5) * sx, (13.3 + 0.9) * sy, (5.7 + 4) * sx, (13.3 + 2.6) * sy, 10.2 * sx, 18.3 * sy);
+          ..cubicTo(
+            (8 - 2) * sx,
+            (19.8 - 1.6) * sy,
+            (8 - 2.8) * sx,
+            (19.8 - 3.8) * sy,
+            5.7 * sx,
+            13.3 * sy,
+          )
+          ..cubicTo(
+            (5.7 + 2.5) * sx,
+            (13.3 + 0.9) * sy,
+            (5.7 + 4) * sx,
+            (13.3 + 2.6) * sy,
+            10.2 * sx,
+            18.3 * sy,
+          );
         canvas.drawPath(vein2, paint);
         break;
-      
+
       case 'home': // Home icon outline
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.15, h * 0.85)
-              ..lineTo(w * 0.15, h * 0.45)
-              ..lineTo(w * 0.50, h * 0.15)
-              ..lineTo(w * 0.85, h * 0.45)
-              ..lineTo(w * 0.85, h * 0.85)
-              ..close()
-              // door
-              ..moveTo(w * 0.40, h * 0.85)
-              ..lineTo(w * 0.40, h * 0.60)
-              ..lineTo(w * 0.60, h * 0.60)
-              ..lineTo(w * 0.60, h * 0.85),
-            paint);
+          Path()
+            ..moveTo(w * 0.15, h * 0.85)
+            ..lineTo(w * 0.15, h * 0.45)
+            ..lineTo(w * 0.50, h * 0.15)
+            ..lineTo(w * 0.85, h * 0.45)
+            ..lineTo(w * 0.85, h * 0.85)
+            ..close()
+            // door
+            ..moveTo(w * 0.40, h * 0.85)
+            ..lineTo(w * 0.40, h * 0.60)
+            ..lineTo(w * 0.60, h * 0.60)
+            ..lineTo(w * 0.60, h * 0.85),
+          paint,
+        );
         break;
 
       case 'progress': // Trend line chart
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.15, h * 0.80)
-              ..lineTo(w * 0.85, h * 0.80) // bottom line
-              ..moveTo(w * 0.15, h * 0.70)
-              ..lineTo(w * 0.35, h * 0.50)
-              ..lineTo(w * 0.55, h * 0.60)
-              ..lineTo(w * 0.85, h * 0.25) // trend path
-              ..moveTo(w * 0.85, h * 0.25)
-              ..lineTo(w * 0.70, h * 0.25)
-              ..moveTo(w * 0.85, h * 0.25)
-              ..lineTo(w * 0.85, h * 0.40),
-            paint);
+          Path()
+            ..moveTo(w * 0.15, h * 0.80)
+            ..lineTo(w * 0.85, h * 0.80) // bottom line
+            ..moveTo(w * 0.15, h * 0.70)
+            ..lineTo(w * 0.35, h * 0.50)
+            ..lineTo(w * 0.55, h * 0.60)
+            ..lineTo(w * 0.85, h * 0.25) // trend path
+            ..moveTo(w * 0.85, h * 0.25)
+            ..lineTo(w * 0.70, h * 0.25)
+            ..moveTo(w * 0.85, h * 0.25)
+            ..lineTo(w * 0.85, h * 0.40),
+          paint,
+        );
         break;
 
       case 'coach': // Chat bubbles overlap
         canvas.drawPath(
-            Path()
-              // Big bubble
-              ..moveTo(w * 0.15, h * 0.50)
-              ..quadraticBezierTo(w * 0.15, h * 0.20, w * 0.48, h * 0.20)
-              ..quadraticBezierTo(w * 0.80, h * 0.20, w * 0.80, h * 0.50)
-              ..quadraticBezierTo(w * 0.80, h * 0.70, w * 0.60, h * 0.70)
-              ..lineTo(w * 0.45, h * 0.85)
-              ..lineTo(w * 0.45, h * 0.70)
-              ..quadraticBezierTo(w * 0.15, h * 0.70, w * 0.15, h * 0.50)
-              ..close(),
-            paint);
+          Path()
+            // Big bubble
+            ..moveTo(w * 0.15, h * 0.50)
+            ..quadraticBezierTo(w * 0.15, h * 0.20, w * 0.48, h * 0.20)
+            ..quadraticBezierTo(w * 0.80, h * 0.20, w * 0.80, h * 0.50)
+            ..quadraticBezierTo(w * 0.80, h * 0.70, w * 0.60, h * 0.70)
+            ..lineTo(w * 0.45, h * 0.85)
+            ..lineTo(w * 0.45, h * 0.70)
+            ..quadraticBezierTo(w * 0.15, h * 0.70, w * 0.15, h * 0.50)
+            ..close(),
+          paint,
+        );
         break;
 
       case 'profile': // Avatar icon outline
         canvas.drawPath(
-            Path()
-              // head
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.50, h * 0.38), radius: w * 0.20))
-              // shoulders
-              ..moveTo(w * 0.15, h * 0.85)
-              ..quadraticBezierTo(w * 0.20, h * 0.65, w * 0.50, h * 0.65)
-              ..quadraticBezierTo(w * 0.80, h * 0.65, w * 0.85, h * 0.85),
-            paint);
+          Path()
+            // head
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.50, h * 0.38),
+                radius: w * 0.20,
+              ),
+            )
+            // shoulders
+            ..moveTo(w * 0.15, h * 0.85)
+            ..quadraticBezierTo(w * 0.20, h * 0.65, w * 0.50, h * 0.65)
+            ..quadraticBezierTo(w * 0.80, h * 0.65, w * 0.85, h * 0.85),
+          paint,
+        );
         break;
 
       case 'calendar': // Calendar grid outline
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.15, h * 0.25)
-              ..lineTo(w * 0.85, h * 0.25)
-              ..lineTo(w * 0.85, h * 0.85)
-              ..lineTo(w * 0.15, h * 0.85)
-              ..close()
-              // binder rings
-              ..moveTo(w * 0.30, h * 0.25)
-              ..lineTo(w * 0.30, h * 0.15)
-              ..moveTo(w * 0.70, h * 0.25)
-              ..lineTo(w * 0.70, h * 0.15)
-              // line inside
-              ..moveTo(w * 0.15, h * 0.45)
-              ..lineTo(w * 0.85, h * 0.45),
-            paint);
+          Path()
+            ..moveTo(w * 0.15, h * 0.25)
+            ..lineTo(w * 0.85, h * 0.25)
+            ..lineTo(w * 0.85, h * 0.85)
+            ..lineTo(w * 0.15, h * 0.85)
+            ..close()
+            // binder rings
+            ..moveTo(w * 0.30, h * 0.25)
+            ..lineTo(w * 0.30, h * 0.15)
+            ..moveTo(w * 0.70, h * 0.25)
+            ..lineTo(w * 0.70, h * 0.15)
+            // line inside
+            ..moveTo(w * 0.15, h * 0.45)
+            ..lineTo(w * 0.85, h * 0.45),
+          paint,
+        );
         break;
 
       case 'gear': // Settings gear outline
@@ -796,271 +1056,482 @@ class LineArtIconPainter extends CustomPainter {
 
       case 'edit': // Pencil edit outline
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.25, h * 0.75)
-              ..lineTo(w * 0.65, h * 0.35)
-              ..lineTo(w * 0.75, h * 0.45)
-              ..lineTo(w * 0.35, h * 0.85)
-              ..close()
-              ..moveTo(w * 0.25, h * 0.75)
-              ..lineTo(w * 0.22, h * 0.88)
-              ..lineTo(w * 0.35, h * 0.85),
-            paint);
+          Path()
+            ..moveTo(w * 0.25, h * 0.75)
+            ..lineTo(w * 0.65, h * 0.35)
+            ..lineTo(w * 0.75, h * 0.45)
+            ..lineTo(w * 0.35, h * 0.85)
+            ..close()
+            ..moveTo(w * 0.25, h * 0.75)
+            ..lineTo(w * 0.22, h * 0.88)
+            ..lineTo(w * 0.35, h * 0.85),
+          paint,
+        );
         break;
-      
+
       case 'share': // Box with outgoing arrow
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.25, h * 0.40)
-              ..lineTo(w * 0.25, h * 0.85)
-              ..lineTo(w * 0.75, h * 0.85)
-              ..lineTo(w * 0.75, h * 0.40)
-              // Arrow
-              ..moveTo(w * 0.50, h * 0.60)
-              ..lineTo(w * 0.50, h * 0.15)
-              ..lineTo(w * 0.35, h * 0.30)
-              ..moveTo(w * 0.50, h * 0.15)
-              ..lineTo(w * 0.65, h * 0.30),
-            paint);
+          Path()
+            ..moveTo(w * 0.25, h * 0.40)
+            ..lineTo(w * 0.25, h * 0.85)
+            ..lineTo(w * 0.75, h * 0.85)
+            ..lineTo(w * 0.75, h * 0.40)
+            // Arrow
+            ..moveTo(w * 0.50, h * 0.60)
+            ..lineTo(w * 0.50, h * 0.15)
+            ..lineTo(w * 0.35, h * 0.30)
+            ..moveTo(w * 0.50, h * 0.15)
+            ..lineTo(w * 0.65, h * 0.30),
+          paint,
+        );
         break;
 
       case 'arrow_down':
         final sx = w / 12.0;
         final sy = h / 12.0;
         canvas.drawPath(
-            Path()
-              ..moveTo(3.0 * sx, 4.6 * sy)
-              ..lineTo(6.0 * sx, 7.4 * sy)
-              ..lineTo(9.0 * sx, 4.6 * sy),
-            paint);
+          Path()
+            ..moveTo(3.0 * sx, 4.6 * sy)
+            ..lineTo(6.0 * sx, 7.4 * sy)
+            ..lineTo(9.0 * sx, 4.6 * sy),
+          paint,
+        );
         break;
 
       case 'bell':
         final sx = w / 24.0;
         final sy = h / 24.0;
         canvas.drawPath(
-            Path()
-              ..moveTo(8.2 * sx, 17.4 * sy)
-              ..lineTo(15.8 * sx, 17.4 * sy),
-            paint);
+          Path()
+            ..moveTo(8.2 * sx, 17.4 * sy)
+            ..lineTo(15.8 * sx, 17.4 * sy),
+          paint,
+        );
         canvas.drawPath(
-            Path()
-              ..moveTo(10.2 * sx, 19.4 * sy)
-              ..cubicTo(10.7 * sx, 20.1 * sy, 11.3 * sx, 20.4 * sy, 12.0 * sx, 20.4 * sy)
-              ..cubicTo(12.7 * sx, 20.4 * sy, 13.3 * sx, 20.1 * sy, 13.8 * sx, 19.4 * sy),
-            paint);
+          Path()
+            ..moveTo(10.2 * sx, 19.4 * sy)
+            ..cubicTo(
+              10.7 * sx,
+              20.1 * sy,
+              11.3 * sx,
+              20.4 * sy,
+              12.0 * sx,
+              20.4 * sy,
+            )
+            ..cubicTo(
+              12.7 * sx,
+              20.4 * sy,
+              13.3 * sx,
+              20.1 * sy,
+              13.8 * sx,
+              19.4 * sy,
+            ),
+          paint,
+        );
         canvas.drawPath(
-            Path()
-              ..moveTo(7.8 * sx, 16.7 * sy)
-              ..cubicTo(8.7 * sx, 16.0 * sy, 8.9 * sx, 14.9 * sy, 8.9 * sx, 13.2 * sy)
-              ..lineTo(8.9 * sx, 11.4 * sy)
-              ..arcToPoint(Offset(15.1 * sx, 11.4 * sy), radius: Radius.elliptical(3.1 * sx, 3.1 * sy), clockwise: true)
-              ..lineTo(15.1 * sx, 13.2 * sy)
-              ..cubicTo(15.1 * sx, 14.9 * sy, 15.3 * sx, 16.0 * sy, 16.2 * sx, 16.7 * sy),
-            paint);
+          Path()
+            ..moveTo(7.8 * sx, 16.7 * sy)
+            ..cubicTo(
+              8.7 * sx,
+              16.0 * sy,
+              8.9 * sx,
+              14.9 * sy,
+              8.9 * sx,
+              13.2 * sy,
+            )
+            ..lineTo(8.9 * sx, 11.4 * sy)
+            ..arcToPoint(
+              Offset(15.1 * sx, 11.4 * sy),
+              radius: Radius.elliptical(3.1 * sx, 3.1 * sy),
+              clockwise: true,
+            )
+            ..lineTo(15.1 * sx, 13.2 * sy)
+            ..cubicTo(
+              15.1 * sx,
+              14.9 * sy,
+              15.3 * sx,
+              16.0 * sy,
+              16.2 * sx,
+              16.7 * sy,
+            ),
+          paint,
+        );
         break;
 
       case 'focus_doc':
         final sx = w / 16.0;
         final sy = h / 16.0;
         canvas.drawPath(
-            Path()
-              ..moveTo(5.0 * sx, 4.5 * sy)
-              ..lineTo(9.3 * sx, 4.5 * sy)
-              ..lineTo(11.0 * sx, 6.2 * sy)
-              ..lineTo(11.0 * sx, 11.5 * sy)
-              ..lineTo(5.0 * sx, 11.5 * sy)
-              ..close(),
-            paint);
+          Path()
+            ..moveTo(5.0 * sx, 4.5 * sy)
+            ..lineTo(9.3 * sx, 4.5 * sy)
+            ..lineTo(11.0 * sx, 6.2 * sy)
+            ..lineTo(11.0 * sx, 11.5 * sy)
+            ..lineTo(5.0 * sx, 11.5 * sy)
+            ..close(),
+          paint,
+        );
         canvas.drawPath(
-            Path()
-              ..moveTo(7.0 * sx, 8.0 * sy)
-              ..lineTo(9.8 * sx, 8.0 * sy)
-              ..moveTo(7.0 * sx, 10.0 * sy)
-              ..lineTo(9.0 * sx, 10.0 * sy),
-            paint);
+          Path()
+            ..moveTo(7.0 * sx, 8.0 * sy)
+            ..lineTo(9.8 * sx, 8.0 * sy)
+            ..moveTo(7.0 * sx, 10.0 * sy)
+            ..lineTo(9.0 * sx, 10.0 * sy),
+          paint,
+        );
         break;
 
       case 'benchpress': // Bench press exercise stick figure
         canvas.drawPath(
-            Path()
-              // bench
-              ..moveTo(w * 0.10, h * 0.75)
-              ..lineTo(w * 0.90, h * 0.75)
-              ..moveTo(w * 0.25, h * 0.75)
-              ..lineTo(w * 0.25, h * 0.90)
-              ..moveTo(w * 0.75, h * 0.75)
-              ..lineTo(w * 0.75, h * 0.90)
-              // lying body torso
-              ..moveTo(w * 0.35, h * 0.70)
-              ..lineTo(w * 0.65, h * 0.70)
-              // head
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.30, h * 0.65), radius: w * 0.05))
-              // legs
-              ..moveTo(w * 0.65, h * 0.70)
-              ..lineTo(w * 0.72, h * 0.88)
-              // arms and barbell
-              ..moveTo(w * 0.48, h * 0.70)
-              ..lineTo(w * 0.48, h * 0.45) // L Arm
-              ..moveTo(w * 0.52, h * 0.70)
-              ..lineTo(w * 0.52, h * 0.45) // R Arm
-              ..moveTo(w * 0.20, h * 0.45)
-              ..lineTo(w * 0.80, h * 0.45) // Barbell bar
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.20, h * 0.45), radius: w * 0.04))
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.80, h * 0.45), radius: w * 0.04)),
-            paint);
+          Path()
+            // bench
+            ..moveTo(w * 0.10, h * 0.75)
+            ..lineTo(w * 0.90, h * 0.75)
+            ..moveTo(w * 0.25, h * 0.75)
+            ..lineTo(w * 0.25, h * 0.90)
+            ..moveTo(w * 0.75, h * 0.75)
+            ..lineTo(w * 0.75, h * 0.90)
+            // lying body torso
+            ..moveTo(w * 0.35, h * 0.70)
+            ..lineTo(w * 0.65, h * 0.70)
+            // head
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.30, h * 0.65),
+                radius: w * 0.05,
+              ),
+            )
+            // legs
+            ..moveTo(w * 0.65, h * 0.70)
+            ..lineTo(w * 0.72, h * 0.88)
+            // arms and barbell
+            ..moveTo(w * 0.48, h * 0.70)
+            ..lineTo(w * 0.48, h * 0.45) // L Arm
+            ..moveTo(w * 0.52, h * 0.70)
+            ..lineTo(w * 0.52, h * 0.45) // R Arm
+            ..moveTo(w * 0.20, h * 0.45)
+            ..lineTo(w * 0.80, h * 0.45) // Barbell bar
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.20, h * 0.45),
+                radius: w * 0.04,
+              ),
+            )
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.80, h * 0.45),
+                radius: w * 0.04,
+              ),
+            ),
+          paint,
+        );
         break;
 
       case 'inclinepress': // Incline press sketch
         canvas.drawPath(
-            Path()
-              // incline bench
-              ..moveTo(w * 0.20, h * 0.85)
-              ..lineTo(w * 0.80, h * 0.50)
-              ..moveTo(w * 0.35, h * 0.76)
-              ..lineTo(w * 0.35, h * 0.90)
-              ..moveTo(w * 0.70, h * 0.56)
-              ..lineTo(w * 0.70, h * 0.90)
-              // reclining body
-              ..moveTo(w * 0.35, h * 0.75)
-              ..lineTo(w * 0.70, h * 0.55)
-              // head
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.75, h * 0.48), radius: w * 0.05))
-              // arms
-              ..moveTo(w * 0.50, h * 0.66)
-              ..lineTo(w * 0.42, h * 0.42) // arm L
-              ..moveTo(w * 0.60, h * 0.60)
-              ..lineTo(w * 0.54, h * 0.36) // arm R
-              // dumbbells
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.42, h * 0.42), radius: w * 0.03))
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.54, h * 0.36), radius: w * 0.03)),
-            paint);
+          Path()
+            // incline bench
+            ..moveTo(w * 0.20, h * 0.85)
+            ..lineTo(w * 0.80, h * 0.50)
+            ..moveTo(w * 0.35, h * 0.76)
+            ..lineTo(w * 0.35, h * 0.90)
+            ..moveTo(w * 0.70, h * 0.56)
+            ..lineTo(w * 0.70, h * 0.90)
+            // reclining body
+            ..moveTo(w * 0.35, h * 0.75)
+            ..lineTo(w * 0.70, h * 0.55)
+            // head
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.75, h * 0.48),
+                radius: w * 0.05,
+              ),
+            )
+            // arms
+            ..moveTo(w * 0.50, h * 0.66)
+            ..lineTo(w * 0.42, h * 0.42) // arm L
+            ..moveTo(w * 0.60, h * 0.60)
+            ..lineTo(w * 0.54, h * 0.36) // arm R
+            // dumbbells
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.42, h * 0.42),
+                radius: w * 0.03,
+              ),
+            )
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.54, h * 0.36),
+                radius: w * 0.03,
+              ),
+            ),
+          paint,
+        );
         break;
 
       case 'shoulderpress': // Shoulder press sitting
         canvas.drawPath(
-            Path()
-              // stool
-              ..moveTo(w * 0.35, h * 0.80)
-              ..lineTo(w * 0.65, h * 0.80)
-              ..lineTo(w * 0.65, h * 0.90)
-              ..lineTo(w * 0.35, h * 0.90)
-              ..close()
-              // seated torso
-              ..moveTo(w * 0.50, h * 0.80)
-              ..lineTo(w * 0.50, h * 0.55)
-              // head
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.50, h * 0.48), radius: w * 0.06))
-              // bent arms up
-              ..moveTo(w * 0.44, h * 0.58)
-              ..lineTo(w * 0.32, h * 0.58)
-              ..lineTo(w * 0.32, h * 0.32)
-              ..moveTo(w * 0.56, h * 0.58)
-              ..lineTo(w * 0.68, h * 0.58)
-              ..lineTo(w * 0.68, h * 0.32)
-              // barbell overhead
-              ..moveTo(w * 0.20, h * 0.32)
-              ..lineTo(w * 0.80, h * 0.32)
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.20, h * 0.32), radius: w * 0.04))
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.80, h * 0.32), radius: w * 0.04)),
-            paint);
+          Path()
+            // stool
+            ..moveTo(w * 0.35, h * 0.80)
+            ..lineTo(w * 0.65, h * 0.80)
+            ..lineTo(w * 0.65, h * 0.90)
+            ..lineTo(w * 0.35, h * 0.90)
+            ..close()
+            // seated torso
+            ..moveTo(w * 0.50, h * 0.80)
+            ..lineTo(w * 0.50, h * 0.55)
+            // head
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.50, h * 0.48),
+                radius: w * 0.06,
+              ),
+            )
+            // bent arms up
+            ..moveTo(w * 0.44, h * 0.58)
+            ..lineTo(w * 0.32, h * 0.58)
+            ..lineTo(w * 0.32, h * 0.32)
+            ..moveTo(w * 0.56, h * 0.58)
+            ..lineTo(w * 0.68, h * 0.58)
+            ..lineTo(w * 0.68, h * 0.32)
+            // barbell overhead
+            ..moveTo(w * 0.20, h * 0.32)
+            ..lineTo(w * 0.80, h * 0.32)
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.20, h * 0.32),
+                radius: w * 0.04,
+              ),
+            )
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.80, h * 0.32),
+                radius: w * 0.04,
+              ),
+            ),
+          paint,
+        );
         break;
 
       case 'triceppushdown': // Tricep pushdown standing
         canvas.drawPath(
-            Path()
-              // floor line
-              ..moveTo(w * 0.10, h * 0.90)
-              ..lineTo(w * 0.90, h * 0.90)
-              // standing body torso
-              ..moveTo(w * 0.35, h * 0.45)
-              ..lineTo(w * 0.35, h * 0.70)
-              ..lineTo(w * 0.30, h * 0.90) // leg L
-              ..moveTo(w * 0.35, h * 0.70)
-              ..lineTo(w * 0.40, h * 0.90) // leg R
-              // head
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.35, h * 0.36), radius: w * 0.06))
-              // cable machine frame on the right
-              ..moveTo(w * 0.80, h * 0.90)
-              ..lineTo(w * 0.80, h * 0.15)
-              ..lineTo(w * 0.55, h * 0.15)
-              // pulley & cable
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.55, h * 0.17), radius: w * 0.03))
-              ..moveTo(w * 0.55, h * 0.20)
-              ..lineTo(w * 0.50, h * 0.45) // diagonal cable
-              // hands holding rope attachment
-              ..moveTo(w * 0.35, h * 0.45)
-              ..lineTo(w * 0.45, h * 0.45) // upper arm
-              ..lineTo(w * 0.50, h * 0.56) // forearm holding rope
-              ..moveTo(w * 0.44, h * 0.56)
-              ..lineTo(w * 0.56, h * 0.56), // rope handle
-            paint);
+          Path()
+            // floor line
+            ..moveTo(w * 0.10, h * 0.90)
+            ..lineTo(w * 0.90, h * 0.90)
+            // standing body torso
+            ..moveTo(w * 0.35, h * 0.45)
+            ..lineTo(w * 0.35, h * 0.70)
+            ..lineTo(w * 0.30, h * 0.90) // leg L
+            ..moveTo(w * 0.35, h * 0.70)
+            ..lineTo(w * 0.40, h * 0.90) // leg R
+            // head
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.35, h * 0.36),
+                radius: w * 0.06,
+              ),
+            )
+            // cable machine frame on the right
+            ..moveTo(w * 0.80, h * 0.90)
+            ..lineTo(w * 0.80, h * 0.15)
+            ..lineTo(w * 0.55, h * 0.15)
+            // pulley & cable
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.55, h * 0.17),
+                radius: w * 0.03,
+              ),
+            )
+            ..moveTo(w * 0.55, h * 0.20)
+            ..lineTo(w * 0.50, h * 0.45) // diagonal cable
+            // hands holding rope attachment
+            ..moveTo(w * 0.35, h * 0.45)
+            ..lineTo(w * 0.45, h * 0.45) // upper arm
+            ..lineTo(w * 0.50, h * 0.56) // forearm holding rope
+            ..moveTo(w * 0.44, h * 0.56)
+            ..lineTo(w * 0.56, h * 0.56), // rope handle
+          paint,
+        );
         break;
 
       case 'avocado': // Avocado outline
         canvas.drawPath(
-            Path()
-              // outer egg shape
-              ..moveTo(w * 0.50, h * 0.15)
-              ..cubicTo(w * 0.25, h * 0.25, w * 0.20, h * 0.70, w * 0.50, h * 0.85)
-              ..cubicTo(w * 0.80, h * 0.70, w * 0.75, h * 0.25, w * 0.50, h * 0.15)
-              ..close()
-              // inner seed circle
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.50, h * 0.60), radius: w * 0.14)),
-            paint);
+          Path()
+            // outer egg shape
+            ..moveTo(w * 0.50, h * 0.15)
+            ..cubicTo(
+              w * 0.25,
+              h * 0.25,
+              w * 0.20,
+              h * 0.70,
+              w * 0.50,
+              h * 0.85,
+            )
+            ..cubicTo(
+              w * 0.80,
+              h * 0.70,
+              w * 0.75,
+              h * 0.25,
+              w * 0.50,
+              h * 0.15,
+            )
+            ..close()
+            // inner seed circle
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.50, h * 0.60),
+                radius: w * 0.14,
+              ),
+            ),
+          paint,
+        );
         break;
 
       case 'meat': // Steak outline
         canvas.drawPath(
-            Path()
-              // steak shape
-              ..moveTo(w * 0.30, h * 0.30)
-              ..cubicTo(w * 0.15, h * 0.40, w * 0.20, h * 0.75, w * 0.45, h * 0.75)
-              ..cubicTo(w * 0.70, h * 0.75, w * 0.85, h * 0.55, w * 0.80, h * 0.35)
-              ..cubicTo(w * 0.75, h * 0.15, w * 0.45, h * 0.20, w * 0.30, h * 0.30)
-              ..close()
-              // bone circle
-              ..addOval(Rect.fromCircle(center: Offset(w * 0.40, h * 0.40), radius: w * 0.05))
-              // grill lines
-              ..moveTo(w * 0.50, h * 0.35)
-              ..lineTo(w * 0.65, h * 0.50)
-              ..moveTo(w * 0.45, h * 0.50)
-              ..lineTo(w * 0.60, h * 0.65),
-            paint);
+          Path()
+            // steak shape
+            ..moveTo(w * 0.30, h * 0.30)
+            ..cubicTo(
+              w * 0.15,
+              h * 0.40,
+              w * 0.20,
+              h * 0.75,
+              w * 0.45,
+              h * 0.75,
+            )
+            ..cubicTo(
+              w * 0.70,
+              h * 0.75,
+              w * 0.85,
+              h * 0.55,
+              w * 0.80,
+              h * 0.35,
+            )
+            ..cubicTo(
+              w * 0.75,
+              h * 0.15,
+              w * 0.45,
+              h * 0.20,
+              w * 0.30,
+              h * 0.30,
+            )
+            ..close()
+            // bone circle
+            ..addOval(
+              Rect.fromCircle(
+                center: Offset(w * 0.40, h * 0.40),
+                radius: w * 0.05,
+              ),
+            )
+            // grill lines
+            ..moveTo(w * 0.50, h * 0.35)
+            ..lineTo(w * 0.65, h * 0.50)
+            ..moveTo(w * 0.45, h * 0.50)
+            ..lineTo(w * 0.60, h * 0.65),
+          paint,
+        );
         break;
 
       case 'broccoli': // Broccoli tree outline
         canvas.drawPath(
-            Path()
-              // trunk
-              ..moveTo(w * 0.44, h * 0.60)
-              ..lineTo(w * 0.44, h * 0.85)
-              ..lineTo(w * 0.56, h * 0.85)
-              ..lineTo(w * 0.56, h * 0.60)
-              // crown
-              ..moveTo(w * 0.44, h * 0.60)
-              ..cubicTo(w * 0.20, h * 0.60, w * 0.15, h * 0.30, w * 0.38, h * 0.25)
-              ..cubicTo(w * 0.40, h * 0.10, w * 0.60, h * 0.10, w * 0.62, h * 0.25)
-              ..cubicTo(w * 0.85, h * 0.30, w * 0.80, h * 0.60, w * 0.56, h * 0.60)
-              ..close(),
-            paint);
+          Path()
+            // trunk
+            ..moveTo(w * 0.44, h * 0.60)
+            ..lineTo(w * 0.44, h * 0.85)
+            ..lineTo(w * 0.56, h * 0.85)
+            ..lineTo(w * 0.56, h * 0.60)
+            // crown
+            ..moveTo(w * 0.44, h * 0.60)
+            ..cubicTo(
+              w * 0.20,
+              h * 0.60,
+              w * 0.15,
+              h * 0.30,
+              w * 0.38,
+              h * 0.25,
+            )
+            ..cubicTo(
+              w * 0.40,
+              h * 0.10,
+              w * 0.60,
+              h * 0.10,
+              w * 0.62,
+              h * 0.25,
+            )
+            ..cubicTo(
+              w * 0.85,
+              h * 0.30,
+              w * 0.80,
+              h * 0.60,
+              w * 0.56,
+              h * 0.60,
+            )
+            ..close(),
+          paint,
+        );
         break;
 
       case 'flame': // Recovery flame outline
         canvas.drawPath(
-            Path()
-              ..moveTo(w * 0.50, h * 0.10)
-              ..cubicTo(w * 0.35, h * 0.35, w * 0.20, h * 0.55, w * 0.20, h * 0.70)
-              ..cubicTo(w * 0.20, h * 0.90, w * 0.80, h * 0.90, w * 0.80, h * 0.70)
-              ..cubicTo(w * 0.80, h * 0.45, w * 0.60, h * 0.35, w * 0.50, h * 0.10)
-              ..close()
-              // inner flame
-              ..moveTo(w * 0.50, h * 0.40)
-              ..cubicTo(w * 0.40, h * 0.55, w * 0.35, h * 0.65, w * 0.35, h * 0.75)
-              ..cubicTo(w * 0.35, h * 0.85, w * 0.65, h * 0.85, w * 0.65, h * 0.75)
-              ..cubicTo(w * 0.65, h * 0.60, w * 0.55, h * 0.55, w * 0.50, h * 0.40)
-              ..close(),
-            paint);
+          Path()
+            ..moveTo(w * 0.50, h * 0.10)
+            ..cubicTo(
+              w * 0.35,
+              h * 0.35,
+              w * 0.20,
+              h * 0.55,
+              w * 0.20,
+              h * 0.70,
+            )
+            ..cubicTo(
+              w * 0.20,
+              h * 0.90,
+              w * 0.80,
+              h * 0.90,
+              w * 0.80,
+              h * 0.70,
+            )
+            ..cubicTo(
+              w * 0.80,
+              h * 0.45,
+              w * 0.60,
+              h * 0.35,
+              w * 0.50,
+              h * 0.10,
+            )
+            ..close()
+            // inner flame
+            ..moveTo(w * 0.50, h * 0.40)
+            ..cubicTo(
+              w * 0.40,
+              h * 0.55,
+              w * 0.35,
+              h * 0.65,
+              w * 0.35,
+              h * 0.75,
+            )
+            ..cubicTo(
+              w * 0.35,
+              h * 0.85,
+              w * 0.65,
+              h * 0.85,
+              w * 0.65,
+              h * 0.75,
+            )
+            ..cubicTo(
+              w * 0.65,
+              h * 0.60,
+              w * 0.55,
+              h * 0.55,
+              w * 0.50,
+              h * 0.40,
+            )
+            ..close(),
+          paint,
+        );
         break;
 
       default:

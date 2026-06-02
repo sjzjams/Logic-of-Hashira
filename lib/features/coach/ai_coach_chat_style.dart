@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme.dart';
 
@@ -13,7 +12,7 @@ LlmChatViewStyle aiCoachChatViewStyle() {
     backgroundColor: Colors.white,
     progressIndicatorColor: AppColors.inkBlue,
     userMessageStyle: UserMessageStyle(
-      textStyle: GoogleFonts.nunito(
+      textStyle: AppTypography.body(
         fontSize: 15,
         fontWeight: FontWeight.w600,
         color: AppColors.inkText,
@@ -34,8 +33,8 @@ LlmChatViewStyle aiCoachChatViewStyle() {
     ),
     chatInputStyle: ChatInputStyle(
       hintText: 'Ask your coach anything...',
-      textStyle: GoogleFonts.nunito(fontSize: 15, color: AppColors.inkText),
-      hintStyle: GoogleFonts.nunito(fontSize: 14, color: AppColors.grayText),
+      textStyle: AppTypography.body(fontSize: 15, color: AppColors.inkText),
+      hintStyle: AppTypography.body(fontSize: 14, color: AppColors.grayText),
       backgroundColor: Colors.white,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -52,7 +51,7 @@ LlmChatViewStyle aiCoachChatViewStyle() {
       ),
     ),
     suggestionStyle: SuggestionStyle(
-      textStyle: GoogleFonts.nunito(
+      textStyle: AppTypography.body(
         fontSize: 13,
         fontWeight: FontWeight.w600,
         color: AppColors.inkBlue,

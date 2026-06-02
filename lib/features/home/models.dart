@@ -2,9 +2,7 @@ library;
 
 /// 首页相关的模型定义。
 class MuscleActivation {
-  const MuscleActivation({
-    required this.levelsByMuscleId,
-  });
+  const MuscleActivation({required this.levelsByMuscleId});
 
   /// 当前日期对应的肌肉区域强度，key 对应 SVG 中的 `data-muscle-id`。
   final Map<String, int> levelsByMuscleId;

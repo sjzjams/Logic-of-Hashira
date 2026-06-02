@@ -18,7 +18,7 @@ class HandDrawnCard extends StatelessWidget {
     this.color = AppColors.canvas,
     this.borderColor = AppColors.border,
     this.borderWidth = 1.2,
-    this.borderRadius = 24.0,
+    this.borderRadius = 18.0,
     this.onTap,
     this.elevation = 0.0,
   });
@@ -30,15 +30,12 @@ class HandDrawnCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(
-          color: borderColor,
-          width: borderWidth,
-        ),
+        border: Border.all(color: borderColor, width: borderWidth),
         boxShadow: [
           BoxShadow(
-            color: AppColors.inkBlue.withValues(alpha: 0.03),
-            blurRadius: 12 + elevation,
-            offset: Offset(0, 4 + elevation),
+            color: AppColors.inkText.withValues(alpha: 0.05),
+            blurRadius: 28 + elevation,
+            offset: Offset(0, 10 + elevation),
           ),
         ],
       ),
@@ -52,7 +49,7 @@ class HandDrawnCard extends StatelessWidget {
         child: cardContent,
       );
     }
-    
+
     return cardContent;
   }
 }

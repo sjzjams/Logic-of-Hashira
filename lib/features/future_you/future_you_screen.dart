@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/hand_drawn_card.dart';
 import '../../core/widgets/illustrations.dart';
@@ -19,7 +18,7 @@ class FutureYouScreen extends StatelessWidget {
           children: [
             Text(
               'Your Future You',
-              style: GoogleFonts.pangolin(
+              style: AppTypography.title(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: AppColors.inkText,
@@ -27,7 +26,7 @@ class FutureYouScreen extends StatelessWidget {
             ),
             Text(
               'Built by your habits today',
-              style: GoogleFonts.nunito(
+              style: AppTypography.body(
                 fontSize: 12,
                 color: AppColors.grayText,
               ),
@@ -54,16 +53,14 @@ class FutureYouScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Center Body Comparison Illustration
-                const SizedBox(
-                  width: 100,
+                const PrototypeIllustration(
+                  assetId: 'future_self_split_body',
+                  width: 140,
                   height: 220,
-                  child: CustomPaint(
-                    painter: BodyComparisonPainter(),
-                  ),
                 ),
-                
+
                 // Right Metrics Column
                 Expanded(
                   child: Column(
@@ -86,7 +83,7 @@ class FutureYouScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Keep going,\nyour future self is\nrooting for you.',
-                      style: GoogleFonts.pangolin(
+                      style: AppTypography.title(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.inkText,
@@ -124,7 +121,7 @@ class FutureYouScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.nunito(
+          style: AppTypography.body(
             fontSize: 13,
             color: AppColors.grayText,
             fontWeight: FontWeight.bold,
@@ -133,7 +130,7 @@ class FutureYouScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: GoogleFonts.pangolin(
+          style: AppTypography.title(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: AppColors.inkText,
@@ -143,15 +140,11 @@ class FutureYouScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.arrow_upward,
-              size: 10,
-              color: AppColors.inkBlue,
-            ),
+            const Icon(Icons.arrow_upward, size: 10, color: AppColors.inkBlue),
             const SizedBox(width: 2),
             Text(
               change,
-              style: GoogleFonts.nunito(
+              style: AppTypography.body(
                 fontSize: 11,
                 color: AppColors.inkBlue,
                 fontWeight: FontWeight.bold,

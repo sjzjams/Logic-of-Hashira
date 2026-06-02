@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../core/theme.dart';
 import '../core/widgets/illustrations.dart';
 
@@ -56,31 +55,26 @@ class _LayoutShellState extends State<LayoutShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.page,
       body: SafeArea(
         child: IndexedStack(
           index: _currentIndex,
           children: List<Widget>.generate(5, (int index) {
             final Widget child = _screenCache[index] ?? const SizedBox.shrink();
-            return TickerMode(
-              enabled: _currentIndex == index,
-              child: child,
-            );
+            return TickerMode(enabled: _currentIndex == index, child: child);
           }),
         ),
       ),
       bottomNavigationBar: Container(
-        height: 64,
+        height: 56,
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(
-            top: BorderSide(
-              color: AppColors.border,
-              width: 1.2,
-            ),
+            top: BorderSide(color: AppColors.tabBarBorder, width: 1),
           ),
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildNavItem(0, 'Home', 'home'),
             _buildNavItem(1, 'Progress', 'progress'),
@@ -95,7 +89,7 @@ class _LayoutShellState extends State<LayoutShell> {
 
   Widget _buildNavItem(int index, String label, String iconType) {
     final isSelected = _currentIndex == index;
-    final color = isSelected ? AppColors.inkBlue : AppColors.grayText;
+    final color = isSelected ? AppColors.inkBlue : AppColors.tabInactive;
 
     return Expanded(
       child: GestureDetector(
@@ -106,36 +100,21 @@ class _LayoutShellState extends State<LayoutShell> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Line-art Icon
             SizedBox(
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               child: CustomPaint(
-                painter: LineArtIconPainter(
-                  iconType: iconType,
-                  color: color,
-                ),
+                painter: LineArtIconPainter(iconType: iconType, color: color),
               ),
             ),
-            const SizedBox(height: 6),
-            // Text Label
+            const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.pangolin(
-                fontSize: 12,
+              style: AppTypography.title(
+                fontSize: 9,
+                height: 1,
                 color: color,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            const SizedBox(height: 2),
-            // Tiny active indicator bar
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: isSelected ? 12 : 0,
-              height: 2,
-              decoration: BoxDecoration(
-                color: AppColors.inkBlue,
-                borderRadius: BorderRadius.circular(1),
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
               ),
             ),
           ],

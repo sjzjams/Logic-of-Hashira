@@ -1,66 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../core/theme.dart';
-import '../../core/widgets/hand_drawn_card.dart';
 import '../../core/widgets/hand_drawn_button.dart';
+import '../../core/widgets/hand_drawn_card.dart';
 import '../../core/widgets/illustrations.dart';
 
 class WorkoutDetailScreen extends StatelessWidget {
-  final String workoutName;
-  final String workoutCategory;
-
   const WorkoutDetailScreen({
     super.key,
     required this.workoutName,
     required this.workoutCategory,
   });
 
+  final String workoutName;
+  final String workoutCategory;
+
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> exercises = [
+    final exercises = const [
       {
         'id': '1',
         'name': 'Bench Press',
         'sets': '4 x 8-10',
-        'icon': 'benchpress',
+        'assetId': 'exercise_bench_press',
       },
       {
         'id': '2',
         'name': 'Incline Dumbbell Press',
         'sets': '4 x 8-10',
-        'icon': 'inclinepress',
+        'assetId': 'exercise_incline_press',
       },
       {
         'id': '3',
         'name': 'Shoulder Press',
         'sets': '3 x 10-12',
-        'icon': 'shoulderpress',
+        'assetId': 'exercise_shoulder_press',
       },
       {
         'id': '4',
-        'name': 'Tricep Pushdown',
+        'name': 'Triceps Pushdown',
         'sets': '3 x 12-15',
-        'icon': 'triceppushdown',
+        'assetId': 'exercise_triceps_pushdown',
       },
     ];
 
     return Scaffold(
+      backgroundColor: AppColors.canvas,
       appBar: AppBar(
+        backgroundColor: AppColors.canvas,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const SizedBox(
-              width: 20,
-              height: 20,
-              child: CustomPaint(
-                painter: LineArtIconPainter(iconType: 'share', color: AppColors.inkText),
-              ),
-            ),
-            onPressed: () {},
+        title: Text(
+          'Workout Detail',
+          style: AppTypography.title(
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+            color: AppColors.inkText,
           ),
+        ),
+        centerTitle: true,
+        actions: [
           IconButton(
             icon: const Icon(Icons.more_horiz, color: AppColors.inkText),
             onPressed: () {},
@@ -71,254 +72,231 @@ class WorkoutDetailScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.all(12.0),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(22, 8, 22, 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  HandDrawnCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        // Title + Completed Circle Badge
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Container(
+                          width: 50,
+                          height: 50,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.softLilac,
+                            border: Border.all(
+                              color: AppColors.inkBlue,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            color: AppColors.inkBlue,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                workoutName,
+                                style: AppTypography.title(
+                                  fontSize: 26,
+                                  height: 1.1,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.inkText,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                workoutCategory,
+                                style: AppTypography.body(
+                                  fontSize: 13,
+                                  color: AppColors.grayText,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: const [
+                      Expanded(
+                        child: _MetricCard(
+                          icon: Icons.access_time_outlined,
+                          label: 'Estimated Time',
+                          value: '60 min',
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _MetricCard(
+                          icon: Icons.local_fire_department_outlined,
+                          label: 'Calories',
+                          value: '420 kcal',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    'Exercises',
+                    style: AppTypography.title(
+                      fontSize: 18,
+                      color: AppColors.inkText,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ...exercises.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: HandDrawnCard(
+                        padding: const EdgeInsets.fromLTRB(10, 9, 12, 9),
+                        child: Row(
                           children: [
+                            Container(
+                              width: 28,
+                              height: 28,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Text(
+                                item['id']!,
+                                style: AppTypography.title(
+                                  fontSize: 13,
+                                  color: AppColors.inkText,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    workoutName,
-                                    style: GoogleFonts.pangolin(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
+                                    item['name']!,
+                                    style: AppTypography.title(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
                                       color: AppColors.inkText,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 3),
                                   Text(
-                                    workoutCategory,
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 13,
+                                    item['sets']!,
+                                    style: AppTypography.body(
+                                      fontSize: 12,
                                       color: AppColors.grayText,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 16),
                             Container(
-                              width: 44,
-                              height: 44,
+                              width: 46,
+                              height: 46,
+                              padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.inkBlue, width: 1.5),
                                 color: AppColors.softLilac,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: AppColors.border),
                               ),
-                              child: const Icon(
-                                Icons.check,
-                                color: AppColors.inkBlue,
-                                size: 24,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Metadata Cards (Duration, Calories)
-                        Row(
-                          children: [
-                            // Time Card
-                            Expanded(
-                              child: HandDrawnCard(
-                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.access_time_outlined, color: AppColors.inkBlue, size: 20),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Estimated Time',
-                                          style: GoogleFonts.nunito(fontSize: 10, color: AppColors.grayText),
-                                        ),
-                                        Text(
-                                          '60 min',
-                                          style: GoogleFonts.pangolin(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.inkText,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            // Calories Card
-                            Expanded(
-                              child: HandDrawnCard(
-                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.local_fire_department_outlined, color: AppColors.inkBlue, size: 20),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Calories',
-                                          style: GoogleFonts.nunito(fontSize: 10, color: AppColors.grayText),
-                                        ),
-                                        Text(
-                                          '420 kcal',
-                                          style: GoogleFonts.pangolin(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.inkText,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              child: PrototypeIllustration(
+                                assetId: item['assetId']!,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-
-                        // Section Title
-                        Text(
-                          'Exercises',
-                          style: GoogleFonts.pangolin(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.inkText,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final item = exercises[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: HandDrawnCard(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                // Step Number Circle
-                                Container(
-                                  width: 22,
-                                  height: 22,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: AppColors.border, width: 1.2),
-                                  ),
-                                  child: Text(
-                                    item['id'],
-                                    style: GoogleFonts.pangolin(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.inkText,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-
-                                // Name and Sets
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item['name'],
-                                        style: GoogleFonts.pangolin(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.inkText,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        item['sets'],
-                                        style: GoogleFonts.nunito(
-                                          fontSize: 11,
-                                          color: AppColors.grayText,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Exercise Graphic Drawing
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: AppColors.border.withValues(alpha: 0.5), width: 1.0),
-                                    color: AppColors.softGray,
-                                  ),
-                                  child: CustomPaint(
-                                    painter: LineArtIconPainter(
-                                      iconType: item['icon'],
-                                      color: AppColors.inkBlue,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      childCount: exercises.length,
-                    ),
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              ],
+                ],
+              ),
             ),
           ),
-          
-          // Fixed Bottom Start Workout CTA Button
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            padding: const EdgeInsets.fromLTRB(22, 10, 22, 12),
             decoration: const BoxDecoration(
               color: Colors.white,
-              border: Border(
-                top: BorderSide(color: AppColors.border, width: 1.0),
-              ),
+              border: Border(top: BorderSide(color: AppColors.border)),
             ),
             child: HandDrawnButton(
               text: 'Start Workout',
-              style: HandDrawnButtonStyle.primary,
               width: double.infinity,
+              style: HandDrawnButtonStyle.primary,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Workout session started! Let\'s crush it! 💪',
-                      style: GoogleFonts.pangolin(color: Colors.white),
+                      'Workout session started!',
+                      style: AppTypography.title(color: Colors.white),
                     ),
                     backgroundColor: AppColors.inkBlue,
                   ),
                 );
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return HandDrawnCard(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.inkBlue, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTypography.body(
+                    fontSize: 10,
+                    color: AppColors.grayText,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  value,
+                  style: AppTypography.title(
+                    fontSize: 15,
+                    color: AppColors.inkText,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

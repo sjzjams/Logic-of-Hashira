@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/hand_drawn_card.dart';
 import '../../core/widgets/illustrations.dart';
@@ -26,7 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         title: Text(
           'Settings',
-          style: GoogleFonts.pangolin(
+          style: AppTypography.title(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: AppColors.inkText,
@@ -52,13 +51,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       width: 20,
                       height: 20,
                       child: CustomPaint(
-                        painter: LineArtIconPainter(iconType: 'edit', color: AppColors.grayText),
+                        painter: LineArtIconPainter(
+                          iconType: 'edit',
+                          color: AppColors.grayText,
+                        ),
                       ),
                     ),
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Profile editing coming soon!', style: GoogleFonts.pangolin(color: Colors.white)),
+                          content: Text(
+                            'Profile editing coming soon!',
+                            style: AppTypography.title(color: Colors.white),
+                          ),
                           backgroundColor: AppColors.inkBlue,
                         ),
                       );
@@ -67,7 +72,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Divider(color: AppColors.border, height: 12),
                   _buildSettingRow(
                     'Change Avatar Graphic',
-                    trailing: const Icon(Icons.keyboard_arrow_right, color: AppColors.grayText),
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_right,
+                      color: AppColors.grayText,
+                    ),
                     onTap: () {},
                   ),
                 ],
@@ -87,7 +95,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     trailing: Switch.adaptive(
                       value: _gymReminders,
                       activeThumbColor: AppColors.inkBlue,
-                      activeTrackColor: AppColors.inkBlue.withValues(alpha: 0.5),
+                      activeTrackColor: AppColors.inkBlue.withValues(
+                        alpha: 0.5,
+                      ),
                       onChanged: (val) => setState(() => _gymReminders = val),
                     ),
                   ),
@@ -97,7 +107,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     trailing: Switch.adaptive(
                       value: _sleepReminders,
                       activeThumbColor: AppColors.inkBlue,
-                      activeTrackColor: AppColors.inkBlue.withValues(alpha: 0.5),
+                      activeTrackColor: AppColors.inkBlue.withValues(
+                        alpha: 0.5,
+                      ),
                       onChanged: (val) => setState(() => _sleepReminders = val),
                     ),
                   ),
@@ -129,7 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Fitness Record App',
-                    style: GoogleFonts.pangolin(
+                    style: AppTypography.title(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.inkText,
@@ -137,8 +149,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Version 1.0.0 • Hand-drawn with ❤️',
-                    style: GoogleFonts.nunito(
+                    'Version 1.0.0 —Hand-drawn with ❤️',
+                    style: AppTypography.body(
                       fontSize: 12,
                       color: AppColors.grayText,
                     ),
@@ -155,7 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: GoogleFonts.pangolin(
+      style: AppTypography.title(
         fontSize: 18,
         fontWeight: FontWeight.bold,
         color: AppColors.inkText,
@@ -163,7 +175,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSettingRow(String title, {required Widget trailing, VoidCallback? onTap}) {
+  Widget _buildSettingRow(
+    String title, {
+    required Widget trailing,
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -173,7 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Expanded(
             child: Text(
               title,
-              style: GoogleFonts.nunito(
+              style: AppTypography.body(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: AppColors.inkText,
