@@ -6,6 +6,7 @@ import '../../core/widgets/edge_disintegrate_image.dart';
 import '../../core/widgets/edge_effect_intensity.dart';
 import '../../core/widgets/hand_drawn_button.dart';
 import '../../core/widgets/hand_drawn_card.dart';
+import '../../core/widgets/processing_view_v2.dart';
 import '../../core/widgets/prototype_page.dart';
 import '../../models/meal.dart';
 import '../../models/nutrition.dart';
@@ -393,12 +394,11 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
             onCapture: _capture,
             onLiveCapture: _captureLive,
           ),
-        SnapshotPhase.segmenting => const _ProcessingView(
-            label: 'Segmenting food…',
-          ),
-        SnapshotPhase.analyzing => const _ProcessingView(
-            label: 'Analyzing nutrition…',
-          ),
+        // V1.2-A：处理页动效升级到 V2（LOCATING → DISINTEGRATING）。
+        // 业务层保持单态：segmenting 与 analyzing 共用同一视觉，
+        // 由 ProcessingViewV2 内部按时间轴自动推进两段文案。
+        SnapshotPhase.segmenting => const _ProcessingV2View(),
+        SnapshotPhase.analyzing => const _ProcessingV2View(),
         SnapshotPhase.result => _ResultView(
             result: _result!,
             imagePath: _imagePath,
@@ -410,9 +410,7 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
             onRetry: _retake,
             onUseSample: () => _capture(sampleName: MockSnapshotRecognizer.samples.first.name),
           ),
-        SnapshotPhase.capturing => const _ProcessingView(
-            label: 'Preparing…',
-          ),
+        SnapshotPhase.capturing => const _ProcessingV2View(),
       },
     );
   }
@@ -637,26 +635,18 @@ class _SampleChip extends StatelessWidget {
   }
 }
 
-class _ProcessingView extends StatelessWidget {
-  const _ProcessingView({this.label = 'Locating food…'});
-
-  final String label;
+/// V1.2-A：处理页 V2 入口。
+///
+/// 函数级注释：
+/// - 复用 V2 动效组件，4 角 L 形定位器 + LOCATING/DISINTEGRATING 文案；
+/// - 阶段由 [ProcessingViewV2] 内部时间轴推进，UI 层无需关心；
+/// - 该包装仅在原 `_ProcessingView` 名称上做替换，避免改动状态机 switch 分支。
+class _ProcessingV2View extends StatelessWidget {
+  const _ProcessingV2View();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(strokeWidth: 1.5),
-          const SizedBox(height: 18),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 14),
-          ),
-        ],
-      ),
-    );
+    return const ProcessingViewV2();
   }
 }
 
