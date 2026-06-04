@@ -24,6 +24,7 @@ class ProcessingViewV2 extends StatefulWidget {
   const ProcessingViewV2({
     super.key,
     this.imagePath,
+    this.maskPath,
     this.onCompleted,
     this.locatingDuration = const Duration(milliseconds: 1400),
     this.disintegratingDuration = const Duration(milliseconds: 1600),
@@ -33,6 +34,9 @@ class ProcessingViewV2 extends StatefulWidget {
   /// V1.2-B：进入 disintegrating 阶段时若提供图片路径，则用 DisintegrateView
   /// 渲染真实视觉（主体保留 + 背景消融）。空时退化为 L 形角标动画。
   final String? imagePath;
+
+  /// V1.2-C：NCNN 真实 mask 路径；为 null 时 DisintegrateView 走 V1.2-B 软椭圆。
+  final String? maskPath;
 
   /// 两阶段都播完后回调。
   final VoidCallback? onCompleted;
@@ -135,6 +139,7 @@ class _ProcessingViewV2State extends State<ProcessingViewV2>
                         ? DisintegrateView(
                             key: const ValueKey<String>('disintegrating'),
                             imagePath: widget.imagePath!,
+                            maskPath: widget.maskPath,
                             duration: widget.disintegratingDuration,
                           )
                         : Container(

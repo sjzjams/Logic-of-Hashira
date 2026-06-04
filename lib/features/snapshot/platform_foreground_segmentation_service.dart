@@ -67,22 +67,42 @@ class PlatformForegroundSegmentationService
     // Sprint 5+: 原生侧会把 NCNN 推理得到的"顶部检测类目"通过约定的
     // "::label:prob" 后缀追加到路径之后,这样无需新增 method 即可让 Dart
     // 拿到 COCO classId + 置信度,用于后续 [coco_food_mapper] 食物映射。
+    //
+    // V1.2-C:协议扩展为 "<fg>::<mask>::<label>:<prob>"。Dart 侧兼容新旧两段式。
     int? topClassId;
     double? topConfidence;
-    final int sep = foregroundPath.lastIndexOf('::');
-    if (sep >= 0) {
-      final String tail = foregroundPath.substring(sep + 2);
-      final List<String> parts = tail.split(':');
-      if (parts.length == 2) {
-        topClassId = int.tryParse(parts[0]);
-        topConfidence = double.tryParse(parts[1]);
+    String? maskPath;
+    final List<String> parts = foregroundPath.split('::');
+    String fgPath = foregroundPath;
+    if (parts.length == 3) {
+      // 0=fg, 1=mask, 2="<label>:<prob>"
+      fgPath = parts[0];
+      maskPath = parts[1];
+      final List<String> tail = parts[2].split(':');
+      if (tail.length == 2) {
+        topClassId = int.tryParse(tail[0]);
+        topConfidence = double.tryParse(tail[1]);
       }
+    } else if (parts.length == 2) {
+      // 0=fg, 1="<label>:<prob>"
+      fgPath = parts[0];
+      final List<String> tail = parts[1].split(':');
+      if (tail.length == 2) {
+        topClassId = int.tryParse(tail[0]);
+        topConfidence = double.tryParse(tail[1]);
+      }
+    }
+    final Object? rawMaskPath = raw['maskPath'];
+    if (rawMaskPath is String && rawMaskPath.isNotEmpty) {
+      // Kotlin 端独立字段优先级高于 :: 协议,便于 iOS / Mock 走不同路径。
+      maskPath = rawMaskPath;
     }
     return SegmentationResult(
       originalPath: imagePath,
-      foregroundPath: foregroundPath,
+      foregroundPath: fgPath,
       topClassId: topClassId,
       topConfidence: topConfidence,
+      maskPath: maskPath,
     );
   }
 }

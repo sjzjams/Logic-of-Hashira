@@ -14,14 +14,16 @@ abstract class ForegroundSegmentationService {
 
 /// 前景区分割结果。
 ///
-/// V1 仅返回原图路径 + 合成后的“食物主体图”路径，
-/// 后续 Sprint 会在此基础上扩展 mask 路径、置信度等字段。
+/// V1.0:仅返回原图路径 + 合成后的“食物主体图”路径。
+/// V1.2-C:在 NCNN 真实 mask 可用时,同时返回 [maskPath],供处理页 Shader
+/// 用真实 mask 通道（而非 V1.2-B 软椭圆）决定主体保留范围。
 class SegmentationResult {
   const SegmentationResult({
     required this.originalPath,
     required this.foregroundPath,
     this.topClassId,
     this.topConfidence,
+    this.maskPath,
   });
 
   /// 原图本地路径（与输入一致，方便调试与日志）。
@@ -37,6 +39,10 @@ class SegmentationResult {
 
   /// 顶部检测的置信度（0-1，已 Sigmoid）。
   final double? topConfidence;
+
+  /// V1.2-C:8-bit 灰度 PNG,值 0 或 255,与原图同分辨率。
+  /// 为 null 时上层应回退到软椭圆 mask 模式（V1.2-B 行为）。
+  final String? maskPath;
 }
 
 class SegmentationException implements Exception {

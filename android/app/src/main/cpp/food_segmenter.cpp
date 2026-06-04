@@ -389,6 +389,39 @@ inline std::string MakeOutputPath(const std::string& cache_dir) {
     return cache_dir + filename;
 }
 
+// V1.2-C:与前景图同名的 mask PNG 输出路径。约定 seg_mask_<ts>.png,
+// 编码为 8-bit 灰度 (R=G=B=mask, A=255),复用现有 write_png_rgba
+// 不再额外实现 L8 PNG 写出器,降低 C++ 端改动面。
+inline std::string MakeMaskPath(const std::string& cache_dir) {
+    char filename[128];
+    const long long ts = static_cast<long long>(std::time(nullptr)) * 1000;
+    std::snprintf(filename, sizeof(filename), "/seg_mask_%lld.png", ts);
+    return cache_dir + filename;
+}
+
+// 把单通道 [0,1] 概率图量化为灰度 RGBA 写盘。
+//   - mask > 0.5 → R=G=B=255
+//   - 其余       → R=G=B=0, A=255
+// 失败返回 false,调用方应跳过 mask 路径返回。
+inline bool WriteMaskGrayscalePng(const std::string& path,
+                                  int orig_w, int orig_h,
+                                  const std::vector<float>& mask) {
+    std::vector<uint8_t> rgba(static_cast<size_t>(orig_w) * orig_h * 4, 255);
+    if (mask.size() != static_cast<size_t>(orig_w) * orig_h) {
+        LOGE("WriteMaskGrayscalePng size mismatch: %zu vs %d",
+             mask.size(), orig_w * orig_h);
+        return false;
+    }
+    for (int i = 0; i < orig_w * orig_h; i++) {
+        const uint8_t v = mask[i] > kMaskThresh ? 255 : 0;
+        rgba[i * 4 + 0] = v;
+        rgba[i * 4 + 1] = v;
+        rgba[i * 4 + 2] = v;
+        rgba[i * 4 + 3] = 255;
+    }
+    return foodseg::write_png_rgba(path.c_str(), orig_w, orig_h, rgba.data());
+}
+
 }  // namespace
 
 // JNI 入口:版本号探针。
@@ -522,7 +555,7 @@ Java_com_hashira_logic_fitness_1log_1app_segmentation_NcnnBridge_nativeSegment(
         out_rgba[i * 4 + 3] = (combined[i] > kMaskThresh) ? 255 : 0;
     }
 
-    // 11. 写 PNG
+    // 11. 写前景 PNG
     const std::string out_path = MakeOutputPath(cache_dir);
     if (!foodseg::write_png_rgba(out_path.c_str(), orig_w, orig_h, out_rgba.data())) {
         LOGE("write_png_rgba failed: %s", out_path.c_str());
@@ -530,20 +563,35 @@ Java_com_hashira_logic_fitness_1log_1app_segmentation_NcnnBridge_nativeSegment(
         return nullptr;
     }
 
-    // 12. 释放 Bitmap 锁,返回路径 + 顶部检测类目
+    // 12. 释放 Bitmap 锁
     AndroidBitmap_unlockPixels(env, jBitmap);
-    char tail[64];
+
+    // 13. V1.2-C:写 mask PNG。失败时降级为单段旧协议,避免阻断主链路。
+    std::string mask_path;
+    if (!dets.empty()) {
+        const std::string candidate = MakeMaskPath(cache_dir);
+        if (WriteMaskGrayscalePng(candidate, orig_w, orig_h, combined)) {
+            mask_path = candidate;
+            LOGI("nativeSegment: mask -> %s (%dx%d)", mask_path.c_str(), orig_w, orig_h);
+        } else {
+            LOGW("nativeSegment: mask write failed, falling back to soft-ellipse mode");
+        }
+    }
+
+    // 14. 拼接返回路径。协议:
+    //     新 - 三段式: <fg>::<mask>::<label>:<prob>
+    //     降级 - 旧两段式: <fg>::<label>:<prob>
+    char tail[96];
     if (!dets.empty()) {
         const auto& top = dets[0];
         std::snprintf(tail, sizeof(tail), "::%d:%.3f", top.label, top.prob);
     } else {
         std::snprintf(tail, sizeof(tail), "::-1:0.0");
     }
-    // 注意:必须使用独立变量名 result_path,避免与上文
-    // std::vector<float> combined 产生 redefinition-of-symbol 冲突。
-    // 此外 LOGI 走的是 variadic __android_log_print,std::string 不可直接传,
-    // 必须 .c_str() 拿到 const char*。
-    const std::string result_path = std::string(out_path) + tail;
+    std::string result_path = std::string(out_path) + tail;
+    if (!mask_path.empty()) {
+        result_path = std::string(out_path) + "::" + mask_path + tail;
+    }
     LOGI("nativeSegment: foreground -> %s, top=%s",
          out_path.c_str(), tail);
     return env->NewStringUTF(result_path.c_str());

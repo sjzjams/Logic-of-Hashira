@@ -21,6 +21,7 @@ class DisintegrateView extends StatefulWidget {
   const DisintegrateView({
     super.key,
     required this.imagePath,
+    this.maskPath,
     this.duration = const Duration(milliseconds: 1600),
     this.borderRadius = 24,
     this.intensity = 1.0,
@@ -29,6 +30,11 @@ class DisintegrateView extends StatefulWidget {
 
   /// 本地图片绝对路径；为空时退化为 lilac 占位。
   final String imagePath;
+
+  /// V1.2-C：NCNN 真实 mask 路径（8-bit 灰度 PNG，与原图同分辨率）。
+  /// 为空时 Shader 走 V1.2-B 软椭圆 mask 模式。
+  final String? maskPath;
+
   final Duration duration;
   final double borderRadius;
   final double intensity;
@@ -45,6 +51,7 @@ class _DisintegrateViewState extends State<DisintegrateView>
   late final AnimationController _controller;
   ui.FragmentProgram? _program;
   ui.Image? _decodedImage;
+  ui.Image? _decodedMask;
   String? _loadError;
   bool _ready = false;
   bool _onCompleteFired = false;
@@ -63,6 +70,7 @@ class _DisintegrateViewState extends State<DisintegrateView>
       ..removeListener(_onTick)
       ..dispose();
     _decodedImage?.dispose();
+    _decodedMask?.dispose();
     super.dispose();
   }
 
@@ -78,6 +86,9 @@ class _DisintegrateViewState extends State<DisintegrateView>
   }
 
   /// 一次性加载 Shader + 解码图片；任一失败进入 [Image.file] fallback。
+  ///
+  /// V1.2-C：若 [widget.maskPath] 非空，会再解码一次 mask 通道；
+  /// 解码失败时降级到软椭圆（V1.2-B 行为）而不是闪退。
   Future<void> _load() async {
     try {
       final ui.FragmentProgram program =
@@ -93,9 +104,36 @@ class _DisintegrateViewState extends State<DisintegrateView>
         frame.image.dispose();
         return;
       }
+
+      // 尝试加载 mask；失败则保持 _decodedMask = null,Shader 走软椭圆。
+      ui.Image? mask;
+      final String? maskPath = widget.maskPath;
+      if (maskPath != null && maskPath.isNotEmpty && File(maskPath).existsSync()) {
+        try {
+          final Uint8List maskBytes = await File(maskPath).readAsBytes();
+          final ui.Codec maskCodec = await ui.instantiateImageCodec(maskBytes);
+          final ui.FrameInfo maskFrame = await maskCodec.getNextFrame();
+          if (mounted) {
+            mask = maskFrame.image;
+          } else {
+            maskFrame.image.dispose();
+            return;
+          }
+        } catch (e) {
+          // mask 加载失败不阻断主链路,静默降级。
+          mask = null;
+        }
+      }
+
+      if (!mounted) {
+        frame.image.dispose();
+        mask?.dispose();
+        return;
+      }
       setState(() {
         _program = program;
         _decodedImage = frame.image;
+        _decodedMask = mask;
         _ready = true;
         _loadError = null;
       });
@@ -137,6 +175,7 @@ class _DisintegrateViewState extends State<DisintegrateView>
               painter: _DisintegratePainter(
                 program: _program!,
                 image: _decodedImage!,
+                mask: _decodedMask,
                 progress: _controller.value,
                 intensity: widget.intensity,
               ),
@@ -151,17 +190,22 @@ class _DisintegrateViewState extends State<DisintegrateView>
 /// 实际绘制 Shader 的 Painter。
 ///
 /// Uniform 顺序与 `assets/shaders/disintegrate_bg.frag` 顶部注释一致：
-///   0=uSize.x  1=uSize.y  2=uProgress  3=uDisintegrate  4=uMaskStrength
+///   0=uSize.x  1=uSize.y  2=uProgress  3=uDisintegrate
+///   4=uMaskStrength  5=uHasMask
+///   setImageSampler(0, image) → uImage
+///   setImageSampler(1, mask)  → uMask
 class _DisintegratePainter extends CustomPainter {
   _DisintegratePainter({
     required this.program,
     required this.image,
+    this.mask,
     required this.progress,
     this.intensity = 1.0,
   });
 
   final ui.FragmentProgram program;
   final ui.Image image;
+  final ui.Image? mask;
   final double progress;
   final double intensity;
 
@@ -177,7 +221,11 @@ class _DisintegratePainter extends CustomPainter {
       ..setFloat(2, progress)
       ..setFloat(3, (disintegrate * k).clamp(0.0, 0.55))
       ..setFloat(4, 0.55)
+      ..setFloat(5, mask != null ? 1.0 : 0.0)
       ..setImageSampler(0, image);
+    if (mask != null) {
+      shader.setImageSampler(1, mask!);
+    }
     final Paint paint = Paint()..shader = shader;
     canvas.drawRect(Offset.zero & size, paint);
   }
@@ -197,6 +245,7 @@ class _DisintegratePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _DisintegratePainter old) {
     return old.image != image ||
+        old.mask != mask ||
         old.program != program ||
         (old.progress - progress).abs() > 0.001 ||
         (old.intensity - intensity).abs() > 0.001;

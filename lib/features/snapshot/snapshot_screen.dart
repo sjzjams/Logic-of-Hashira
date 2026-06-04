@@ -288,7 +288,9 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
       <String, Object?>{'input_source': 'live_camera'},
     );
     try {
-      await _segmentation.segment(path);
+      // V1.2-C：把 segment 结果存到 _lastSegmentation,让处理页能拿到 mask。
+      final SegmentationResult segResult = await _segmentation.segment(path);
+      _lastSegmentation = segResult;
     } on SegmentationException catch (error) {
       if (!mounted) {
         return;
@@ -398,8 +400,15 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
         // 业务层保持单态：segmenting 与 analyzing 共用同一视觉，
         // 由 ProcessingViewV2 内部按时间轴自动推进两段文案。
         // V1.2-B：disintegrating 阶段若有真实图片则改用 DisintegrateView 渲染。
-        SnapshotPhase.segmenting => _ProcessingV2View(imagePath: _imagePath),
-        SnapshotPhase.analyzing => _ProcessingV2View(imagePath: _imagePath),
+        // V1.2-C：disintegrating 阶段若 NCNN 真实 mask 可用则把路径透传。
+        SnapshotPhase.segmenting => _ProcessingV2View(
+            imagePath: _imagePath,
+            maskPath: _lastSegmentation?.maskPath,
+          ),
+        SnapshotPhase.analyzing => _ProcessingV2View(
+            imagePath: _imagePath,
+            maskPath: _lastSegmentation?.maskPath,
+          ),
         SnapshotPhase.result => _ResultView(
             result: _result!,
             imagePath: _imagePath,
@@ -643,13 +652,14 @@ class _SampleChip extends StatelessWidget {
 /// - 阶段由 [ProcessingViewV2] 内部时间轴推进，UI 层无需关心；
 /// - V1.2-B：在 disintegrating 阶段若传入图片路径，则切换为 DisintegrateView。
 class _ProcessingV2View extends StatelessWidget {
-  const _ProcessingV2View({this.imagePath});
+  const _ProcessingV2View({this.imagePath, this.maskPath});
 
   final String? imagePath;
+  final String? maskPath;
 
   @override
   Widget build(BuildContext context) {
-    return ProcessingViewV2(imagePath: imagePath);
+    return ProcessingViewV2(imagePath: imagePath, maskPath: maskPath);
   }
 }
 

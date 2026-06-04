@@ -92,13 +92,19 @@ class ForegroundSegmentationPlugin : FlutterPlugin, MethodCallHandler {
             }
             try {
                 val modelDir = File(ctx.cacheDir, "ncnn-cache").apply { mkdirs() }.absolutePath
-                val foregroundPath = NcnnBridge.segment(
+                val rawResult = NcnnBridge.segment(
                     assetManager = am,
                     modelDir = modelDir,
                     cacheDir = ctx.cacheDir.absolutePath,
                     bitmap = decoded,
                 )
-                postSuccess(result, imagePath, foregroundPath)
+                val parsed = parseSegmentResult(rawResult)
+                postSuccess(
+                    result,
+                    imagePath,
+                    parsed.foregroundPath,
+                    parsed.maskPath,
+                )
             } catch (t: Throwable) {
                 postError(result, "NCNN_FAILED", t.message ?: "ncnn segment failed", null)
             } finally {
@@ -107,14 +113,46 @@ class ForegroundSegmentationPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun postSuccess(result: Result, originalPath: String, foregroundPath: String) {
+    private fun postSuccess(
+        result: Result,
+        originalPath: String,
+        foregroundPath: String,
+        maskPath: String?,
+    ) {
         mainHandler.post {
-            result.success(
-                mapOf(
-                    "originalPath" to originalPath,
-                    "foregroundPath" to foregroundPath,
-                ),
-            )
+            val payload = HashMap<String, Any>(3)
+            payload["originalPath"] = originalPath
+            payload["foregroundPath"] = foregroundPath
+            if (maskPath != null) {
+                payload["maskPath"] = maskPath
+            }
+            result.success(payload)
+        }
+    }
+
+    /**
+     * 解析 native 返回的 `::` 分隔字符串。
+     * V1.2-C 协议:
+     *   - 三段式 `<fg>::<mask>::<label>:<prob>`
+     *   - 兼容旧两段式 `<fg>::<label>:<prob>`
+     */
+    private data class SegmentResultParts(
+        val foregroundPath: String,
+        val maskPath: String?,
+    )
+
+    private fun parseSegmentResult(raw: String): SegmentResultParts {
+        val parts = raw.split("::")
+        return when (parts.size) {
+            3 -> {
+                // 0=fg, 1=mask, 2="<label>:<prob>"
+                SegmentResultParts(parts[0], parts[1])
+            }
+            2 -> {
+                // 0=fg, 1="<label>:<prob>"
+                SegmentResultParts(parts[0], null)
+            }
+            else -> SegmentResultParts(raw, null)
         }
     }
 
