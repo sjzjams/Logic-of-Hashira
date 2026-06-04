@@ -1,0 +1,36 @@
+{
+  "id": "06-04-v1-upgrade-visual-effects",
+  "name": "06-04-v1-upgrade-visual-effects",
+  "title": "V1 升级 - Visual Effects（Result 页边缘发光 + 像素消融 Fragment Shader）",
+  "description": "在 Snapshot Result 页食物图片位接入 GLSL Fragment Shader：Sobel 边缘检测 + warm-orange 发光 + hash 噪声像素消融，4 段动画驱动 1.8s。",
+  "status": "completed",
+  "dev_type": "feature",
+  "scope": "pubspec.yaml, assets/shaders, lib/core/widgets, lib/features/snapshot",
+  "package": null,
+  "priority": "P2",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-06-04",
+  "completedAt": "2026-06-04",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "pubspec.yaml",
+    "assets/shaders/edge_disintegrate.frag",
+    "lib/core/widgets/edge_disintegrate_image.dart",
+    "lib/features/snapshot/snapshot_screen.dart"
+  ],
+  "notes": "Fragment Shader: Sobel 边缘 + warm-orange (1.0, 0.78, 0.42) 发光 + hash21 像素消融；EdgeDisintegrateImage 用 CustomPainter + AnimationController 驱动；失败时回退 Image.file。",
+  "meta": {
+    "verification": {
+      "dart_analyze": "No issues found! (lib/)",
+      "flutter_test": "31/31 passed"
+    }
+  }
+}

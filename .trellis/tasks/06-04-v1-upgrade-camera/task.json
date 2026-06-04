@@ -1,0 +1,37 @@
+{
+  "id": "06-04-v1-upgrade-camera",
+  "name": "06-04-v1-upgrade-camera",
+  "title": "V1 升级 - 真实相机集成（camera 插件 + 实时预览）",
+  "description": "加 `camera` 0.11 插件，在 Snapshot 页面提供可点的 viewport 入口，弹出 LiveCaptureScreen 走 Camera2/AVFoundation 实时预览；image_picker 路径保留为 Quick Take fallback。",
+  "status": "completed",
+  "dev_type": "feature",
+  "scope": "pubspec.yaml, lib/features/snapshot, lib/core/analytics/event_names.dart",
+  "package": null,
+  "priority": "P1",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-06-04",
+  "completedAt": "2026-06-04",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "pubspec.yaml",
+    "lib/features/snapshot/live_capture_screen.dart",
+    "lib/features/snapshot/snapshot_screen.dart",
+    "lib/core/analytics/event_names.dart"
+  ],
+  "notes": "LiveCaptureScreen 用 CameraController + CameraPreview；点击 idle 视图的可点 viewport 进入；拍照后 pop path，回到原 segment + 识别链路。事件：camera_live_open / camera_live_capture。",
+  "meta": {
+    "verification": {
+      "dart_pub_get": "Got dependencies! (camera 0.11.4 + camera_android_camerax 0.6.30)",
+      "dart_analyze": "No issues found! (lib/)",
+      "flutter_test": "31/31 passed (新增 ncnn_recognizer 9 个 + widget_test 4 个)"
+    }
+  }
+}

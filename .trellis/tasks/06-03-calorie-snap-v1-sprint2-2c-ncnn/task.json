@@ -1,0 +1,46 @@
+{
+  "id": "calorie-snap-v1-sprint2-2c-ncnn",
+  "name": "calorie-snap-v1-sprint2-2c-ncnn",
+  "title": "calorie-snap-v1-sprint2-2c-ncnn",
+  "description": "Sprint 2.2-C：用 Android YOLOv8-seg + ncnn 替换 ML Kit Subject Segmentation。本轮范围仅限 Phase C：C++ 端加载 ncnn 模型、640 letterbox 推理、YOLOv8-seg 后处理、合成前景 mask 并写出 PNG。ML Kit 依赖与 ForegroundSegmenterFactory 切换保留给 Phase D。",
+  "status": "completed",
+  "dev_type": "feature",
+  "scope": "android/app/src/main/cpp, android/app/src/main/assets, android/app/build.gradle.kts, android/app/src/main/AndroidManifest.xml, android/app/src/main/kotlin/com/hashira/logic/fitness_log_app/segmentation, lib/features/snapshot, scripts",
+  "package": null,
+  "priority": "P2",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-06-03",
+  "completedAt": "2026-06-04",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "06-03-calorie-snap-v1-sprint2-2a-segment-mock",
+  "relatedFiles": [
+    "android/app/src/main/cpp/CMakeLists.txt",
+    "android/app/src/main/cpp/food_segmenter.cpp",
+    "android/app/src/main/cpp/stb/stb_image_write.h",
+    "android/app/src/main/assets/yolov8-seg/model.ncnn.param",
+    "android/app/src/main/assets/yolov8-seg/model.ncnn.bin",
+    "android/app/src/main/kotlin/com/hashira/logic/fitness_log_app/segmentation/ForegroundSegmentationPlugin.kt",
+    "scripts/export_yolov8_seg_ncnn.py"
+  ],
+  "notes": "Phase C: C++ 端 ncnn 推理 + mask 写出 PNG + Kotlin JNI 封装,全部跑通,layout 假设 (1, 4+nc+nm, anchors) 已对齐。Phase D: ForegroundSegmenterFactory 默认走 ncnn(Android 真机),删除 ML Kit 依赖与 Kotlin 路径。",
+  "meta": {
+    "phases": {
+      "A": "done: phaseA-ok",
+      "B": "done: ncnn prebuilt linked via CMake",
+      "C": "done: 640 letterbox + YOLOv8-seg 后处理 + mask PNG",
+      "D": "done: 删除 ML Kit 依赖与 manifest meta-data,ForegroundSegmentationPlugin.kt 精简到 132 行,只走 ncnn"
+    },
+    "verification": {
+      "build": "BUILD SUCCESSFUL in 1m 4s (Phase D 验证)",
+      "dart_analyze": "No issues found! (4.3s, lib/features/snapshot)",
+      "native_layout_assumption": "det_out = (1, 116, 8400) = (1, 4+nc+nm, anchors),真机一次能 LOGI 验证"
+    }
+  }
+}

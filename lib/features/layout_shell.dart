@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/analytics/analytics.dart';
 import '../core/theme.dart';
 import '../core/widgets/illustrations.dart';
 
@@ -50,6 +51,13 @@ class _LayoutShellState extends State<LayoutShell> {
         }
       });
     });
+    // FE-01: 进入 Coach Tab 时记录埋点（不触发真实 LLM，仅打点）。
+    if (index == 2) {
+      AnalyticsService.instance.track(
+        AnalyticsEventNames.coachOpen,
+        <String, Object?>{'source': 'tab'},
+      );
+    }
   }
 
   @override

@@ -11,6 +11,8 @@ pluginManagement {
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
+        // 使用 dl.google.com 镜像替代 maven.google.com，避免主机解析超时。
+        maven("https://dl.google.com/dl/android/maven2/")
         google()
         mavenCentral()
         gradlePluginPortal()

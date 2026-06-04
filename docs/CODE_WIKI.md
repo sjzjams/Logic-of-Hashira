@@ -866,6 +866,50 @@ assets:
 
 **CI / 协作流程**：本地开发者跑 `flutterfire configure` 后，本文件被覆盖为平台配置；`.example.dart` 长期保留作为 git-tracked 模板。
 
+### Android 原生 C++ 推理层 (ncnn + YOLOv8-seg)
+
+Android 端在 `android/app/src/main/cpp/` 下提供 JNI 推理层,负责把拍照得到的食物区域用 **YOLOv8-seg + Tencent ncnn** 在端侧离线抠出来(详见 Sprint 2.2-C Phase C)。
+
+| 文件 | 角色 |
+|---|---|
+| [CMakeLists.txt](file:///d:/Logic-of-Hashira/android/app/src/main/cpp/CMakeLists.txt) | NDK CMake 构建脚本,只 link `arm64-v8a` 的 ncnn 预编译静态库 |
+| [food_segmenter.cpp](file:///d:/Logic-of-Hashira/android/app/src/main/cpp/food_segmenter.cpp) | JNI 实现:`nativeSegment()` 走 AAsset 读模型 → 640 letterbox → ncnn 推理 → mask 后处理 → zlib 写 PNG |
+| [png_writer.h](file:///d:/Logic-of-Hashira/android/app/src/main/cpp/png_writer.h) | 用 zlib 自实现的 PNG 写出器,不依赖 OpenCV / stb |
+| [fetch_ncnn.ps1](file:///d:/Logic-of-Hashira/android/app/src/main/cpp/fetch_ncnn.ps1) | Windows 拉取脚本(幂等,只解 `arm64-v8a`) |
+| [fetch_ncnn.sh](file:///d:/Logic-of-Hashira/android/app/src/main/cpp/fetch_ncnn.sh) | macOS / Linux 拉取脚本(幂等,只解 `arm64-v8a`) |
+| `ncnn/ncnn-20260526-android-vulkan/` | **预编译产物,不入 git**。见下方"ncnn 预编译包管理" |
+
+**调用链路**:
+
+```
+Dart (lib/features/snapshot/platform_foreground_segmentation_service.dart)
+  → Platform Channel
+    → Kotlin / Java
+      → JNI: nativeSegment(assetManager, modelDir, cacheDir, bitmap)
+        → C++ food_segmenter.cpp
+          → ncnn (YOLOv8-seg) → RGBA PNG → cacheDir
+```
+
+**ncnn 预编译包管理**(重要,新人 clone 后必看):
+
+- `android/app/src/main/cpp/ncnn/` 目录在 [.gitignore](file:///d:/Logic-of-Hashira/.gitignore) 中**被排除**,不入 git。
+- 首次构建前,在 `android/app/src/main/cpp/` 下执行一次:
+
+  ```bash
+  # Windows
+  ./fetch_ncnn.ps1
+
+  # macOS / Linux
+  ./fetch_ncnn.sh
+  ```
+
+  脚本默认从 [Tencent ncnn release](https://github.com/Tencent/ncnn/releases) 下载 `ncnn-20260526-android-vulkan.zip`,**只解出 `arm64-v8a` 一个 ABI**(裁掉 `armeabi-v7a` / `riscv64` / `x86` / `x86_64` 四个用不到的 ABI,本地省 ~100 MB)。脚本幂等,目录已存在则跳过。
+
+- 升级 ncnn 版本:改 `fetch_ncnn.*` 里的版本号默认值即可(支持传参 `./fetch_ncnn.sh 20260601 x86_64`)。
+- 想加新 ABI(模拟器等场景):把 `CMakeLists.txt` 里的 `NCNN_PREBUILT_DIR` 改成对应 ABI 路径,并把 `splits { abi ... }` 加到 `android/app/build.gradle`。
+
+**模型文件**:YOLOv8-seg 的 `model.ncnn.{param,bin}` 走 `assets/yolov8-seg/`,由 JNI 首次调用时写到 `modelDir` 后用 `load_param(path)` 路径分支加载(规避 `load_param(memory)` 的真机不稳定问题)。
+
 ---
 
 ## 10. 运行与构建
@@ -897,8 +941,9 @@ flutter build web
 1. `flutter doctor` 无阻塞项
 2. `flutter pub get` 成功
 3. 设备 / 模拟器已连接
-4. **可选**：若需要真实 Coach，配置 Firebase 后重跑 `flutter pub get`
-5. **无需**网络加载字体（已切到系统字体）
+4. **Android 端 ncnn 预编译包**:`android/app/src/main/cpp/ncnn/` 目录存在(否则跑一次 `./fetch_ncnn.ps1` 或 `./fetch_ncnn.sh`)
+5. **可选**:若需要真实 Coach,配置 Firebase 后重跑 `flutter pub get`
+6. **无需**网络加载字体(已切到系统字体)
 
 ---
 

@@ -1,0 +1,29 @@
+{
+  "id": "calorie-snap-v1-sprint2-snapshot-mock",
+  "name": "calorie-snap-v1-sprint2-snapshot-mock",
+  "title": "calorie-snap-v1-sprint2-snapshot-mock",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-06-03",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-03-calorie-snap-v1-sprint2-1-camera",
+    "06-03-calorie-snap-v1-sprint2-2a-segment-mock"
+  ],
+  "parent": "06-03-calorie-snap-v1-sprint1",
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

@@ -39,6 +39,15 @@ dependencies:
   flutter_ai_toolkit: ^1.0.0
   firebase_core: ^4.9.0
   firebase_ai: ^3.12.1
+  image_picker: ^1.1.2
+  # V1 升级 - 真实相机集成：用 `camera` 插件在 Snapshot 页面提供实时预览
+  # + 自定义帧率；image_picker 保留为 Quick Take / Gallery 路径的 fallback。
+  camera: ^0.11.0+2
+  # V1 升级 - 持久化：
+  # Sprint 5+ 决策：所有持久化统一走 shared_preferences（轻量、无 codegen、
+  # 与 AGP 8 100% 兼容）。Isar 已被移除（包未维护、与 AGP 8 namespace 冲突）。
+  path_provider: ^2.1.5
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +59,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  # Sprint 5+：isar_generator 已随 isar 一起移除；如需复杂 schema codegen，
+  # 后续可考虑 json_serializable。当前数据规模不需要 build_runner。
+  build_runner: ^2.4.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -69,6 +81,8 @@ flutter:
     - assets/muscle_map_female_front.svg
     - assets/muscle_map_female_back.svg
     - assets/illustrations/cutouts/
+    # V1 升级 - Visual Effects: Result 页"边缘发光 + 像素消融" Fragment Shader。
+    - assets/shaders/edge_disintegrate.frag
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

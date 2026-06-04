@@ -9,6 +9,14 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  # isar 3.x 生成代码里使用了 experimental 索引 API（getByIndex / putByIndex 等），
+  # 团队已知问题；build_runner 重跑会覆盖 .g.dart，无法在文件内 ignore。
+  errors:
+    experimental_member_use: ignore
+  exclude:
+    - "**/*.g.dart"
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

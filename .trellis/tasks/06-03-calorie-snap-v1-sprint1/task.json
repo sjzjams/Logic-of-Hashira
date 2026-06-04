@@ -1,0 +1,28 @@
+{
+  "id": "calorie-snap-v1-sprint1",
+  "name": "calorie-snap-v1-sprint1",
+  "title": "calorie-snap-v1-sprint1",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-06-03",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-03-calorie-snap-v1-sprint2-snapshot-mock"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

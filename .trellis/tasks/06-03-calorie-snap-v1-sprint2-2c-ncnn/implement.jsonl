@@ -1,0 +1,14 @@
+{"file": "android/app/src/main/cpp/CMakeLists.txt", "reason": "现有 CMake 已 link ncnn,本轮不需要改"}
+{"file": "android/app/src/main/cpp/food_segmenter.cpp", "reason": "Phase C:替换 Phase A 桩为完整 YOLOv8-seg 推理 + mask 合成 + PNG 输出,模型走 AAssetManager 内存加载"}
+{"file": "android/app/src/main/cpp/png_writer.h", "reason": "Phase C:新增 NDK zlib 自实现的 8bit RGBA PNG 写出器,用于把合成后的 mask 落盘"}
+{"file": "android/app/src/main/kotlin/com/hashira/logic/fitness_log_app/segmentation/NcnnBridge.kt", "reason": "Phase C/D:新增 native 库封装:loadLibrary + nativeSegment,失败转 IllegalStateException;Phase D 注释同步"}
+{"file": "android/app/src/main/kotlin/com/hashira/logic/fitness_log_app/segmentation/ForegroundSegmentationPlugin.kt", "reason": "Phase D:精简为只走 ncnn 路径(132 行),删除 ML Kit 全部代码:imports/handleSegment/ensureModuleReady/waitForModuleAvailability/processImage/buildSegmenter/prefetchOptionalModule 全部移除,字段 moduleInstallClient/segmenter 移除"}
+{"file": "android/app/src/main/AndroidManifest.xml", "reason": "Phase D:删除 <meta-data com.google.mlkit.vision.DEPENDENCIES subject_segment />"}
+{"file": "android/app/build.gradle.kts", "reason": "Phase D:删除 play-services-mlkit-subject-segmentation 依赖;minSdk 注释理由从 ML Kit 改为 ncnn ABI 兼容;新增 externalNativeBuild.cmake.abiFilters 锁 arm64-v8a"}
+{"file": "android/gradle.properties", "reason": "JVM 17 强制指向 D:\\Software\\jdk-17.0.3.1(AGP 8.11 + Gradle 8.14 要求)"}
+{"file": "lib/features/snapshot/platform_foreground_segmentation_service.dart", "reason": "Phase D:更新类注释,错误码从 MODULE_DOWNLOADING/MODULE_INSTALL_FAILED 改为 NCNN_UNAVAILABLE/NCNN_FAILED"}
+{"file": "lib/features/snapshot/foreground_segmenter_factory.dart", "reason": "Phase D:更新文档注释,说明 Android 默认走 ncnn"}
+{"file": "lib/features/snapshot/foreground_segmentation_service.dart", "reason": "Phase D:更新类文档注释"}
+{"file": "lib/features/snapshot/mock_foreground_segmentation_service.dart", "reason": "Phase D:更新注释,说明 Android 已切到 ncnn"}
+{"file": "android/app/src/main/assets/yolov8-seg/.gitkeep", "reason": "占位,让 yolov8-seg/ 目录进入 git,模型文件由 export_yolov8_seg_ncnn.py 写入"}
+{"file": "scripts/export_yolov8_seg_ncnn.py", "reason": "新增 ultralytics 导出脚本,yolov8n-seg.pt -> ncnn -> android/app/src/main/assets/yolov8-seg/"}

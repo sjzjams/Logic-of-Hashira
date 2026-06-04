@@ -45,64 +45,67 @@ class HandDrawnButton extends StatelessWidget {
         break;
     }
 
-    final double verticalPadding = style == HandDrawnButtonStyle.chip
-        ? 6.0
-        : 12.0;
-    final double horizontalPadding = style == HandDrawnButtonStyle.chip
-        ? 16.0
-        : 24.0;
-    final double btnHeight = style == HandDrawnButtonStyle.chip ? 32.0 : height;
+    // Chip 样式固定 32，其余样式使用 [height] 作为最小高度，
+    // 不再强制 `height: 42`，避免字号 16 + vertical padding 12*2 = 24 超过 42
+    // 而出现底部 RenderFlex 溢出 7.4 像素。
+    final double minHeight = style == HandDrawnButtonStyle.chip ? 32.0 : height;
+    final double horizontalPadding =
+        style == HandDrawnButtonStyle.chip ? 16.0 : 24.0;
+    final double verticalPadding =
+        style == HandDrawnButtonStyle.chip ? 6.0 : 12.0;
 
     Widget btnContent = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (icon != null) ...[icon!, const SizedBox(width: 8)],
-        Text(
-          text,
-          style: AppTypography.title(
-            fontSize: style == HandDrawnButtonStyle.chip ? 13.0 : 16.0,
-            color: textColor,
-            fontWeight: FontWeight.w500,
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.title(
+              fontSize: style == HandDrawnButtonStyle.chip ? 13.0 : 16.0,
+              color: textColor,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
     );
 
-    return Container(
-      width: width,
-      height: btnHeight,
-      decoration: BoxDecoration(
-        color: bg,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(
           style == HandDrawnButtonStyle.chip ? 16.0 : 999.0,
         ),
-        border: border,
-        boxShadow: style == HandDrawnButtonStyle.primary
-            ? [
-                BoxShadow(
-                  color: AppColors.inkText.withValues(alpha: 0.10),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
-                ),
-              ]
-            : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(
-            style == HandDrawnButtonStyle.chip ? 16.0 : 999.0,
-          ),
-          child: Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(
-              vertical: verticalPadding,
-              horizontal: horizontalPadding,
+        child: Container(
+          width: width,
+          constraints: BoxConstraints(minHeight: minHeight),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(
+              style == HandDrawnButtonStyle.chip ? 16.0 : 999.0,
             ),
-            child: btnContent,
+            border: border,
+            boxShadow: style == HandDrawnButtonStyle.primary
+                ? [
+                    BoxShadow(
+                      color: AppColors.inkText.withValues(alpha: 0.10),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
+                  ]
+                : null,
           ),
+          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(
+            vertical: verticalPadding,
+            horizontal: horizontalPadding,
+          ),
+          child: btnContent,
         ),
       ),
     );

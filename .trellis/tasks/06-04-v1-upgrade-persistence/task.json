@@ -1,0 +1,42 @@
+{
+  "id": "06-04-v1-upgrade-persistence",
+  "name": "06-04-v1-upgrade-persistence",
+  "title": "V1 升级 - 持久化（Meal isar + Coach SharedPreferences）",
+  "description": "把 MealRepository 从内存改为 isar，把 CoachSessionRepository 从内存改为 SharedPreferences，保留 ChangeNotifier API 兼容现有 UI 与测试。",
+  "status": "completed",
+  "dev_type": "feature",
+  "scope": "pubspec.yaml, lib/features/nutrition, lib/features/coach, lib/main.dart, test, analysis_options.yaml",
+  "package": null,
+  "priority": "P1",
+  "creator": "sjzjams",
+  "assignee": "sjzjams",
+  "createdAt": "2026-06-04",
+  "completedAt": "2026-06-04",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "pubspec.yaml",
+    "lib/main.dart",
+    "lib/features/nutrition/meal_entity.dart",
+    "lib/features/nutrition/meal_entity.g.dart",
+    "lib/features/nutrition/meal_repository.dart",
+    "lib/features/coach/coach_session_repository.dart",
+    "analysis_options.yaml"
+  ],
+  "notes": "Meal 用 isar 3.1.0+1 + isar_flutter_libs；Coach 用 shared_preferences 2.3.3；保留 ChangeNotifier API 与无参构造以兼容现有测试；main.dart 启动序列 init isar + prefs → repository.init() → runApp。analysis_options.yaml 抑制 isar 3.x 生成代码的 experimental_member_use 警告。",
+  "meta": {
+    "verification": {
+      "dart_pub_get": "Got dependencies!",
+      "build_runner": "6 outputs, meal_entity.g.dart 64KB",
+      "dart_analyze": "No issues found!",
+      "flutter_test": "18/18 passed (MealRepo x3, CoachSession x4, CoachMessageClassifier x5, Sprint5 x6)"
+    },
+    "ordering": "v1-upgrade-persistence -> v1-upgrade-camera -> v1-upgrade-visual-effects"
+  }
+}
