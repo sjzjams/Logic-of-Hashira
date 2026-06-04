@@ -51,15 +51,16 @@ class ShutterAnimationWidgetState extends State<ShutterAnimationWidget>
     });
   }
 
-  /// 触发快门动作：闭合 -> 张开
-  /// 
-  /// 物理参数参考 PRD：Stiffness=180, DampingRatio=0.75
+  /// 触发快门动作：闭合 -> 张开。
+  ///
+  /// 物理参数参考 PRD：Stiffness=180, DampingRatio=0.75。
+  /// 返回一个 [Future]，当物理模拟结束（`_progress` 接近 1.0）时完成。
   Future<void> snap() async {
     // 1. 强制闭合（全黑状态）
     _controller.value = 0.0;
-    
+
     // 给 UI 一个呼吸时间，确保快门完全闭合的瞬间被渲染
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
 
     // 2. 使用物理模拟弹性张开
     final spring = SpringDescription.withDampingRatio(
@@ -69,20 +70,29 @@ class ShutterAnimationWidgetState extends State<ShutterAnimationWidget>
     );
 
     final simulation = SpringSimulation(spring, 0, 1, 0);
-    
-    // 我们手动等待动画完成，而不是使用复杂的 asTimedEnvelope
+
+    // 等待物理模拟真正结束。物理模拟不会发出 AnimationStatus.completed，
+    // 必须手动根据 [SpringSimulation.isDone] 判定。
     final completer = Completer<void>();
-    void listener(AnimationStatus status) {
-      if (status == AnimationStatus.completed) {
-        _controller.removeStatusListener(listener);
+    late final VoidCallback tick;
+    tick = () {
+      // SpringSimulation.isDone 接受秒数，使用 _controller.value 作为近似信号；
+      // value 到达 1.0 也视为结束（兜底防物理引擎未到 isDone 但已静止的情况）。
+      if (_controller.value >= 0.999) {
+        _controller.removeListener(tick);
         completer.complete();
       }
-    }
-    _controller.addStatusListener(listener);
-    
+    };
+    _controller.addListener(tick);
     _controller.animateWith(simulation);
-    
     await completer.future;
+
+    // 标记进度到达 1.0，下一帧 build 会自动隐藏 painter。
+    if (mounted) {
+      setState(() {
+        _progress = 1.0;
+      });
+    }
   }
 
   @override

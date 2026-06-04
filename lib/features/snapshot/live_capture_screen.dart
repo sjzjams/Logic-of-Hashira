@@ -124,36 +124,60 @@ class _LiveCaptureScreenState extends State<LiveCaptureScreen>
       _capturedPath = null;
     });
 
+    // 拍照与快门动画并行触发，但 _maybePop 必须在两者都完成时才允许 pop。
+    Future<void>? shutterFuture;
     try {
-      // 1. 先触发快门动画并等待其开始（全黑阶段）
-      final shutterFuture = _shutterKey.currentState?.snap() ?? Future.value();
-      
+      // 1. 启动快门动效（闭合 → 弹性旋开）。
+      shutterFuture = _shutterKey.currentState?.snap();
+
       // 2. 同时执行拍照。
-      // 我们不需要在这里 Future.wait，因为 snap() 内部已经等待了动画结束。
-      final file = await controller.takePicture();
-      _capturedPath = file.path;
+      final XFile file = await controller.takePicture();
+      if (!mounted) return;
+      setState(() {
+        _capturedPath = file.path;
+      });
       AnalyticsService.instance.track(AnalyticsEventNames.cameraLiveCapture);
 
-      // 3. 确保动画也执行完毕
-      await shutterFuture;
+      // 3. 等待快门动画结束（最多 3 秒兜底）。
+      if (shutterFuture != null) {
+        await shutterFuture.timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {
+            // 物理模拟异常：兜底直接认为动画完成，避免永远卡住。
+          },
+        );
+      }
 
+      if (!mounted) return;
+      setState(() {
+        _animationDone = true;
+      });
       _maybePop();
     } catch (error) {
       if (!mounted) return;
       setState(() {
         _isCapturing = false;
+        _animationDone = true;
         _errorMessage = 'Failed to take picture: $error';
       });
     }
   }
 
   void _onShutterComplete() {
-    _animationDone = true;
+    // 快门物理模拟结束时由 ShutterAnimationWidget 的 status 触发；
+    // 当 _takePicture 的 await shutterFuture 结束时会主动 setState。
+    // 此回调仅作为兼容性兜底。
+    if (mounted) {
+      setState(() {
+        _animationDone = true;
+      });
+    }
     _maybePop();
   }
 
   void _maybePop() {
-    if (_capturedPath != null && _animationDone && mounted) {
+    if (!mounted) return;
+    if (_capturedPath != null && _animationDone) {
       Navigator.of(context).pop<String>(_capturedPath);
     }
   }
