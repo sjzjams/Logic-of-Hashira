@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../core/analytics/analytics.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/hand_drawn_button.dart';
+import '../../core/widgets/shutter_animation_widget.dart';
 import 'image_input_service.dart';
 
 /// 实时相机预览 + 拍照页。
@@ -25,11 +26,14 @@ class LiveCaptureScreen extends StatefulWidget {
 
 class _LiveCaptureScreenState extends State<LiveCaptureScreen>
     with WidgetsBindingObserver {
+  final GlobalKey<ShutterAnimationWidgetState> _shutterKey =
+      GlobalKey<ShutterAnimationWidgetState>();
   CameraController? _controller;
   List<CameraDescription> _cameras = const <CameraDescription>[];
   bool _isInitializing = true;
   String? _errorMessage;
   bool _isCapturing = false;
+  String? _capturedPath;
 
   @override
   void initState() {
@@ -106,28 +110,49 @@ class _LiveCaptureScreenState extends State<LiveCaptureScreen>
     }
   }
 
-  /// 拍照：成功则 `Navigator.pop(filePath)`。
+  bool _animationDone = false;
+
+  /// 拍照：成功则触发快门动画，动画结束后 `Navigator.pop(filePath)`。
   Future<void> _takePicture() async {
     final CameraController? controller = _controller;
     if (controller == null || !controller.value.isInitialized || _isCapturing) {
       return;
     }
-    setState(() => _isCapturing = true);
+    setState(() {
+      _isCapturing = true;
+      _animationDone = false;
+      _capturedPath = null;
+    });
+
     try {
-      final XFile file = await controller.takePicture();
-      AnalyticsService.instance.track(AnalyticsEventNames.cameraLiveCapture);
-      if (!mounted) {
-        return;
-      }
-      Navigator.of(context).pop<String>(file.path);
+      // 同时启动拍照和快门动画
+      await Future.wait([
+        controller.takePicture().then((file) {
+          _capturedPath = file.path;
+          AnalyticsService.instance.track(AnalyticsEventNames.cameraLiveCapture);
+        }),
+        _shutterKey.currentState?.snap() ?? Future.value(),
+      ]);
+
+      // 此时两者都已完成（或者动画比拍照快）
+      _maybePop();
     } catch (error) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       setState(() {
         _isCapturing = false;
         _errorMessage = 'Failed to take picture: $error';
       });
+    }
+  }
+
+  void _onShutterComplete() {
+    _animationDone = true;
+    _maybePop();
+  }
+
+  void _maybePop() {
+    if (_capturedPath != null && _animationDone && mounted) {
+      Navigator.of(context).pop<String>(_capturedPath);
     }
   }
 
@@ -188,9 +213,13 @@ class _LiveCaptureScreenState extends State<LiveCaptureScreen>
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: AspectRatio(
-              aspectRatio: controller.value.aspectRatio,
-              child: CameraPreview(controller),
+            child: ShutterAnimationWidget(
+              key: _shutterKey,
+              onComplete: _onShutterComplete,
+              child: AspectRatio(
+                aspectRatio: controller.value.aspectRatio,
+                child: CameraPreview(controller),
+              ),
             ),
           ),
         ),
