@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import 'disintegrate_view.dart';
 import 'l_corner_finder.dart';
 
 /// PRD 模块二处理页的阶段枚举（动效层）。
@@ -22,11 +23,16 @@ enum ProcessingStage { locating, disintegrating }
 class ProcessingViewV2 extends StatefulWidget {
   const ProcessingViewV2({
     super.key,
+    this.imagePath,
     this.onCompleted,
     this.locatingDuration = const Duration(milliseconds: 1400),
     this.disintegratingDuration = const Duration(milliseconds: 1600),
     this.cornerDuration = const Duration(milliseconds: 1200),
   });
+
+  /// V1.2-B：进入 disintegrating 阶段时若提供图片路径，则用 DisintegrateView
+  /// 渲染真实视觉（主体保留 + 背景消融）。空时退化为 L 形角标动画。
+  final String? imagePath;
 
   /// 两阶段都播完后回调。
   final VoidCallback? onCompleted;
@@ -106,18 +112,44 @@ class _ProcessingViewV2State extends State<ProcessingViewV2>
               ),
             ),
             const SizedBox(height: 22),
-            // 4 角 L 形定位器
+            // 主体可视化区域：locating 用 L 形角标，disintegrating 用真实消融。
             AspectRatio(
               aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.softLilac,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppColors.border, width: 1.2),
-                ),
-                child: LCornerFinder(
-                  progress: _cornerController.value,
-                ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 320),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeIn,
+                child: _stage == ProcessingStage.locating
+                    ? Container(
+                        key: const ValueKey<String>('locating'),
+                        decoration: BoxDecoration(
+                          color: AppColors.softLilac,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: AppColors.border, width: 1.2),
+                        ),
+                        child: LCornerFinder(
+                          progress: _cornerController.value,
+                        ),
+                      )
+                    : (widget.imagePath != null && widget.imagePath!.isNotEmpty
+                        ? DisintegrateView(
+                            key: const ValueKey<String>('disintegrating'),
+                            imagePath: widget.imagePath!,
+                            duration: widget.disintegratingDuration,
+                          )
+                        : Container(
+                            key: const ValueKey<String>('disintegrating-empty'),
+                            decoration: BoxDecoration(
+                              color: AppColors.softLilac,
+                              borderRadius: BorderRadius.circular(24),
+                              border:
+                                  Border.all(color: AppColors.border, width: 1.2),
+                            ),
+                            child: const Center(
+                              child: Text('🍱',
+                                  style: TextStyle(fontSize: 56)),
+                            ),
+                          )),
               ),
             ),
             const SizedBox(height: 22),

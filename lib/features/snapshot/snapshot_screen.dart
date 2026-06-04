@@ -397,8 +397,9 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
         // V1.2-A：处理页动效升级到 V2（LOCATING → DISINTEGRATING）。
         // 业务层保持单态：segmenting 与 analyzing 共用同一视觉，
         // 由 ProcessingViewV2 内部按时间轴自动推进两段文案。
-        SnapshotPhase.segmenting => const _ProcessingV2View(),
-        SnapshotPhase.analyzing => const _ProcessingV2View(),
+        // V1.2-B：disintegrating 阶段若有真实图片则改用 DisintegrateView 渲染。
+        SnapshotPhase.segmenting => _ProcessingV2View(imagePath: _imagePath),
+        SnapshotPhase.analyzing => _ProcessingV2View(imagePath: _imagePath),
         SnapshotPhase.result => _ResultView(
             result: _result!,
             imagePath: _imagePath,
@@ -640,13 +641,15 @@ class _SampleChip extends StatelessWidget {
 /// 函数级注释：
 /// - 复用 V2 动效组件，4 角 L 形定位器 + LOCATING/DISINTEGRATING 文案；
 /// - 阶段由 [ProcessingViewV2] 内部时间轴推进，UI 层无需关心；
-/// - 该包装仅在原 `_ProcessingView` 名称上做替换，避免改动状态机 switch 分支。
+/// - V1.2-B：在 disintegrating 阶段若传入图片路径，则切换为 DisintegrateView。
 class _ProcessingV2View extends StatelessWidget {
-  const _ProcessingV2View();
+  const _ProcessingV2View({this.imagePath});
+
+  final String? imagePath;
 
   @override
   Widget build(BuildContext context) {
-    return const ProcessingViewV2();
+    return ProcessingViewV2(imagePath: imagePath);
   }
 }
 

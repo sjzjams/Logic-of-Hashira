@@ -79,10 +79,12 @@ flutter:
     - assets/muscle_map_front.svg
     - assets/muscle_map_back.svg
     - assets/muscle_map_female_front.svg
-    - assets/muscle_map_female_back.svg
+    - assets/muscle_map_female_front.svg
     - assets/illustrations/cutouts/
     # V1 升级 - Visual Effects: Result 页"边缘发光 + 像素消融" Fragment Shader。
     - assets/shaders/edge_disintegrate.frag
+    # V1.2-B：处理页"背景消融提取" Fragment Shader (主体保留 + 背景噪声解构)。
+    - assets/shaders/disintegrate_bg.frag
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
