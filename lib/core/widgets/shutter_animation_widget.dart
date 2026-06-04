@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'shutter_mask_painter.dart';
@@ -53,10 +54,13 @@ class ShutterAnimationWidgetState extends State<ShutterAnimationWidget>
   /// 触发快门动作：闭合 -> 张开
   /// 
   /// 物理参数参考 PRD：Stiffness=180, DampingRatio=0.75
-  TickerFuture snap() {
-    // 1. 快速闭合（模拟快门关闭）
+  Future<void> snap() async {
+    // 1. 强制闭合（全黑状态）
     _controller.value = 0.0;
     
+    // 给 UI 一个呼吸时间，确保快门完全闭合的瞬间被渲染
+    await Future.delayed(const Duration(milliseconds: 100));
+
     // 2. 使用物理模拟弹性张开
     final spring = SpringDescription.withDampingRatio(
       mass: 1.0,
@@ -65,7 +69,20 @@ class ShutterAnimationWidgetState extends State<ShutterAnimationWidget>
     );
 
     final simulation = SpringSimulation(spring, 0, 1, 0);
-    return _controller.animateWith(simulation);
+    
+    // 我们手动等待动画完成，而不是使用复杂的 asTimedEnvelope
+    final completer = Completer<void>();
+    void listener(AnimationStatus status) {
+      if (status == AnimationStatus.completed) {
+        _controller.removeStatusListener(listener);
+        completer.complete();
+      }
+    }
+    _controller.addStatusListener(listener);
+    
+    _controller.animateWith(simulation);
+    
+    await completer.future;
   }
 
   @override

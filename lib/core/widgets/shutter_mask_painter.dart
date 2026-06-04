@@ -18,32 +18,28 @@ class ShutterMaskPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (progress >= 0.99) return;
+
     final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = math.sqrt(size.width * size.width + size.height * size.height) / 2;
+    // 增加 maxRadius 确保多边形完全覆盖矩形角落
+    final maxRadius = math.sqrt(size.width * size.width + size.height * size.height);
     
-    // 基础孔径半径随进度变化
-    // progress=0 时半径为 0，progress=1 时半径覆盖整个 Viewport
     final holeRadius = progress * maxRadius;
 
     _drawSophisticatedShutter(canvas, size, center, holeRadius, maxRadius);
   }
 
   void _drawSophisticatedShutter(Canvas canvas, Size size, Offset center, double holeRadius, double maxRadius) {
-    // 离屏渲染以支持 BlendMode
-    canvas.saveLayer(Offset.zero & size, Paint());
-    
-    // 1. 绘制底色（炭黑）
-    canvas.drawRect(Offset.zero & size, Paint()..color = color);
-    
-    // 2. 使用 BlendMode.clear 挖孔
-    final holePaint = Paint()
-      ..blendMode = BlendMode.clear
+    final paint = Paint()
+      ..color = color
       ..style = PaintingStyle.fill;
 
+    // 1. 创建背景路径
+    final backgroundPath = Path()..addRect(Offset.zero & size);
+    
+    // 2. 创建孔径路径 (8片叶片形成的多边形)
     final holePath = Path();
     final angleStep = (2 * math.pi) / bladeCount;
-    
-    // 旋转偏移量，随进度产生旋开感
     final rotationOffset = (1 - progress) * math.pi / 2;
 
     for (int i = 0; i < bladeCount; i++) {
@@ -54,14 +50,14 @@ class ShutterMaskPainter extends CustomPainter {
       if (i == 0) {
         holePath.moveTo(x, y);
       } else {
-        // 这里可以使用 lineTo 形成八边形，或者使用弧线形成更像光圈的形状
         holePath.lineTo(x, y);
       }
     }
     holePath.close();
-    
-    canvas.drawPath(holePath, holePaint);
-    canvas.restore();
+
+    // 3. 使用 PathOperation.difference 挖孔，避免 saveLayer 性能开销和兼容性问题
+    final finalPath = Path.combine(PathOperation.difference, backgroundPath, holePath);
+    canvas.drawPath(finalPath, paint);
   }
 
   @override

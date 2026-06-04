@@ -125,16 +125,18 @@ class _LiveCaptureScreenState extends State<LiveCaptureScreen>
     });
 
     try {
-      // 同时启动拍照和快门动画
-      await Future.wait([
-        controller.takePicture().then((file) {
-          _capturedPath = file.path;
-          AnalyticsService.instance.track(AnalyticsEventNames.cameraLiveCapture);
-        }),
-        _shutterKey.currentState?.snap() ?? Future.value(),
-      ]);
+      // 1. 先触发快门动画并等待其开始（全黑阶段）
+      final shutterFuture = _shutterKey.currentState?.snap() ?? Future.value();
+      
+      // 2. 同时执行拍照。
+      // 我们不需要在这里 Future.wait，因为 snap() 内部已经等待了动画结束。
+      final file = await controller.takePicture();
+      _capturedPath = file.path;
+      AnalyticsService.instance.track(AnalyticsEventNames.cameraLiveCapture);
 
-      // 此时两者都已完成（或者动画比拍照快）
+      // 3. 确保动画也执行完毕
+      await shutterFuture;
+
       _maybePop();
     } catch (error) {
       if (!mounted) return;
