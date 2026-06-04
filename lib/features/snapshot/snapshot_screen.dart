@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/analytics/analytics.dart';
 import '../../core/theme.dart';
-import '../../core/widgets/edge_disintegrate_image.dart';
 import '../../core/widgets/edge_effect_intensity.dart';
+import '../../core/widgets/edge_glow_image.dart';
 import '../../core/widgets/hand_drawn_button.dart';
 import '../../core/widgets/hand_drawn_card.dart';
 import '../../core/widgets/processing_view_v2.dart';
@@ -412,6 +412,7 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
         SnapshotPhase.result => _ResultView(
             result: _result!,
             imagePath: _imagePath,
+            maskPath: _lastSegmentation?.maskPath,
             onRetake: _retake,
             onSave: _save,
           ),
@@ -669,12 +670,16 @@ class _ResultView extends StatefulWidget {
     required this.imagePath,
     required this.onRetake,
     required this.onSave,
+    this.maskPath,
   });
 
   final SnapshotResult result;
   final String? imagePath;
   final VoidCallback onRetake;
   final VoidCallback onSave;
+
+  /// V1.2-D：NCNN 真实 mask 路径，用于"主体识别后再次发光收口"。
+  final String? maskPath;
 
   @override
   State<_ResultView> createState() => _ResultViewState();
@@ -721,8 +726,9 @@ class _ResultViewState extends State<_ResultView> {
         // sample / 识别 mock 路径没有本地图片，给一个 lilac 占位保持视觉一致。
         const SizedBox(height: 18),
         if (path != null && path.isNotEmpty)
-          EdgeDisintegrateImage(
+          EdgeGlowImage(
             imagePath: path,
+            maskPath: widget.maskPath,
             intensity: intensity,
             onComplete: _onEffectComplete,
           )

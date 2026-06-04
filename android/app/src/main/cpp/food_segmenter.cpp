@@ -389,37 +389,74 @@ inline std::string MakeOutputPath(const std::string& cache_dir) {
     return cache_dir + filename;
 }
 
-// V1.2-C:与前景图同名的 mask PNG 输出路径。约定 seg_mask_<ts>.png,
-// 编码为 8-bit 灰度 (R=G=B=mask, A=255),复用现有 write_png_rgba
-// 不再额外实现 L8 PNG 写出器,降低 C++ 端改动面。
+// V1.2-C/D:与前景图同名的 mask 输出路径。V1.2-D 切换为 .mag 二进制
+// bit plane 格式（自定义 0/1 编码），不再走 PNG deflate 编/解码。
+// 头部: "MAG1" (4B) + width (4B BE) + height (4B BE) + ceil(w*h/8) B bit plane。
 inline std::string MakeMaskPath(const std::string& cache_dir) {
     char filename[128];
     const long long ts = static_cast<long long>(std::time(nullptr)) * 1000;
-    std::snprintf(filename, sizeof(filename), "/seg_mask_%lld.png", ts);
+    std::snprintf(filename, sizeof(filename), "/seg_mask_%lld.mag", ts);
     return cache_dir + filename;
 }
 
-// 把单通道 [0,1] 概率图量化为灰度 RGBA 写盘。
-//   - mask > 0.5 → R=G=B=255
-//   - 其余       → R=G=B=0, A=255
+// 把单通道 [0,1] 概率图量化为 0/1 bit plane 二进制写盘。
+// 文件头: "MAG1" (4B) + width (4B BE) + height (4B BE) + bit plane。
+// bit plane 按行优先,每字节 8 个像素,MSB first,尾位用 0 填充。
 // 失败返回 false,调用方应跳过 mask 路径返回。
-inline bool WriteMaskGrayscalePng(const std::string& path,
-                                  int orig_w, int orig_h,
-                                  const std::vector<float>& mask) {
-    std::vector<uint8_t> rgba(static_cast<size_t>(orig_w) * orig_h * 4, 255);
+inline bool WriteMaskBitplane(const std::string& path,
+                              int orig_w, int orig_h,
+                              const std::vector<float>& mask) {
     if (mask.size() != static_cast<size_t>(orig_w) * orig_h) {
-        LOGE("WriteMaskGrayscalePng size mismatch: %zu vs %d",
+        LOGE("WriteMaskBitplane size mismatch: %zu vs %d",
              mask.size(), orig_w * orig_h);
         return false;
     }
-    for (int i = 0; i < orig_w * orig_h; i++) {
-        const uint8_t v = mask[i] > kMaskThresh ? 255 : 0;
-        rgba[i * 4 + 0] = v;
-        rgba[i * 4 + 1] = v;
-        rgba[i * 4 + 2] = v;
-        rgba[i * 4 + 3] = 255;
+    FILE* fp = fopen(path.c_str(), "wb");
+    if (fp == nullptr) {
+        LOGE("WriteMaskBitplane fopen failed: %s", path.c_str());
+        return false;
     }
-    return foodseg::write_png_rgba(path.c_str(), orig_w, orig_h, rgba.data());
+    // 1) Magic
+    static const char kMagic[4] = {'M', 'A', 'G', '1'};
+    if (fwrite(kMagic, 1, 4, fp) != 4) {
+        fclose(fp);
+        return false;
+    }
+    // 2) Width / Height (BE)
+    uint8_t header[8];
+    header[0] = static_cast<uint8_t>((orig_w >> 24) & 0xff);
+    header[1] = static_cast<uint8_t>((orig_w >> 16) & 0xff);
+    header[2] = static_cast<uint8_t>((orig_w >> 8) & 0xff);
+    header[3] = static_cast<uint8_t>(orig_w & 0xff);
+    header[4] = static_cast<uint8_t>((orig_h >> 24) & 0xff);
+    header[5] = static_cast<uint8_t>((orig_h >> 16) & 0xff);
+    header[6] = static_cast<uint8_t>((orig_h >> 8) & 0xff);
+    header[7] = static_cast<uint8_t>(orig_h & 0xff);
+    if (fwrite(header, 1, 8, fp) != 8) {
+        fclose(fp);
+        return false;
+    }
+    // 3) Bit plane
+    const size_t total_pixels = static_cast<size_t>(orig_w) * orig_h;
+    const size_t total_bytes = (total_pixels + 7) / 8;
+    std::vector<uint8_t> plane(total_bytes, 0);
+    for (size_t i = 0; i < total_pixels; i++) {
+        if (mask[i] > kMaskThresh) {
+            // MSB first:像素 i 在字节 (i/8) 的第 (7 - i%8) 位。
+            const size_t byte_idx = i >> 3;
+            const uint8_t bit_idx = static_cast<uint8_t>(7 - (i & 7));
+            plane[byte_idx] = static_cast<uint8_t>(plane[byte_idx] | (1u << bit_idx));
+        }
+    }
+    const bool ok = fwrite(plane.data(), 1, total_bytes, fp) == total_bytes;
+    fclose(fp);
+    if (!ok) {
+        LOGE("WriteMaskBitplane fwrite failed: %s", path.c_str());
+        return false;
+    }
+    LOGI("WriteMaskBitplane: %s (%dx%d, %zu bytes)",
+         path.c_str(), orig_w, orig_h, total_bytes);
+    return true;
 }
 
 }  // namespace
@@ -566,11 +603,11 @@ Java_com_hashira_logic_fitness_1log_1app_segmentation_NcnnBridge_nativeSegment(
     // 12. 释放 Bitmap 锁
     AndroidBitmap_unlockPixels(env, jBitmap);
 
-    // 13. V1.2-C:写 mask PNG。失败时降级为单段旧协议,避免阻断主链路。
+    // 13. V1.2-D:写 mask bit plane (.mag 二进制)。失败时降级为单段旧协议。
     std::string mask_path;
     if (!dets.empty()) {
         const std::string candidate = MakeMaskPath(cache_dir);
-        if (WriteMaskGrayscalePng(candidate, orig_w, orig_h, combined)) {
+        if (WriteMaskBitplane(candidate, orig_w, orig_h, combined)) {
             mask_path = candidate;
             LOGI("nativeSegment: mask -> %s (%dx%d)", mask_path.c_str(), orig_w, orig_h);
         } else {

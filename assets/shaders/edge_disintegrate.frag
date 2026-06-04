@@ -1,18 +1,23 @@
-// V1 升级 - Visual Effects: 边缘发光 + 像素消融 Fragment Shader。
+// V1 升级 - Visual Effects: 边缘发光 + 像素消融 Fragment Shader (V1.2-D)。
 //
 // 合成规则：
 // 1. Sobel 算子检测原图的亮度边缘，叠 warm-orange 发光（uGlowIntensity 越大越亮）；
-// 2. 用 hash 噪声做像素级透明度阈值，uDisintegrate 越大被消融的像素越多；
-// 3. 消融出去的像素颜色偏向 glowColor，让观感像"被能量吞噬"。
+// 2. V1.2-D：若 uHasMask > 0.5，边缘 glow 仅作用在 uMask 通道命中的像素
+//    （真实 NCNN 主体），避免在背景上产生"假"的发光圈；
+// 3. 用 hash 噪声做像素级透明度阈值，uDisintegrate 越大被消融的像素越多；
+// 4. 消融出去的像素颜色偏向 glowColor，让观感像"被能量吞噬"。
 //
 // Flutter 端通过 FragmentProgram.fromAsset 加载本文件，uniform 索引：
-//   0: uSize.x        (像素宽度)
-//   1: uSize.y        (像素高度)
-//   2: uTime          (0..1 动画时间，由 Dart 端驱动)
-//   3: uGlowIntensity (0..1 边缘发光强度)
-//   4: uDisintegrate  (0..1 像素消融阈值)
+//   0: uSize.x         (像素宽度)
+//   1: uSize.y         (像素高度)
+//   2: uTime           (0..1 动画时间，由 Dart 端驱动)
+//   3: uGlowIntensity  (0..1 边缘发光强度)
+//   4: uDisintegrate   (0..1 像素消融阈值)
+//   5: uHasMask        (0 = Sobel 全图,1 = Sobel ∩ uMask 主体)
 //
-// 图像采样：setImageSampler(0, image) 绑定到 uImage。
+// 图像采样：
+//   setImageSampler(0, image) → uImage
+//   setImageSampler(1, mask)  → uMask
 #version 460 core
 #include <flutter/runtime_effect.glsl>
 
@@ -22,8 +27,10 @@ uniform vec2 uSize;
 uniform float uTime;
 uniform float uGlowIntensity;
 uniform float uDisintegrate;
+uniform float uHasMask;
 
 uniform sampler2D uImage;
+uniform sampler2D uMask;
 
 out vec4 fragColor;
 
@@ -59,6 +66,12 @@ void main() {
   float edge = sobelEdge(uImage, uv, texel);
   // 经验值：原始 Sobel 值通常在 [0,1.5] 之间，乘 3.0 把锐边拉满。
   float glow = clamp(edge * 3.0 * uGlowIntensity, 0.0, 1.0);
+  // V1.2-D：有真实 mask 时，glow 只作用在主体像素上。
+  if (uHasMask > 0.5) {
+    float m = texture(uMask, uv).r;
+    // smoothstep 让 mask 边缘也有软过渡,避免 glow 出现锯齿边。
+    glow *= smoothstep(0.15, 0.85, m);
+  }
   vec3 glowColor = vec3(1.0, 0.78, 0.42);
 
   // 2) 像素消融：hash 阈值；uDisintegrate 越大被 step 过滤掉的像素越多。
