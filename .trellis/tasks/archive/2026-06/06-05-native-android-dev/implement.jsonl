@@ -1,0 +1,12 @@
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Flutter 目录约定"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "前端组件指南"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "状态管理规范"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "代码质量指南"}
+{"file": "lib/features/snapshot/segmentation_engine.dart", "reason": "分割引擎接口，需要实现实时推理支持"}
+{"file": "lib/features/snapshot/snapshot_screen.dart", "reason": "Dart 层状态机，需要与原生层对接"}
+{"file": "lib/features/snapshot/live_capture_screen.dart", "reason": "相机预览页，需要迁移到 CameraX"}
+{"file": "android/app/src/main/kotlin/com/hashira/logic/fitness_log_app/segmentation/ForegroundSegmentationPlugin.kt", "reason": "当前 Kotlin 插件，需要新增实时推理接口"}
+{"file": "android/app/src/main/cpp/food_segmenter.cpp", "reason": "NCNN 推理实现，需要支持实时推理"}
+{"file": "android/app/build.gradle.kts", "reason": "构建配置，需要添加 CameraX 依赖"}
+{"file": "docs/Calorie_Snap_原生层开发执行方案.md", "reason": "开发执行方案，包含详细技术方案"}
+{"file": ".trellis/tasks/06-05-native-android-dev/prd.md", "reason": "本任务 PRD，实现时需要参考"}

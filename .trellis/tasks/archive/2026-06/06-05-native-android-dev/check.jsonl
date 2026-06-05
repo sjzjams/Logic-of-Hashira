@@ -1,0 +1,11 @@
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Flutter 目录约定，检查时需要参考"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "前端组件指南，检查 UI 实现"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "状态管理规范，检查状态机实现"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "代码质量指南，检查代码质量"}
+{"file": "lib/features/snapshot/snapshot_screen.dart", "reason": "Dart 层状态机，检查是否与原生层正确对接"}
+{"file": "lib/features/snapshot/segmentation_engine.dart", "reason": "分割引擎接口，检查是否支持实时推理"}
+{"file": "lib/features/snapshot/live_capture_screen.dart", "reason": "相机预览页，检查是否迁移到 CameraX"}
+{"file": "android/app/src/main/kotlin/com/hashira/logic/fitness_log_app/segmentation/ForegroundSegmentationPlugin.kt", "reason": "当前 Kotlin 插件，检查是否新增实时推理接口"}
+{"file": "android/app/src/main/cpp/food_segmenter.cpp", "reason": "NCNN 推理实现，检查是否支持实时推理"}
+{"file": "android/app/build.gradle.kts", "reason": "构建配置，检查 CameraX 依赖是否正确添加"}
+{"file": ".trellis/tasks/06-05-native-android-dev/prd.md", "reason": "本任务 PRD，检查实现是否符合需求"}
