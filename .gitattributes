@@ -1,0 +1,41 @@
+# ==================================================================
+# Git 行尾符配置
+# 确保跨平台（Windows/macOS/Linux）一致性
+# ==================================================================
+
+# 默认行为：检出时不转换，提交时转换为 LF
+* text=auto
+
+# 强制所有 .dart 文件使用 LF 行尾符
+*.dart text eol=lf
+
+# 强制所有 .kt/.java 文件使用 LF 行尾符
+*.kt text eol=lf
+*.java text eol=lf
+
+# 强制所有 .yaml/.yml 文件使用 LF 行尾符
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# 强制所有 .json/.md 文件使用 LF 行尾符
+*.json text eol=lf
+*.md text eol=lf
+
+# 强制所有 .gradle/.properties 文件使用 LF 行尾符
+*.gradle text eol=lf
+*.properties text eol=lf
+
+# 二进制文件（不转换）
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.apk binary
+*.aab binary
+*.keystore binary
+*.jks binary
+*.bin binary
+*.param binary
