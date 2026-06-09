@@ -75,7 +75,9 @@ class _SnapButtonState extends State<SnapButton>
                     : AppColors.inkBlue,
                 boxShadow: [
                   BoxShadow(
-                    color: pulse.withOpacity(0.4 + _pulse.value * 0.3),
+                    color: pulse.withValues(
+                      alpha: 0.4 + _pulse.value * 0.3,
+                    ),
                     blurRadius: 12 + _pulse.value * 8,
                     offset: const Offset(0, 4),
                   ),
@@ -91,7 +93,7 @@ class _SnapButtonState extends State<SnapButton>
                           height: 14,
                           child: CircularProgressIndicator(
                             strokeWidth: 1.8,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                           ),
                         ),
                         const SizedBox(width: 10),

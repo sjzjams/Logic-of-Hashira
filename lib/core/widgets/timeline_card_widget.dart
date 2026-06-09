@@ -74,7 +74,7 @@ class _TimelineCardWidgetState extends State<TimelineCardWidget>
                 border: Border.all(color: AppColors.border, width: 1.2),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.inkText.withOpacity(0.06),
+                    color: AppColors.inkText.withValues(alpha: 0.06),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),

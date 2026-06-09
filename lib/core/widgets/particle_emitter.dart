@@ -147,7 +147,7 @@ class _ParticlePainter extends CustomPainter {
               ? 1.0 + localT / 0.35 * 0.5
               : 1.5 - (localT - 0.35) / 0.65 * 1.3);
 
-      paint.color = color.withOpacity(opacity.clamp(0.0, maxOpacity));
+      paint.color = color.withValues(alpha: opacity.clamp(0.0, maxOpacity));
       paint.maskFilter = const MaskFilter.blur(
         BlurStyle.normal,
         2.5,

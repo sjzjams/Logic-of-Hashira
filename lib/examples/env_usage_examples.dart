@@ -9,23 +9,23 @@ import '../core/config/env_config.dart';
 /// 示例 1: 在 main() 中根据环境初始化
 void mainWithEnv() {
   // 打印环境信息
-  print('=== 应用启动 ===');
-  print('环境: ${EnvConfig.env}');
-  print('版本类型: ${EnvConfig.versionType}');
-  print('应用名称: ${EnvConfig.appName}');
-  print('API 地址: ${EnvConfig.apiBaseUrl}');
-  print('构建时间: ${EnvConfig.buildTime}');
-  print('Git 提交: ${EnvConfig.gitCommit}');
+  debugPrint('=== 应用启动 ===');
+  debugPrint('环境: ${EnvConfig.env}');
+  debugPrint('版本类型: ${EnvConfig.versionType}');
+  debugPrint('应用名称: ${EnvConfig.appName}');
+  debugPrint('API 地址: ${EnvConfig.apiBaseUrl}');
+  debugPrint('构建时间: ${EnvConfig.buildTime}');
+  debugPrint('Git 提交: ${EnvConfig.gitCommit}');
 
   // 根据环境初始化不同的配置
   if (EnvConfig.isDev) {
-    print('🔧 开发环境：启用详细日志和调试功能');
+    debugPrint('🔧 开发环境：启用详细日志和调试功能');
     // 初始化开发环境配置
     // - 使用 Mock 数据
     // - 启用日志
     // - 连接测试服务器
   } else {
-    print('🚀 生产环境：启用性能优化');
+    debugPrint('🚀 生产环境：启用性能优化');
     // 初始化生产环境配置
     // - 使用真实 API
     // - 禁用日志
@@ -37,6 +37,7 @@ void mainWithEnv() {
 
 /// 示例 2: 在 UI 中显示环境标识
 class EnvIndicator extends StatelessWidget {
+  const EnvIndicator({super.key});
   @override
   Widget build(BuildContext context) {
     if (!EnvConfig.isDev) {
@@ -70,11 +71,11 @@ class ApiService {
   // 示例：发起网络请求
   static Future<Map<String, dynamic>> fetchUserData() async {
     final url = '${EnvConfig.apiBaseUrl}/api/user';
-    print('📡 请求: $url');
+    debugPrint('📡 请求: $url');
 
     // 开发环境可以使用 Mock 数据
     if (EnvConfig.isDev) {
-      print('🔧 使用 Mock 数据');
+      debugPrint('🔧 使用 Mock 数据');
       return {
         'id': 1,
         'name': 'Test User',
@@ -91,6 +92,7 @@ class ApiService {
 
 /// 示例 4: 根据环境决定是否显示调试菜单
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +104,7 @@ class HomePage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.bug_report),
               onPressed: () {
-                print('🔧 打开调试菜单');
+                debugPrint('🔧 打开调试菜单');
                 // 打开调试菜单
               },
             ),
@@ -141,7 +143,7 @@ class HomePage extends StatelessWidget {
       floatingActionButton: EnvConfig.isDev
           ? FloatingActionButton(
               onPressed: () {
-                print('🔧 快速操作');
+                debugPrint('🔧 快速操作');
               },
               child: Icon(Icons.build),
             )
@@ -155,7 +157,7 @@ class Logger {
   static void log(String message) {
     // 仅开发环境打印日志
     if (EnvConfig.enableLogging) {
-      print('📝 $message');
+      debugPrint('📝 $message');
     }
   }
 
@@ -163,11 +165,11 @@ class Logger {
     // 生产环境可以将错误上报到崩溃报告服务
     if (EnvConfig.isProd) {
       // 上报到 Firebase Crashlytics / Sentry 等
-      print('🚨 生产环境错误: $message');
+      debugPrint('🚨 生产环境错误: $message');
     } else {
-      print('🚨 $message');
+      debugPrint('🚨 $message');
       if (error != null) {
-        print('错误详情: $error');
+        debugPrint('错误详情: $error');
       }
     }
   }
@@ -232,7 +234,7 @@ class AppConfig {
 ///
 /// 2. 在 main() 中打印环境信息：
 ///    ```dart
-///    print('当前环境: ${EnvConfig.env}');
+///    debugPrint('当前环境: ${EnvConfig.env}');
 ///    ```
 ///
 /// 3. 在 UI 中根据环境显示不同内容：

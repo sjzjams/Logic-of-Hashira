@@ -21,18 +21,18 @@ import 'features/nutrition/meal_repository.dart';
 /// 统一走 `shared_preferences` JSON 列表。
 Future<void> main() async {
   // 🔧 打印环境信息（根据编译时 --dart-define=ENV=dev/prod）
-  print('=== 🚀 Fitness Log App 启动 ===');
-  print('📊 环境: ${EnvConfig.env}');
-  print('📦 版本类型: ${EnvConfig.versionType}');
-  print('📱 应用名称: ${EnvConfig.appName}');
-  print('🔗 API 地址: ${EnvConfig.apiBaseUrl}');
+  debugPrint('=== 🚀 Fitness Log App 启动 ===');
+  debugPrint('📊 环境: ${EnvConfig.env}');
+  debugPrint('📦 版本类型: ${EnvConfig.versionType}');
+  debugPrint('📱 应用名称: ${EnvConfig.appName}');
+  debugPrint('🔗 API 地址: ${EnvConfig.apiBaseUrl}');
   if (EnvConfig.buildTime.isNotEmpty) {
-    print('📅 构建时间: ${EnvConfig.buildTime}');
+    debugPrint('📅 构建时间: ${EnvConfig.buildTime}');
   }
   if (EnvConfig.gitCommit.isNotEmpty) {
-    print('📝 Git 提交: ${EnvConfig.gitCommit}');
+    debugPrint('📝 Git 提交: ${EnvConfig.gitCommit}');
   }
-  print('================================');
+  debugPrint('================================');
 
   WidgetsFlutterBinding.ensureInitialized();
 

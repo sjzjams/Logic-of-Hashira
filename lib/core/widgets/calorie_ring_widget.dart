@@ -39,7 +39,9 @@ class CalorieRingWidget extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: hasData ? AppColors.inkBlue.withOpacity(0.25) : AppColors.border,
+              color: hasData
+                  ? AppColors.inkBlue.withValues(alpha: 0.25)
+                  : AppColors.border,
               width: 3,
             ),
           ),

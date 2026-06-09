@@ -130,6 +130,9 @@ class MealRepository extends ChangeNotifier {
     _persist();
   }
 
+  /// 根据餐次 ID 返回对应的营养信息。
+  Nutrition? nutritionForMeal(String mealId) => _nutrition[mealId];
+
   // ---- 持久化内部方法 ----
 
   /// 把整张 meal 表序列化到 [SharedPreferences]。失败仅 `debugPrint`。

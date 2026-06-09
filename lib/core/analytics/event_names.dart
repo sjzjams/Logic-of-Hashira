@@ -18,6 +18,8 @@ class AnalyticsEventNames {
   static const String nutritionDashboardOpen = 'nutrition_dashboard_open';
 
   static const String coachOpen = 'coach_open';
+  static const String coachShown = 'coach_shown';
+  static const String coachTapped = 'coach_tapped';
   static const String coachChatStart = 'coach_chat_start';
   static const String coachMessageSend = 'coach_message_send';
   static const String coachSuggestionClick = 'coach_suggestion_click';
@@ -43,6 +45,8 @@ class AnalyticsEventNames {
 
   static const List<String> coachEvents = <String>[
     coachOpen,
+    coachShown,
+    coachTapped,
     coachChatStart,
     coachMessageSend,
     coachSuggestionClick,
