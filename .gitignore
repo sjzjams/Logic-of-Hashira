@@ -10,11 +10,9 @@
 .history
 .svn/
 .swiftpm/
-migrate_working_dir/
 prototype/
 .agents/
 .claude/
-.codex/
 
 # IntelliJ related
 *.iml
@@ -50,3 +48,13 @@ app.*.map.json
 
 # ncnn 预编译静态库(体积大、走脚本拉取,不入仓)
 /android/app/src/main/cpp/ncnn/
+
+# Windows 保留文件名（无法被 Git 处理）
+nul
+NUL
+nul.*
+
+# 用户临时文件
+screenshot.png
+*.bak
+*.tmp
