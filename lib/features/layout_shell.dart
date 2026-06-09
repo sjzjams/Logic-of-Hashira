@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/analytics/analytics.dart';
 import '../core/theme.dart';
+import '../core/widgets/env_indicator.dart';
 import '../core/widgets/illustrations.dart';
 
 // We will import screens as they are created. For now, we stub them.
@@ -65,12 +66,18 @@ class _LayoutShellState extends State<LayoutShell> {
     return Scaffold(
       backgroundColor: AppColors.page,
       body: SafeArea(
-        child: IndexedStack(
-          index: _currentIndex,
-          children: List<Widget>.generate(5, (int index) {
-            final Widget child = _screenCache[index] ?? const SizedBox.shrink();
-            return TickerMode(enabled: _currentIndex == index, child: child);
-          }),
+        child: Stack(
+          children: [
+            IndexedStack(
+              index: _currentIndex,
+              children: List<Widget>.generate(5, (int index) {
+                final Widget child = _screenCache[index] ?? const SizedBox.shrink();
+                return TickerMode(enabled: _currentIndex == index, child: child);
+              }),
+            ),
+            // 🔧 环境指示器（仅开发环境显示）
+            const EnvIndicator(),
+          ],
         ),
       ),
       bottomNavigationBar: Container(

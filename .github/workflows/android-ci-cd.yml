@@ -1,0 +1,286 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  # 允许手动触发
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: '构建类型'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+        - debug
+        - release
+        - both
+
+# 添加权限配置
+permissions:
+  contents: write
+  packages: read
+
+env:
+  FLUTTER_VERSION: '3.32.8'
+  JAVA_VERSION: '17'
+
+jobs:
+  # Job 1: 代码分析
+  analyze:
+    name: 🔍 代码分析
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置 Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'zulu'
+
+      - name: 🐦 设置 Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+
+      - name: 📦 获取依赖
+        run: flutter pub get
+
+      - name: 🔍 运行 Flutter Analyze
+        run: flutter analyze
+
+      - name: 🎨 检查代码格式
+        run: |
+          dart format --set-exit-if-changed . || (
+            echo "❌ 代码格式不符合规范，请运行 'dart format .'" &&
+            exit 1
+          )
+
+  # Job 2: 单元测试
+  test:
+    name: 🧪 单元测试
+    runs-on: ubuntu-latest
+    needs: analyze
+    
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置 Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'zulu'
+
+      - name: 🐦 设置 Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 获取依赖
+        run: flutter pub get
+
+      - name: 🧪 运行测试
+        run: flutter test --coverage
+
+      - name: 📊 上传覆盖率到 Codecov
+        uses: codecov/codecov-action@v4
+        if: success()
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+  # Job 3: 构建 Android APK
+  build-android:
+    name: 🤖 Android 构建
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    if: success()
+    
+    strategy:
+      matrix:
+        include:
+          - build-name: 'debug'
+            build-command: 'flutter build apk --debug'
+            artifact-name: 'app-debug'
+            retention-days: 30
+          - build-name: 'release'
+            build-command: 'flutter build apk --release'
+            artifact-name: 'app-release'
+            retention-days: 90
+    
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置 Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'zulu'
+
+      - name: 🐦 设置 Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 获取依赖
+        run: flutter pub get
+
+      - name: 🔧 构建 ${{ matrix.build-name }} APK
+        run: |
+          # 获取构建时间和 Git 提交
+          BUILD_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          GIT_COMMIT=$(git rev-parse --short HEAD)
+          
+          echo "📅 构建时间: $BUILD_TIME"
+          echo "📝 Git 提交: $GIT_COMMIT"
+          
+          if [ "${{ matrix.build-name }}" == "debug" ]; then
+            # 开发版本
+            flutter build apk --debug \
+              --dart-define=ENV=dev \
+              --dart-define=VERSION_TYPE=debug \
+              --dart-define=BUILD_TIME="$BUILD_TIME" \
+              --dart-define=GIT_COMMIT="$GIT_COMMIT"
+            # 重命名 APK
+            cd build/app/outputs/flutter-apk/
+            for f in app-debug*.apk; do
+              if [ -f "$f" ]; then
+                mv "$f" "fitness-log-dev-debug.apk"
+                echo "✅ 重命名: $f → fitness-log-dev-debug.apk"
+              fi
+            done
+            ls -lh *.apk 2>/dev/null || echo "⚠️ 未找到 APK 文件"
+            cd ../../../../../
+          else
+            # 正式版本
+            flutter build apk --release \
+              --dart-define=ENV=prod \
+              --dart-define=VERSION_TYPE=release \
+              --dart-define=BUILD_TIME="$BUILD_TIME" \
+              --dart-define=GIT_COMMIT="$GIT_COMMIT"
+            # 重命名 APK
+            cd build/app/outputs/flutter-apk/
+            for f in app-release*.apk; do
+              if [ -f "$f" ]; then
+                mv "$f" "fitness-log-prod-release.apk"
+                echo "✅ 重命名: $f → fitness-log-prod-release.apk"
+              fi
+            done
+            ls -lh *.apk 2>/dev/null || echo "⚠️ 未找到 APK 文件"
+            cd ../../../../../
+          fi
+
+      - name: 📤 上传 ${{ matrix.build-name }} APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/flutter-apk/**/*.apk
+          retention-days: ${{ matrix.retention-days }}
+          if-no-files-found: warn
+
+      - name: 📋 列出构建产物
+        if: always()
+        run: |
+          echo "=== 构建产物列表 ==="
+          ls -lh build/app/outputs/flutter-apk/ || echo "未找到构建产物"
+          echo ""
+          echo "💡 下载方式："
+          echo "1. 进入 GitHub 仓库 → Actions 标签"
+          echo "2. 点击本次工作流运行记录"
+          echo "3. 在页面底部 Artifacts 区域下载 APK"
+
+  # Job 4: 创建 GitHub Release (仅当推送 tag 时)
+  release:
+    name: 🏷️ 创建 Release
+    runs-on: ubuntu-latest
+    needs: build-android
+    if: success() && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: 📥 Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 📥 下载 Debug APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug
+          path: ./artifacts/debug
+
+      - name: 📥 下载 Release APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: ./artifacts/release
+
+      - name: 🏷️ 创建 GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 🚀 Fitness Log App ${{ github.ref_name }}
+            
+            ### 📦 下载
+            
+            - **Debug APK**: `app-debug.apk` (开发测试用)
+            - **Release APK**: `app-release.apk` (正式版本)
+            
+            ### 📋 安装说明
+            
+            1. 下载 APK 文件到手机
+            2. 在手机设置中允许"安装未知来源应用"
+            3. 点击 APK 文件进行安装
+            
+            ### 🔧 更新日志
+            
+            - 自动构建版本
+            - 提交: ${{ github.sha }}
+          files: |
+            ./artifacts/debug/*.apk
+            ./artifacts/release/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job 5: 推送到本地测试机 (可选)
+  deploy-to-local:
+    name: 📱 推送到本地测试机
+    runs-on: ubuntu-latest
+    needs: build-android
+    if: false  # 默认禁用，需要时可启用
+    
+    steps:
+      - name: 📥 下载 Release APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: ./apk
+
+      - name: 📤 推送到本地服务器
+        if: ${{ secrets.LOCAL_SERVER_URL != '' }}
+        run: |
+          echo "📤 正在推送 APK 到本地服务器..."
+          # 示例：使用 curl 上传到本地服务器
+          # curl -F "file=@./apk/app-release.apk" ${{ secrets.LOCAL_SERVER_URL }}
+          echo "✅ 推送完成"
+          echo "💡 请在本地服务器查看 APK 文件"

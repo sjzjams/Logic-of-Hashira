@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/config/env_config.dart';
+import 'core/services/model_loader_service.dart';
+import 'core/services/shader_preloader.dart';
 import 'core/theme.dart';
 import 'features/coach/coach_session_repository.dart';
 import 'features/layout_shell.dart';
@@ -17,12 +20,38 @@ import 'features/nutrition/meal_repository.dart';
 /// Sprint 5+：Isar 已移除（包未维护、与 AGP 8 namespace 冲突），所有持久化
 /// 统一走 `shared_preferences` JSON 列表。
 Future<void> main() async {
+  // 🔧 打印环境信息（根据编译时 --dart-define=ENV=dev/prod）
+  print('=== 🚀 Fitness Log App 启动 ===');
+  print('📊 环境: ${EnvConfig.env}');
+  print('📦 版本类型: ${EnvConfig.versionType}');
+  print('📱 应用名称: ${EnvConfig.appName}');
+  print('🔗 API 地址: ${EnvConfig.apiBaseUrl}');
+  if (EnvConfig.buildTime.isNotEmpty) {
+    print('📅 构建时间: ${EnvConfig.buildTime}');
+  }
+  if (EnvConfig.gitCommit.isNotEmpty) {
+    print('📝 Git 提交: ${EnvConfig.gitCommit}');
+  }
+  print('================================');
+
   WidgetsFlutterBinding.ensureInitialized();
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   await MealRepository.instance.init(prefs);
   await CoachSessionRepository.instance.init(prefs);
+
+  // 🔧 后台预加载 Fragment Shader，避免首次使用时延迟 + 失败重试
+  ShaderPreloader.preloadAll().then((Map<String, bool> results) {
+    debugPrint('🎨 [ShaderPreload] Results: $results');
+  });
+
+  // 🔧 后台预加载 NCNN 模型，完成后 SNAP 按钮从 loading 变为可点击
+  ModelLoaderService.instance.preload().then((_) {
+    debugPrint('✅ [ModelLoader] NCNN model ready');
+  }).catchError((Object e) {
+    debugPrint('⚠ [ModelLoader] Preload failed (degraded mode): $e');
+  });
 
   runApp(const MyApp());
 }
@@ -33,8 +62,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fitness Record App',
-      debugShowCheckedModeBanner: false,
+      title: EnvConfig.appName, // 🔧 根据环境显示不同名称
+      debugShowCheckedModeBanner: EnvConfig.isDev, // 🔧 仅开发环境显示 DEBUG 横幅
       theme: AppTheme.lightTheme,
       home: const LayoutShell(),
     );
