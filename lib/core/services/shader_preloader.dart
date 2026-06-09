@@ -34,8 +34,9 @@ class ShaderPreloader {
           '🎨 [ShaderPreloader] Loading $assetPath '
           '(attempt ${i + 1}/$maxRetries)',
         );
-        final ui.FragmentProgram program =
-            await ui.FragmentProgram.fromAsset(assetPath);
+        final ui.FragmentProgram program = await ui.FragmentProgram.fromAsset(
+          assetPath,
+        );
         _cache[assetPath] = program;
         debugPrint('✅ [ShaderPreloader] $assetPath loaded');
         return true;

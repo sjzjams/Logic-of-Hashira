@@ -8,7 +8,7 @@ import 'image_input_service.dart';
 /// 单元测试可通过实现 [ImageInputService] 注入。
 class PackageImageInputService implements ImageInputService {
   PackageImageInputService({ImagePicker? picker})
-      : _picker = picker ?? ImagePicker();
+    : _picker = picker ?? ImagePicker();
 
   final ImagePicker _picker;
 

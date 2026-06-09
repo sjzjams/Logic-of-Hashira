@@ -42,10 +42,8 @@ class _TypingTextWidgetState extends State<TypingTextWidget>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    )..forward();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..forward();
     // 文字打完后再闪烁光标。
     _controller.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.completed && widget.showCursor && mounted) {
@@ -67,7 +65,10 @@ class _TypingTextWidgetState extends State<TypingTextWidget>
       builder: (BuildContext context, Widget? child) {
         final int visible = _controller.isCompleted
             ? widget.text.length
-            : (widget.text.length * _controller.value).ceil().clamp(0, widget.text.length);
+            : (widget.text.length * _controller.value).ceil().clamp(
+                0,
+                widget.text.length,
+              );
         final String visibleText = widget.text.substring(0, visible);
 
         return Row(

@@ -50,9 +50,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     // 按日期倒序
     final List<String> keys = groups.keys.toList()
       ..sort((String a, String b) => b.compareTo(a));
-    return <String, List<Meal>>{
-      for (final String k in keys) k: groups[k]!,
-    };
+    return <String, List<Meal>>{for (final String k in keys) k: groups[k]!};
   }
 
   /// 按餐次类型分组。
@@ -91,40 +89,44 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _openDetail(Meal meal) {
-    final Nutrition? nutrition =
-        MealRepository.instance.nutritionForMeal(meal.id);
+    final Nutrition? nutrition = MealRepository.instance.nutritionForMeal(
+      meal.id,
+    );
     final String heroTag = mealHeroTag(meal.id);
     Navigator.of(context).push(
       PageRouteBuilder<Object>(
-        pageBuilder: (
-          BuildContext context,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return MealDetailScreen(
-            meal: meal,
-            nutrition: nutrition ??
-                Nutrition(
-                  mealId: meal.id,
-                  calories: 0,
-                  protein: 0,
-                  carbs: 0,
-                  fat: 0,
-                  fiber: 0,
-                  weight: 0,
-                ),
-            imagePath: meal.photoPath,
-            heroTag: heroTag,
-          );
-        },
-        transitionsBuilder: (
-          BuildContext context,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-          Widget child,
-        ) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+        pageBuilder:
+            (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+            ) {
+              return MealDetailScreen(
+                meal: meal,
+                nutrition:
+                    nutrition ??
+                    Nutrition(
+                      mealId: meal.id,
+                      calories: 0,
+                      protein: 0,
+                      carbs: 0,
+                      fat: 0,
+                      fiber: 0,
+                      weight: 0,
+                    ),
+                imagePath: meal.photoPath,
+                heroTag: heroTag,
+              );
+            },
+        transitionsBuilder:
+            (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget child,
+            ) {
+              return FadeTransition(opacity: animation, child: child);
+            },
         transitionDuration: const Duration(milliseconds: 280),
       ),
     );
@@ -211,8 +213,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
       );
 
       // 按餐次类型分组
-      final Map<MealType, List<Meal>> typeGroups =
-          _groupByMealType(dateEntry.value);
+      final Map<MealType, List<Meal>> typeGroups = _groupByMealType(
+        dateEntry.value,
+      );
       for (final MapEntry<MealType, List<Meal>> typeEntry
           in typeGroups.entries) {
         children.add(
@@ -229,8 +232,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
         );
         for (final Meal meal in typeEntry.value) {
-          final Nutrition? n =
-              MealRepository.instance.nutritionForMeal(meal.id);
+          final Nutrition? n = MealRepository.instance.nutritionForMeal(
+            meal.id,
+          );
           final String timeLabel =
               '${meal.createdAt.hour.toString().padLeft(2, '0')}:'
               '${meal.createdAt.minute.toString().padLeft(2, '0')}';
@@ -304,8 +308,10 @@ class _HistoryMealCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               alignment: Alignment.center,
-              child: Text(_emojiForMealType(meal.mealType),
-                  style: const TextStyle(fontSize: 20)),
+              child: Text(
+                _emojiForMealType(meal.mealType),
+                style: const TextStyle(fontSize: 20),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

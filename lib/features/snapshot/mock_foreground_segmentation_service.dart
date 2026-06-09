@@ -14,9 +14,10 @@ import 'foreground_segmentation_service.dart';
 ///
 /// Android 真实实现已切到 `YOLOv8-seg + ncnn`(Sprint 2.2-C Phase D),不再走
 /// Sprint 2.2-B 时期的 ML Kit Subject Segmentation。
-class MockForegroundSegmentationService implements ForegroundSegmentationService {
+class MockForegroundSegmentationService
+    implements ForegroundSegmentationService {
   MockForegroundSegmentationService({Random? random})
-      : _random = random ?? Random();
+    : _random = random ?? Random();
 
   final Random _random;
 

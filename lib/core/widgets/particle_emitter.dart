@@ -38,10 +38,7 @@ class _ParticleEmitterState extends State<ParticleEmitter>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     _particles = _generateParticles();
     _controller.addListener(() {
       if (mounted) setState(() {});
@@ -62,7 +59,8 @@ class _ParticleEmitterState extends State<ParticleEmitter>
         y: 0.3 + _rng.nextDouble() * 0.4, // 偏中下部，模拟食物边缘
         angle: _rng.nextDouble() * 2 * math.pi,
         speed: 0.4 + _rng.nextDouble() * 0.6,
-        size: widget.minRadius +
+        size:
+            widget.minRadius +
             _rng.nextDouble() * (widget.maxRadius - widget.minRadius) * 0.3,
         delay: _rng.nextDouble() * 0.45, // 错开出时机
         life: 0.55 + _rng.nextDouble() * 0.45,
@@ -129,8 +127,7 @@ class _ParticlePainter extends CustomPainter {
 
     for (final _Particle p in particles) {
       // 延迟启动，错开粒子出现时机。
-      final double localT =
-          ((progress - p.delay) / p.life).clamp(0.0, 1.0);
+      final double localT = ((progress - p.delay) / p.life).clamp(0.0, 1.0);
       if (localT <= 0.0 || localT >= 1.0) continue;
 
       // 径向偏移：从原位置向外移动。
@@ -139,19 +136,16 @@ class _ParticlePainter extends CustomPainter {
       final double cy = p.y * size.height + math.sin(p.angle) * dist;
 
       // 透明度：抛物线 fade-in → fade-out。
-      final double opacity =
-          math.sin(localT * math.pi) * p.speed * maxOpacity;
+      final double opacity = math.sin(localT * math.pi) * p.speed * maxOpacity;
       // 尺寸：先膨胀 1→1.5，再收缩 1.5→0.2。
-      final double radius = p.size *
+      final double radius =
+          p.size *
           (localT < 0.35
               ? 1.0 + localT / 0.35 * 0.5
               : 1.5 - (localT - 0.35) / 0.65 * 1.3);
 
       paint.color = color.withValues(alpha: opacity.clamp(0.0, maxOpacity));
-      paint.maskFilter = const MaskFilter.blur(
-        BlurStyle.normal,
-        2.5,
-      );
+      paint.maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5);
       canvas.drawCircle(Offset(cx, cy), radius, paint);
     }
   }

@@ -214,24 +214,25 @@ class CoachSessionRepository extends ChangeNotifier {
     }
     try {
       final List<Object?> decoded = jsonDecode(raw) as List<Object?>;
-      return decoded.map((Object? row) {
-        final Map<String, Object?> map = (row as Map<Object?, Object?>)
-            .map((Object? k, Object? v) => MapEntry<String, Object?>(
-                  k?.toString() ?? '',
-                  v,
-                ));
-        return CoachMessageEvent(
-          messageLength: (map['messageLength'] as num?)?.toInt() ?? 0,
-          messageLengthBucket:
-              (map['messageLengthBucket'] as String?) ?? '0_20',
-          category: (map['category'] as String?) ?? 'unknown',
-          suggestion: map['suggestion'] as String?,
-          tag: map['tag'] as String?,
-          createdAt: DateTime.fromMillisecondsSinceEpoch(
-            (map['createdAt'] as num?)?.toInt() ?? 0,
-          ),
-        );
-      }).toList(growable: false);
+      return decoded
+          .map((Object? row) {
+            final Map<String, Object?> map = (row as Map<Object?, Object?>).map(
+              (Object? k, Object? v) =>
+                  MapEntry<String, Object?>(k?.toString() ?? '', v),
+            );
+            return CoachMessageEvent(
+              messageLength: (map['messageLength'] as num?)?.toInt() ?? 0,
+              messageLengthBucket:
+                  (map['messageLengthBucket'] as String?) ?? '0_20',
+              category: (map['category'] as String?) ?? 'unknown',
+              suggestion: map['suggestion'] as String?,
+              tag: map['tag'] as String?,
+              createdAt: DateTime.fromMillisecondsSinceEpoch(
+                (map['createdAt'] as num?)?.toInt() ?? 0,
+              ),
+            );
+          })
+          .toList(growable: false);
     } catch (error) {
       debugPrint('CoachSessionRepository: decode log failed: $error');
       return <CoachMessageEvent>[];

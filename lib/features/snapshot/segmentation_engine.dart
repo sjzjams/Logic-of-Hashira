@@ -6,11 +6,7 @@ import 'mock_foreground_segmentation_service.dart';
 import 'platform_foreground_segmentation_service.dart';
 
 /// 分割后端选择。
-enum SegmentationBackend {
-  mock,
-  platform,
-  ncnn,
-}
+enum SegmentationBackend { mock, platform, ncnn }
 
 /// 分割引擎统一接口（预留 SAM / MobileSAM 插拔能力）。
 ///
@@ -119,9 +115,7 @@ class _FallbackService implements ForegroundSegmentationService {
     } on SegmentationException catch (error) {
       if (error.message.contains('NCNN_UNAVAILABLE')) {
         // ignore: avoid_print
-        print(
-          'SegEngine fallback: ncnn unavailable, falling back to mock.',
-        );
+        print('SegEngine fallback: ncnn unavailable, falling back to mock.');
         return _mock.segment(imagePath);
       }
       rethrow;

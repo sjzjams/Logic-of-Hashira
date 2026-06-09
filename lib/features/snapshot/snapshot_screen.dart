@@ -391,36 +391,37 @@ class _SnapshotScreenState extends State<SnapshotScreen> {
       ),
       body: switch (_phase) {
         SnapshotPhase.idle => _IdleView(
-            onCamera: () => _captureFromInput(ImageInputSource.camera),
-            onGallery: () => _captureFromInput(ImageInputSource.gallery),
-            onCapture: _capture,
-            onLiveCapture: _captureLive,
-          ),
+          onCamera: () => _captureFromInput(ImageInputSource.camera),
+          onGallery: () => _captureFromInput(ImageInputSource.gallery),
+          onCapture: _capture,
+          onLiveCapture: _captureLive,
+        ),
         // V1.2-A：处理页动效升级到 V2（LOCATING → DISINTEGRATING）。
         // 业务层保持单态：segmenting 与 analyzing 共用同一视觉，
         // 由 ProcessingViewV2 内部按时间轴自动推进两段文案。
         // V1.2-B：disintegrating 阶段若有真实图片则改用 DisintegrateView 渲染。
         // V1.2-C：disintegrating 阶段若 NCNN 真实 mask 可用则把路径透传。
         SnapshotPhase.segmenting => _ProcessingV2View(
-            imagePath: _imagePath,
-            maskPath: _lastSegmentation?.maskPath,
-          ),
+          imagePath: _imagePath,
+          maskPath: _lastSegmentation?.maskPath,
+        ),
         SnapshotPhase.analyzing => _ProcessingV2View(
-            imagePath: _imagePath,
-            maskPath: _lastSegmentation?.maskPath,
-          ),
+          imagePath: _imagePath,
+          maskPath: _lastSegmentation?.maskPath,
+        ),
         SnapshotPhase.result => _ResultView(
-            result: _result!,
-            imagePath: _imagePath,
-            maskPath: _lastSegmentation?.maskPath,
-            onRetake: _retake,
-            onSave: _save,
-          ),
+          result: _result!,
+          imagePath: _imagePath,
+          maskPath: _lastSegmentation?.maskPath,
+          onRetake: _retake,
+          onSave: _save,
+        ),
         SnapshotPhase.failed => _FailedView(
-            message: _errorMessage,
-            onRetry: _retake,
-            onUseSample: () => _capture(sampleName: MockSnapshotRecognizer.samples.first.name),
-          ),
+          message: _errorMessage,
+          onRetry: _retake,
+          onUseSample: () =>
+              _capture(sampleName: MockSnapshotRecognizer.samples.first.name),
+        ),
         SnapshotPhase.capturing => const _ProcessingV2View(),
       },
     );
@@ -446,10 +447,7 @@ class _IdleView extends StatelessWidget {
   Widget build(BuildContext context) {
     return PrototypePage(
       children: [
-        const PrototypeHeader(
-          title: 'Snap a meal',
-          kicker: 'OR TEST A SAMPLE',
-        ),
+        const PrototypeHeader(title: 'Snap a meal', kicker: 'OR TEST A SAMPLE'),
         const SizedBox(height: 18),
         // Viewport 现在是可点入口：点击进入 LiveCaptureScreen（camera 插件实时预览）。
         _CameraViewport(onTap: onLiveCapture),
@@ -457,10 +455,7 @@ class _IdleView extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: HandDrawnButton(
-                text: 'Take photo',
-                onTap: onCamera,
-              ),
+              child: HandDrawnButton(text: 'Take photo', onTap: onCamera),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -475,10 +470,7 @@ class _IdleView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Sample library',
-          style: AppTypography.title(
-            fontSize: 16,
-            color: AppColors.inkText,
-          ),
+          style: AppTypography.title(fontSize: 16, color: AppColors.inkText),
         ),
         const SizedBox(height: 8),
         // 高度从 92 提到 100,容纳 _SampleChip 主轴收缩后约 78px 的内容
@@ -496,7 +488,8 @@ class _IdleView extends StatelessWidget {
                 onTap: () => onCapture(sampleName: sample.name),
               );
             },
-            separatorBuilder: (BuildContext _, int _) => const SizedBox(width: 10),
+            separatorBuilder: (BuildContext _, int _) =>
+                const SizedBox(width: 10),
             itemCount: MockSnapshotRecognizer.samples.length,
           ),
         ),
@@ -713,7 +706,9 @@ class _ResultViewState extends State<_ResultView> {
     final SnapshotResult result = widget.result;
     final String? path = widget.imagePath;
     // V1.1 升级：把识别置信度线性映射到动效强度。
-    final double intensity = edgeEffectIntensityForConfidence(result.confidence);
+    final double intensity = edgeEffectIntensityForConfidence(
+      result.confidence,
+    );
     return PrototypePage(
       children: [
         PrototypeHeader(
@@ -780,10 +775,7 @@ class _ResultViewState extends State<_ResultView> {
         Row(
           children: [
             Expanded(
-              child: _MacroTile(
-                label: 'Fat',
-                value: '${result.fat.round()}g',
-              ),
+              child: _MacroTile(label: 'Fat', value: '${result.fat.round()}g'),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -813,10 +805,7 @@ class _ResultViewState extends State<_ResultView> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: HandDrawnButton(
-                    text: 'Save',
-                    onTap: widget.onSave,
-                  ),
+                  child: HandDrawnButton(text: 'Save', onTap: widget.onSave),
                 ),
               ],
             ),
@@ -841,18 +830,12 @@ class _MacroTile extends StatelessWidget {
         children: [
           Text(
             value,
-            style: AppTypography.title(
-              fontSize: 22,
-              color: AppColors.inkText,
-            ),
+            style: AppTypography.title(fontSize: 22, color: AppColors.inkText),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: AppTypography.body(
-              fontSize: 12,
-              color: AppColors.grayText,
-            ),
+            style: AppTypography.body(fontSize: 12, color: AppColors.grayText),
           ),
         ],
       ),
@@ -876,10 +859,7 @@ class _SampleResultHero extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFFEDE7F6),
-              Color(0xFFCDBEF9),
-            ],
+            colors: <Color>[Color(0xFFEDE7F6), Color(0xFFCDBEF9)],
           ),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: AppColors.border, width: 1.2),
@@ -888,10 +868,7 @@ class _SampleResultHero extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Text(
-              '🍱',
-              style: TextStyle(fontSize: 56),
-            ),
+            Text('🍱', style: TextStyle(fontSize: 56)),
             SizedBox(height: 8),
             Text(
               'Sample result',
@@ -935,16 +912,15 @@ class _FailedView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.error_outline,
-              color: AppColors.inkText,
-              size: 36,
-            ),
+            const Icon(Icons.error_outline, color: AppColors.inkText, size: 36),
             const SizedBox(height: 12),
             Text(
               message ?? 'Analysis failed. Please try again.',
               textAlign: TextAlign.center,
-              style: AppTypography.body(fontSize: 14, color: AppColors.grayText),
+              style: AppTypography.body(
+                fontSize: 14,
+                color: AppColors.grayText,
+              ),
             ),
             const SizedBox(height: 18),
             HandDrawnButton(text: 'Retry', onTap: onRetry),

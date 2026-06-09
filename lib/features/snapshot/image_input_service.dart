@@ -2,11 +2,7 @@
 ///
 /// 与 `snapshot_capture.input_source` 埋点字段保持一致，
 /// 业务层通过此 enum 标记数据来自相机 / 相册 / 内置样本。
-enum ImageInputSource {
-  camera,
-  gallery,
-  sample,
-}
+enum ImageInputSource { camera, gallery, sample }
 
 /// 图像输入抽象。
 ///

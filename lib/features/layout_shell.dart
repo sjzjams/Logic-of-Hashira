@@ -71,8 +71,12 @@ class _LayoutShellState extends State<LayoutShell> {
             IndexedStack(
               index: _currentIndex,
               children: List<Widget>.generate(5, (int index) {
-                final Widget child = _screenCache[index] ?? const SizedBox.shrink();
-                return TickerMode(enabled: _currentIndex == index, child: child);
+                final Widget child =
+                    _screenCache[index] ?? const SizedBox.shrink();
+                return TickerMode(
+                  enabled: _currentIndex == index,
+                  child: child,
+                );
               }),
             ),
             // 🔧 环境指示器（仅开发环境显示）

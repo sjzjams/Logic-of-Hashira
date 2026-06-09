@@ -69,10 +69,7 @@ class MealDetailScreen extends StatelessWidget {
                 tag: tag,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: Image.file(
-                    File(imagePath),
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.file(File(imagePath), fit: BoxFit.cover),
                 ),
               ),
               const SizedBox(height: 18),
@@ -103,8 +100,7 @@ class MealDetailScreen extends StatelessWidget {
               const SizedBox(height: 12),
               // 宏量营养素网格
               Row(
-                children: _macros()
-                    .entries
+                children: _macros().entries
                     .map<Widget>(
                       (MapEntry<String, String> e) => Expanded(
                         child: HandDrawnCard(
@@ -136,7 +132,9 @@ class MealDetailScreen extends StatelessWidget {
               // PRD 第七幕：AI Coach 建议区域（本地规则驱动，埋点预留）。
               Builder(
                 builder: (BuildContext context) {
-                  AnalyticsService.instance.track(AnalyticsEventNames.coachShown);
+                  AnalyticsService.instance.track(
+                    AnalyticsEventNames.coachShown,
+                  );
                   return _CoachCard(nutrition: nutrition);
                 },
               ),

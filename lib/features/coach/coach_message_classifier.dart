@@ -49,22 +49,61 @@ class CoachMessageClassifier {
   // 注意：只保留具体动作/动作技术词，避免 `workout`/`training` 这类通用词
   // 抢占其它类目（如 "I need protein after a workout" 应归 nutrition）。
   static const List<String> _workoutKeywords = <String>[
-    'bench', 'squat', 'deadlift', 'rep', 'set', 'form',
-    '练', '训练', '动作', '组数',
+    'bench',
+    'squat',
+    'deadlift',
+    'rep',
+    'set',
+    'form',
+    '练',
+    '训练',
+    '动作',
+    '组数',
   ];
 
   static const List<String> _nutritionKeywords = <String>[
-    'protein', 'calorie', 'carb', 'fiber', 'meal prep',
-    '吃', '蛋白', '碳水', '脂肪', '饮食', '卡路里',
+    'protein',
+    'calorie',
+    'carb',
+    'fiber',
+    'meal prep',
+    '吃',
+    '蛋白',
+    '碳水',
+    '脂肪',
+    '饮食',
+    '卡路里',
   ];
 
   static const List<String> _recoveryKeywords = <String>[
-    'sleep', 'recovery', 'rest', 'tired', 'fatigue', 'sore', 'nap',
-    '休息', '睡眠', '恢复', '酸痛', '累',
+    'sleep',
+    'recovery',
+    'rest',
+    'tired',
+    'fatigue',
+    'sore',
+    'nap',
+    '休息',
+    '睡眠',
+    '恢复',
+    '酸痛',
+    '累',
   ];
 
   static const List<String> _mindsetKeywords = <String>[
-    'motivation', 'focus', 'mindset', 'stress', 'anxiety', 'habit',
-    'discipline', 'goal', '坚持', '动力', '焦虑', '压力', '目标', '习惯',
+    'motivation',
+    'focus',
+    'mindset',
+    'stress',
+    'anxiety',
+    'habit',
+    'discipline',
+    'goal',
+    '坚持',
+    '动力',
+    '焦虑',
+    '压力',
+    '目标',
+    '习惯',
   ];
 }

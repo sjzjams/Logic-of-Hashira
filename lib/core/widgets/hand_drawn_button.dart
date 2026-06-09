@@ -49,10 +49,12 @@ class HandDrawnButton extends StatelessWidget {
     // 不再强制 `height: 42`，避免字号 16 + vertical padding 12*2 = 24 超过 42
     // 而出现底部 RenderFlex 溢出 7.4 像素。
     final double minHeight = style == HandDrawnButtonStyle.chip ? 32.0 : height;
-    final double horizontalPadding =
-        style == HandDrawnButtonStyle.chip ? 16.0 : 24.0;
-    final double verticalPadding =
-        style == HandDrawnButtonStyle.chip ? 6.0 : 12.0;
+    final double horizontalPadding = style == HandDrawnButtonStyle.chip
+        ? 16.0
+        : 24.0;
+    final double verticalPadding = style == HandDrawnButtonStyle.chip
+        ? 6.0
+        : 12.0;
 
     Widget btnContent = Row(
       mainAxisSize: MainAxisSize.min,

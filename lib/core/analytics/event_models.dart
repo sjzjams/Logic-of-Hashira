@@ -1,33 +1,14 @@
 /// Coach 消息分类枚举，保持与埋点口径一致。
-enum CoachMessageCategory {
-  workout,
-  nutrition,
-  recovery,
-  mindset,
-  unknown,
-}
+enum CoachMessageCategory { workout, nutrition, recovery, mindset, unknown }
 
 /// Coach 消息长度桶，用于区分搜索型输入和长文本倾诉型输入。
-enum MessageLengthBucket {
-  zeroToTwenty,
-  twentyToHundred,
-  hundredPlus,
-}
+enum MessageLengthBucket { zeroToTwenty, twentyToHundred, hundredPlus }
 
 /// Snapshot 输入来源枚举。
-enum SnapshotInputType {
-  camera,
-  gallery,
-  sample,
-}
+enum SnapshotInputType { camera, gallery, sample }
 
 /// Snapshot 分析失败阶段枚举。
-enum SnapshotAnalysisStage {
-  capture,
-  segmentation,
-  nutrition,
-  save,
-}
+enum SnapshotAnalysisStage { capture, segmentation, nutrition, save }
 
 /// 通用埋点参数接口，所有事件参数对象都应实现 `toMap()`。
 abstract class AnalyticsEventParams {
@@ -46,18 +27,13 @@ class SnapshotOpenEventParams extends AnalyticsEventParams {
   @override
   /// 输出 `snapshot_open` 事件所需参数。
   Map<String, Object> toMap() {
-    return _compact(<String, Object?>{
-      'source': source,
-    });
+    return _compact(<String, Object?>{'source': source});
   }
 }
 
 /// 完成拍照、选图或样本选择后使用的参数对象。
 class SnapshotCaptureEventParams extends AnalyticsEventParams {
-  const SnapshotCaptureEventParams({
-    required this.inputType,
-    this.sampleName,
-  });
+  const SnapshotCaptureEventParams({required this.inputType, this.sampleName});
 
   final SnapshotInputType inputType;
   final String? sampleName;
@@ -147,9 +123,7 @@ class CoachOpenEventParams extends AnalyticsEventParams {
   @override
   /// 输出 `coach_open` 事件所需参数。
   Map<String, Object> toMap() {
-    return _compact(<String, Object?>{
-      'source': source,
-    });
+    return _compact(<String, Object?>{'source': source});
   }
 }
 
@@ -162,9 +136,7 @@ class CoachChatStartEventParams extends AnalyticsEventParams {
   @override
   /// 输出 `coach_chat_start` 事件所需参数。
   Map<String, Object> toMap() {
-    return <String, Object>{
-      'first_message': firstMessage,
-    };
+    return <String, Object>{'first_message': firstMessage};
   }
 }
 
@@ -175,11 +147,12 @@ class CoachMessageSendEventParams extends AnalyticsEventParams {
     required this.category,
     MessageLengthBucket? lengthBucket,
   }) : lengthBucket =
-           lengthBucket ?? (messageLength <= 20
+           lengthBucket ??
+           (messageLength <= 20
                ? MessageLengthBucket.zeroToTwenty
                : messageLength <= 100
-                   ? MessageLengthBucket.twentyToHundred
-                   : MessageLengthBucket.hundredPlus);
+               ? MessageLengthBucket.twentyToHundred
+               : MessageLengthBucket.hundredPlus);
 
   final int messageLength;
   final CoachMessageCategory category;
@@ -205,9 +178,7 @@ class CoachSuggestionClickEventParams extends AnalyticsEventParams {
   @override
   /// 输出 `coach_suggestion_click` 事件所需参数。
   Map<String, Object> toMap() {
-    return <String, Object>{
-      'suggestion': suggestion,
-    };
+    return <String, Object>{'suggestion': suggestion};
   }
 }
 
@@ -220,9 +191,7 @@ class CoachTagClickEventParams extends AnalyticsEventParams {
   @override
   /// 输出 `coach_tag_click` 事件所需参数。
   Map<String, Object> toMap() {
-    return <String, Object>{
-      'tag': tag.parameterValue,
-    };
+    return <String, Object>{'tag': tag.parameterValue};
   }
 }
 

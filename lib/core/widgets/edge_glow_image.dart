@@ -95,8 +95,9 @@ class _EdgeGlowImageState extends State<EdgeGlowImage>
   /// 优先用 `.mag` bit plane 解码，缺省回退 PNG codec。
   Future<void> _load() async {
     try {
-      final ui.FragmentProgram program =
-          await ui.FragmentProgram.fromAsset(_shaderAsset);
+      final ui.FragmentProgram program = await ui.FragmentProgram.fromAsset(
+        _shaderAsset,
+      );
       final File file = File(widget.imagePath);
       if (!file.existsSync()) {
         throw FileSystemException('Image file missing', widget.imagePath);
@@ -225,9 +226,11 @@ class _EdgeGlowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // 4 段时间映射 (与 V1.1 通用版一致)。
-    final double disintegrate = _mapRange(progress, 0.0, 0.4, 0.0, 0.55) -
+    final double disintegrate =
+        _mapRange(progress, 0.0, 0.4, 0.0, 0.55) -
         _mapRange(progress, 0.4, 0.6, 0.0, 0.50);
-    final double glow = _mapRange(progress, 0.6, 0.85, 0.4, 0.9) -
+    final double glow =
+        _mapRange(progress, 0.6, 0.85, 0.4, 0.9) -
         _mapRange(progress, 0.85, 1.0, 0.0, 0.4);
     final double k = intensity.clamp(0.0, 1.5);
     final ui.FragmentShader shader = program.fragmentShader()
@@ -245,7 +248,13 @@ class _EdgeGlowPainter extends CustomPainter {
     canvas.drawRect(Offset.zero & size, paint);
   }
 
-  static double _mapRange(double t, double start, double end, double min, double max) {
+  static double _mapRange(
+    double t,
+    double start,
+    double end,
+    double min,
+    double max,
+  ) {
     if (t <= start) {
       return min;
     }

@@ -9,8 +9,10 @@ class EnvConfig {
   static const String env = String.fromEnvironment('ENV', defaultValue: 'dev');
 
   // 版本类型：debug / release
-  static const String versionType =
-      String.fromEnvironment('VERSION_TYPE', defaultValue: 'debug');
+  static const String versionType = String.fromEnvironment(
+    'VERSION_TYPE',
+    defaultValue: 'debug',
+  );
 
   // 是否是开发环境
   static bool get isDev => env == 'dev';
@@ -41,12 +43,16 @@ class EnvConfig {
   static bool get enableDebugFeatures => isDev;
 
   // 构建时间（编译时注入）
-  static const String buildTime =
-      String.fromEnvironment('BUILD_TIME', defaultValue: '');
+  static const String buildTime = String.fromEnvironment(
+    'BUILD_TIME',
+    defaultValue: '',
+  );
 
   // Git 提交哈希（编译时注入）
-  static const String gitCommit =
-      String.fromEnvironment('GIT_COMMIT', defaultValue: '');
+  static const String gitCommit = String.fromEnvironment(
+    'GIT_COMMIT',
+    defaultValue: '',
+  );
 
   @override
   String toString() {

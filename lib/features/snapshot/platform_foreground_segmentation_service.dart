@@ -14,7 +14,7 @@ import 'foreground_segmentation_service.dart';
 class PlatformForegroundSegmentationService
     implements ForegroundSegmentationService {
   PlatformForegroundSegmentationService({MethodChannel? channel})
-      : _channel = channel ?? const MethodChannel(channelName);
+    : _channel = channel ?? const MethodChannel(channelName);
 
   /// 通道名必须与 Android / iOS 原生侧保持一致。
   static const String channelName = 'calorie_snap/segmentation';
@@ -28,10 +28,9 @@ class PlatformForegroundSegmentationService
   Future<SegmentationResult> segment(String imagePath) async {
     final Map<Object?, Object?>? raw;
     try {
-      raw = await _channel.invokeMapMethod(
-        _segmentMethod,
-        <String, Object?>{'imagePath': imagePath},
-      );
+      raw = await _channel.invokeMapMethod(_segmentMethod, <String, Object?>{
+        'imagePath': imagePath,
+      });
     } on PlatformException catch (error) {
       if (error.code == 'NCNN_UNAVAILABLE') {
         throw SegmentationException(

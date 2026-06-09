@@ -28,7 +28,9 @@ class _NutritionSleepScreenState extends State<NutritionSleepScreen> {
     _repository = MealRepository.instance;
     AnalyticsService.instance.track(
       AnalyticsEventNames.nutritionDashboardOpen,
-      <String, Object?>{'source': widget.initialTab == 0 ? 'nutrition' : 'sleep'},
+      <String, Object?>{
+        'source': widget.initialTab == 0 ? 'nutrition' : 'sleep',
+      },
     );
   }
 
@@ -280,9 +282,7 @@ class _NutritionContent extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (_) => SnapshotScreen(
-                        repository: repository,
-                      ),
+                      builder: (_) => SnapshotScreen(repository: repository),
                     ),
                   );
                 },

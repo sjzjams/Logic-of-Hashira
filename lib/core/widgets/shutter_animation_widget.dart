@@ -4,7 +4,7 @@ import 'package:flutter/physics.dart';
 import 'shutter_mask_painter.dart';
 
 /// 快门动效封装组件。
-/// 
+///
 /// 实现 PRD 1.2 的物理弹性动效 (Stiffness=180, Damping=0.75)。
 class ShutterAnimationWidget extends StatefulWidget {
   const ShutterAnimationWidget({
@@ -26,7 +26,7 @@ class ShutterAnimationWidget extends StatefulWidget {
 class ShutterAnimationWidgetState extends State<ShutterAnimationWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  
+
   // 动效进度：0.0 = 完全闭合，1.0 = 完全张开
   double _progress = 1.0;
 
@@ -109,9 +109,7 @@ class ShutterAnimationWidgetState extends State<ShutterAnimationWidget>
         if (_progress < 1.0)
           Positioned.fill(
             child: CustomPaint(
-              painter: ShutterMaskPainter(
-                progress: _progress,
-              ),
+              painter: ShutterMaskPainter(progress: _progress),
             ),
           ),
       ],

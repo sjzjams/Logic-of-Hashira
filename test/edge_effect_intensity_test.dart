@@ -36,9 +36,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: EdgeDisintegrateImage(imagePath: ''),
-          ),
+          home: Scaffold(body: EdgeDisintegrateImage(imagePath: '')),
         ),
       );
       // imagePath 为空时,build() 返回 SizedBox.shrink() 不占空间。
@@ -46,8 +44,9 @@ void main() {
       expect(find.byType(AspectRatio), findsNothing);
     });
 
-    testWidgets('falls back to Image.file when image is missing',
-        (WidgetTester tester) async {
+    testWidgets('falls back to Image.file when image is missing', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

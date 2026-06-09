@@ -11,15 +11,13 @@ void main() {
     test('AnalyticsEventNames.allEvents 不为空且去重', () {
       final all = AnalyticsEventNames.allEvents;
       expect(all, isNotEmpty);
-      expect(all.toSet().length, all.length,
-          reason: '事件名应唯一,避免埋点口径分裂');
+      expect(all.toSet().length, all.length, reason: '事件名应唯一,避免埋点口径分裂');
     });
 
     test('所有声明的事件名都是稳定的小写 snake_case', () {
       final regex = RegExp(r'^[a-z][a-z0-9_]*$');
       for (final e in AnalyticsEventNames.allEvents) {
-        expect(regex.hasMatch(e), isTrue,
-            reason: '事件名 [$e] 不符合 snake_case 规范');
+        expect(regex.hasMatch(e), isTrue, reason: '事件名 [$e] 不符合 snake_case 规范');
       }
     });
   });
@@ -87,7 +85,7 @@ class _AlwaysFailSegmentationService implements ForegroundSegmentationService {
 /// 复刻生产代码中 _FallbackSegmentationService 的行为,只在测试里显式可用。
 class _TestableFallback implements ForegroundSegmentationService {
   _TestableFallback({required this.primary, this.mockOverride})
-      : _mock = mockOverride ?? MockForegroundSegmentationService();
+    : _mock = mockOverride ?? MockForegroundSegmentationService();
 
   final ForegroundSegmentationService primary;
   final ForegroundSegmentationService? mockOverride;

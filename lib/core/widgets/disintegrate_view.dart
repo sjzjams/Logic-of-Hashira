@@ -95,8 +95,9 @@ class _DisintegrateViewState extends State<DisintegrateView>
   /// 解码失败时降级到软椭圆（V1.2-B 行为）而不是闪退。
   Future<void> _load() async {
     try {
-      final ui.FragmentProgram program =
-          await ui.FragmentProgram.fromAsset(_shaderAsset);
+      final ui.FragmentProgram program = await ui.FragmentProgram.fromAsset(
+        _shaderAsset,
+      );
       final File file = File(widget.imagePath);
       if (!file.existsSync()) {
         throw FileSystemException('Image file missing', widget.imagePath);
@@ -112,7 +113,9 @@ class _DisintegrateViewState extends State<DisintegrateView>
       // 尝试加载 mask；失败则保持 _decodedMask = null,Shader 走软椭圆。
       ui.Image? mask;
       final String? maskPath = widget.maskPath;
-      if (maskPath != null && maskPath.isNotEmpty && File(maskPath).existsSync()) {
+      if (maskPath != null &&
+          maskPath.isNotEmpty &&
+          File(maskPath).existsSync()) {
         mask = await _loadMaskFile(maskPath);
       }
 
@@ -263,7 +266,13 @@ class _DisintegratePainter extends CustomPainter {
   }
 
   /// 把 [t] 在 [start,end] 区间线性映射到 0..1；越界时返回 0 或 1。
-  static double _mapRange(double t, double start, double end, double min, double max) {
+  static double _mapRange(
+    double t,
+    double start,
+    double end,
+    double min,
+    double max,
+  ) {
     if (t <= start) {
       return min;
     }
@@ -299,10 +308,7 @@ class _PlaceholderTile extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFFEDE7F6),
-              Color(0xFFCDBEF9),
-            ],
+            colors: <Color>[Color(0xFFEDE7F6), Color(0xFFCDBEF9)],
           ),
           borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(color: const Color(0xFFE7E4F4), width: 1.2),

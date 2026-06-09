@@ -54,7 +54,9 @@ class _ConfidenceCounterState extends State<ConfidenceCounter> {
     for (int i = 1; i <= steps; i++) {
       if (!mounted) return;
       await Future<void>.delayed(
-        Duration(milliseconds: (stepDelayMs * (0.5 + rng.nextDouble() * 0.5)).round()),
+        Duration(
+          milliseconds: (stepDelayMs * (0.5 + rng.nextDouble() * 0.5)).round(),
+        ),
       );
       if (!mounted) return;
 

@@ -31,10 +31,8 @@ class _ScanLineOverlayState extends State<ScanLineOverlay>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    )..forward();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..forward();
   }
 
   @override
@@ -85,18 +83,21 @@ class _ScanLinePainter extends CustomPainter {
     // 渐变拖尾：主线上方渐淡 + 主线 + 下方渐淡。
     final Paint glowPaint = Paint()
       ..style = PaintingStyle.fill
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: <Color>[
-          color.withValues(alpha: 0.0),
-          color.withValues(alpha: 0.6),
-          color.withValues(alpha: 1.0),
-          color.withValues(alpha: 0.6),
-          color.withValues(alpha: 0.0),
-        ],
-        stops: const <double>[0.0, 0.35, 0.5, 0.65, 1.0],
-      ).createShader(Rect.fromLTRB(0, y - glowHeight, size.width, y + glowHeight));
+      ..shader =
+          LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              color.withValues(alpha: 0.0),
+              color.withValues(alpha: 0.6),
+              color.withValues(alpha: 1.0),
+              color.withValues(alpha: 0.6),
+              color.withValues(alpha: 0.0),
+            ],
+            stops: const <double>[0.0, 0.35, 0.5, 0.65, 1.0],
+          ).createShader(
+            Rect.fromLTRB(0, y - glowHeight, size.width, y + glowHeight),
+          );
 
     // 主线
     final Paint linePaint = Paint()

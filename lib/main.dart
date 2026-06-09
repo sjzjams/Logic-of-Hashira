@@ -47,11 +47,14 @@ Future<void> main() async {
   });
 
   // 🔧 后台预加载 NCNN 模型，完成后 SNAP 按钮从 loading 变为可点击
-  ModelLoaderService.instance.preload().then((_) {
-    debugPrint('✅ [ModelLoader] NCNN model ready');
-  }).catchError((Object e) {
-    debugPrint('⚠ [ModelLoader] Preload failed (degraded mode): $e');
-  });
+  ModelLoaderService.instance
+      .preload()
+      .then((_) {
+        debugPrint('✅ [ModelLoader] NCNN model ready');
+      })
+      .catchError((Object e) {
+        debugPrint('⚠ [ModelLoader] Preload failed (degraded mode): $e');
+      });
 
   runApp(const MyApp());
 }

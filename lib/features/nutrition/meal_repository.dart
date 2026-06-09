@@ -179,8 +179,9 @@ class _StoredMeal {
         foodName: (map['foodName'] as String?) ?? '',
         confidence: (map['confidence'] as num?)?.toDouble() ?? 0.0,
         mealType: _parseMealType(map['mealType'] as String?),
-        createdAt:
-            DateTime.fromMillisecondsSinceEpoch(map['createdAtMs'] as int),
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+          map['createdAtMs'] as int,
+        ),
       );
       final Nutrition nutrition = Nutrition(
         mealId: id,

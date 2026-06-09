@@ -24,10 +24,7 @@ import 'coach_session_repository.dart';
 /// Quick Tag 文案直接对应 [CoachMessageCategory] 枚举值（workout / nutrition /
 /// recovery / mindset），避免再维护第二份字面量。
 class AiCoachScreen extends StatefulWidget {
-  const AiCoachScreen({
-    super.key,
-    this.sessionRepository,
-  });
+  const AiCoachScreen({super.key, this.sessionRepository});
 
   /// 注入的会话仓库；不传则走 [CoachSessionRepository.instance] 兜底。
   final CoachSessionRepository? sessionRepository;
@@ -185,23 +182,23 @@ class _AiCoachScreenState extends State<AiCoachScreen> {
                   },
                 )
               : provider == null
-                  ? Container(
-                      color: AppColors.canvas,
-                      child: const Center(
-                        child: CircularProgressIndicator(strokeWidth: 1.5),
-                      ),
-                    )
-                  : Container(
-                      color: AppColors.canvas,
-                      child: LlmChatView(
-                        provider: provider,
-                        style: aiCoachChatViewStyle(),
-                        welcomeMessage: aiCoachWelcomeMessage,
-                        suggestions: aiCoachSuggestions,
-                        enableAttachments: false,
-                        enableVoiceNotes: false,
-                      ),
-                    ),
+              ? Container(
+                  color: AppColors.canvas,
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 1.5),
+                  ),
+                )
+              : Container(
+                  color: AppColors.canvas,
+                  child: LlmChatView(
+                    provider: provider,
+                    style: aiCoachChatViewStyle(),
+                    welcomeMessage: aiCoachWelcomeMessage,
+                    suggestions: aiCoachSuggestions,
+                    enableAttachments: false,
+                    enableVoiceNotes: false,
+                  ),
+                ),
         ),
       ],
     );

@@ -37,16 +37,15 @@ class _TimelineCardWidgetState extends State<TimelineCardWidget>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
-    _scale = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
-    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    _scale = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _opacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
   }
 
@@ -88,18 +87,20 @@ class _TimelineCardWidgetState extends State<TimelineCardWidget>
                     child: SizedBox(
                       width: 56,
                       height: 56,
-                      child: widget.imagePath != null &&
+                      child:
+                          widget.imagePath != null &&
                               File(widget.imagePath!).existsSync()
                           ? Image.file(
                               File(widget.imagePath!),
                               fit: BoxFit.cover,
-                              errorBuilder: (
-                                BuildContext context,
-                                Object error,
-                                StackTrace? stack,
-                              ) {
-                                return _emojiPlaceholder();
-                              },
+                              errorBuilder:
+                                  (
+                                    BuildContext context,
+                                    Object error,
+                                    StackTrace? stack,
+                                  ) {
+                                    return _emojiPlaceholder();
+                                  },
                             )
                           : _emojiPlaceholder(),
                     ),

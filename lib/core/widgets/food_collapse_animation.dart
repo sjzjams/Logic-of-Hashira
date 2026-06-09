@@ -44,19 +44,15 @@ class _FoodCollapseAnimationState extends State<FoodCollapseAnimation>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
-    _scale = Tween<double>(begin: 1.0, end: widget.targetScale).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInBack),
-    );
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: widget.targetScale,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInBack));
     _translate = Tween<Offset>(
       begin: Offset.zero,
       end: widget.flyOffset,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     _opacity = Tween<double>(begin: 1.0, end: 0.3).animate(
       CurvedAnimation(
         parent: _controller,

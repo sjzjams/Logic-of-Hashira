@@ -22,21 +22,29 @@ class ShutterMaskPainter extends CustomPainter {
 
     final center = Offset(size.width / 2, size.height / 2);
     // 增加 maxRadius 确保多边形完全覆盖矩形角落
-    final maxRadius = math.sqrt(size.width * size.width + size.height * size.height);
-    
+    final maxRadius = math.sqrt(
+      size.width * size.width + size.height * size.height,
+    );
+
     final holeRadius = progress * maxRadius;
 
     _drawSophisticatedShutter(canvas, size, center, holeRadius, maxRadius);
   }
 
-  void _drawSophisticatedShutter(Canvas canvas, Size size, Offset center, double holeRadius, double maxRadius) {
+  void _drawSophisticatedShutter(
+    Canvas canvas,
+    Size size,
+    Offset center,
+    double holeRadius,
+    double maxRadius,
+  ) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
     // 1. 创建背景路径
     final backgroundPath = Path()..addRect(Offset.zero & size);
-    
+
     // 2. 创建孔径路径 (8片叶片形成的多边形)
     final holePath = Path();
     final angleStep = (2 * math.pi) / bladeCount;
@@ -46,7 +54,7 @@ class ShutterMaskPainter extends CustomPainter {
       final theta = i * angleStep + rotationOffset;
       final x = center.dx + holeRadius * math.cos(theta);
       final y = center.dy + holeRadius * math.sin(theta);
-      
+
       if (i == 0) {
         holePath.moveTo(x, y);
       } else {
@@ -56,11 +64,15 @@ class ShutterMaskPainter extends CustomPainter {
     holePath.close();
 
     // 3. 使用 PathOperation.difference 挖孔，避免 saveLayer 性能开销和兼容性问题
-    final finalPath = Path.combine(PathOperation.difference, backgroundPath, holePath);
+    final finalPath = Path.combine(
+      PathOperation.difference,
+      backgroundPath,
+      holePath,
+    );
     canvas.drawPath(finalPath, paint);
   }
 
   @override
-  bool shouldRepaint(covariant ShutterMaskPainter oldDelegate) => 
+  bool shouldRepaint(covariant ShutterMaskPainter oldDelegate) =>
       oldDelegate.progress != progress || oldDelegate.color != color;
 }

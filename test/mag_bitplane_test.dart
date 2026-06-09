@@ -64,7 +64,16 @@ void main() {
 
     test('边界 8 像素 1 字节', () {
       // 1x8 横条:8 像素全亮 → 1 字节 0b11111111
-      final Uint8List bytes = buildMag(8, 1, const <int>[0, 1, 2, 3, 4, 5, 6, 7]);
+      final Uint8List bytes = buildMag(8, 1, const <int>[
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+      ]);
       final MagBitplane plane = decodeMagBitplane(bytes);
       final Uint8List rgba = plane.toRgba();
       for (int i = 0; i < 8; i++) {
@@ -82,10 +91,7 @@ void main() {
     });
 
     test('头部太短抛 FormatException', () {
-      expect(
-        () => decodeMagBitplane(Uint8List(8)),
-        throwsFormatException,
-      );
+      expect(() => decodeMagBitplane(Uint8List(8)), throwsFormatException);
     });
 
     test('payload 不足抛 FormatException', () {

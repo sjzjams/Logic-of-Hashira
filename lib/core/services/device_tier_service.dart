@@ -43,8 +43,7 @@ class DeviceFlags {
   static bool useRefineNet(DeviceTier t) =>
       t == DeviceTier.flagship || t == DeviceTier.midrange;
 
-  static bool refineNetOnlyOnCapture(DeviceTier t) =>
-      t == DeviceTier.budget;
+  static bool refineNetOnlyOnCapture(DeviceTier t) => t == DeviceTier.budget;
 
   static int particleCount(DeviceTier t) {
     switch (t) {
@@ -64,8 +63,7 @@ class DeviceFlags {
   static bool showReceiptSpring(DeviceTier t) =>
       t == DeviceTier.flagship || t == DeviceTier.midrange;
 
-  static bool showReceiptDirect(DeviceTier t) =>
-      t == DeviceTier.budget;
+  static bool showReceiptDirect(DeviceTier t) => t == DeviceTier.budget;
 
   static bool showCollapseAnim(DeviceTier t) =>
       t == DeviceTier.flagship || t == DeviceTier.midrange;
@@ -111,8 +109,10 @@ class DeviceTierService {
 
       sw.stop();
       // ignore: avoid_print
-      print('🔬 DeviceTier: benchmark completed in ${sw.elapsedMilliseconds}ms, '
-          'avg=$avgMs ms');
+      print(
+        '🔬 DeviceTier: benchmark completed in ${sw.elapsedMilliseconds}ms, '
+        'avg=$avgMs ms',
+      );
 
       _cached = _classify(avgMs);
     } catch (e) {
@@ -161,7 +161,7 @@ class DeviceTierService {
     const int rounds = 5;
     double total = 0;
 
-      for (int r = 0; r < rounds; r++) {
+    for (int r = 0; r < rounds; r++) {
       final Stopwatch sw = Stopwatch()..start();
 
       // Simulate compute-heavy work: prime sieve + sort.

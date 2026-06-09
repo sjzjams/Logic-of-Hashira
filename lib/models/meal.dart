@@ -36,10 +36,4 @@ class Meal {
 }
 
 /// 餐次枚举，覆盖 PRD 中 `mealType` 字段。
-enum MealType {
-  breakfast,
-  lunch,
-  dinner,
-  snack,
-  unknown,
-}
+enum MealType { breakfast, lunch, dinner, snack, unknown }

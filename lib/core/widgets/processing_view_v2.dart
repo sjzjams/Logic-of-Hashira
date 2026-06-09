@@ -129,32 +129,39 @@ class _ProcessingViewV2State extends State<ProcessingViewV2>
                         decoration: BoxDecoration(
                           color: AppColors.softLilac,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: AppColors.border, width: 1.2),
+                          border: Border.all(
+                            color: AppColors.border,
+                            width: 1.2,
+                          ),
                         ),
-                        child: LCornerFinder(
-                          progress: _cornerController.value,
-                        ),
+                        child: LCornerFinder(progress: _cornerController.value),
                       )
                     : (widget.imagePath != null && widget.imagePath!.isNotEmpty
-                        ? DisintegrateView(
-                            key: const ValueKey<String>('disintegrating'),
-                            imagePath: widget.imagePath!,
-                            maskPath: widget.maskPath,
-                            duration: widget.disintegratingDuration,
-                          )
-                        : Container(
-                            key: const ValueKey<String>('disintegrating-empty'),
-                            decoration: BoxDecoration(
-                              color: AppColors.softLilac,
-                              borderRadius: BorderRadius.circular(24),
-                              border:
-                                  Border.all(color: AppColors.border, width: 1.2),
-                            ),
-                            child: const Center(
-                              child: Text('🍱',
-                                  style: TextStyle(fontSize: 56)),
-                            ),
-                          )),
+                          ? DisintegrateView(
+                              key: const ValueKey<String>('disintegrating'),
+                              imagePath: widget.imagePath!,
+                              maskPath: widget.maskPath,
+                              duration: widget.disintegratingDuration,
+                            )
+                          : Container(
+                              key: const ValueKey<String>(
+                                'disintegrating-empty',
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.softLilac,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  '🍱',
+                                  style: TextStyle(fontSize: 56),
+                                ),
+                              ),
+                            )),
               ),
             ),
             const SizedBox(height: 22),
@@ -233,7 +240,10 @@ class _ThreeDotIndicatorState extends State<_ThreeDotIndicator>
             final double phase = (_controller.value - i / 3.0);
             final double t = phase < 0 ? phase + 1.0 : phase;
             // 0..1..0 的正弦曲线
-            final double alpha = (t < 0.5 ? t * 2.0 : 2.0 - t * 2.0).clamp(0.0, 1.0);
+            final double alpha = (t < 0.5 ? t * 2.0 : 2.0 - t * 2.0).clamp(
+              0.0,
+              1.0,
+            );
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: i == 1 ? 1.0 : 0.5),
               child: Opacity(

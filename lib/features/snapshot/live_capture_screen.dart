@@ -203,19 +203,14 @@ class _LiveCaptureScreenState extends State<LiveCaptureScreen>
         ),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: _buildBody(),
-      ),
+      body: SafeArea(child: _buildBody()),
     );
   }
 
   Widget _buildBody() {
     if (_isInitializing) {
       return const Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 1.5,
-          color: Colors.white,
-        ),
+        child: CircularProgressIndicator(strokeWidth: 1.5, color: Colors.white),
       );
     }
     if (_errorMessage != null) {
@@ -260,10 +255,7 @@ class _LiveCaptureScreenState extends State<LiveCaptureScreen>
               style: HandDrawnButtonStyle.secondary,
               onTap: () => Navigator.of(context).pop<String?>(null),
             ),
-            _ShutterButton(
-              busy: _isCapturing,
-              onTap: _takePicture,
-            ),
+            _ShutterButton(busy: _isCapturing, onTap: _takePicture),
             const SizedBox(width: 80),
           ],
         ),

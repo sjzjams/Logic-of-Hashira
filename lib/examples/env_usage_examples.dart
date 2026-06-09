@@ -76,11 +76,7 @@ class ApiService {
     // 开发环境可以使用 Mock 数据
     if (EnvConfig.isDev) {
       debugPrint('🔧 使用 Mock 数据');
-      return {
-        'id': 1,
-        'name': 'Test User',
-        'email': 'test@example.com',
-      };
+      return {'id': 1, 'name': 'Test User', 'email': 'test@example.com'};
     }
 
     // 生产环境发起真实请求
@@ -132,11 +128,7 @@ class HomePage extends StatelessWidget {
             ),
 
           // 主内容
-          Expanded(
-            child: Center(
-              child: Text('欢迎使用 ${EnvConfig.appName}'),
-            ),
-          ),
+          Expanded(child: Center(child: Text('欢迎使用 ${EnvConfig.appName}'))),
         ],
       ),
       // 开发环境显示浮动调试按钮
@@ -212,17 +204,13 @@ class AppConfig {
       );
     }
     // 生产环境使用正式的颜色
-    return ThemeData(
-      primarySwatch: Colors.blue,
-      brightness: Brightness.light,
-    );
+    return ThemeData(primarySwatch: Colors.blue, brightness: Brightness.light);
   }
 
   // 功能开关
   static bool get enableExperimentalFeatures => EnvConfig.isDev;
   static bool get enableAnalytics => EnvConfig.isProd;
-  static int get networkTimeout =>
-      EnvConfig.isDev ? 30000 : 10000; // 开发环境超时更长
+  static int get networkTimeout => EnvConfig.isDev ? 30000 : 10000; // 开发环境超时更长
 }
 
 /// 使用示例总结：

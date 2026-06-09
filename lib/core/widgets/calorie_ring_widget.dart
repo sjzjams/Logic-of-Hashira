@@ -15,11 +15,7 @@ import '../theme.dart';
 /// )
 /// ```
 class CalorieRingWidget extends StatelessWidget {
-  const CalorieRingWidget({
-    super.key,
-    this.currentCalories,
-    this.dailyGoal,
-  });
+  const CalorieRingWidget({super.key, this.currentCalories, this.dailyGoal});
 
   final double? currentCalories;
   final double? dailyGoal;
@@ -88,10 +84,7 @@ class CalorieRingWidget extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           'Today',
-          style: AppTypography.body(
-            fontSize: 11,
-            color: AppColors.grayText,
-          ),
+          style: AppTypography.body(fontSize: 11, color: AppColors.grayText),
         ),
       ],
     );

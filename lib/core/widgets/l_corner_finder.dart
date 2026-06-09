@@ -100,11 +100,7 @@ class _LCornerPainter extends CustomPainter {
 
     // 右下：水平向左 + 垂直向上
     canvas.drawLine(Offset(right, bottom), Offset(right - arm, bottom), paint);
-    canvas.drawLine(
-      Offset(right, bottom),
-      Offset(right, bottom - arm),
-      paint,
-    );
+    canvas.drawLine(Offset(right, bottom), Offset(right, bottom - arm), paint);
 
     // 左下：水平向右 + 垂直向上
     canvas.drawLine(Offset(left, bottom), Offset(left + arm, bottom), paint);

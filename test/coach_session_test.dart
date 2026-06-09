@@ -23,10 +23,7 @@ void main() {
         classifier.classify('How much protein do I need after a workout?'),
         CoachMessageCategory.nutrition,
       );
-      expect(
-        classifier.classify('今天午餐应该怎么吃?'),
-        CoachMessageCategory.nutrition,
-      );
+      expect(classifier.classify('今天午餐应该怎么吃?'), CoachMessageCategory.nutrition);
     });
 
     test('recovery keywords map to recovery category', () {
@@ -45,10 +42,7 @@ void main() {
         classifier.classify('I lost my motivation and focus this week'),
         CoachMessageCategory.mindset,
       );
-      expect(
-        classifier.classify('坚持不下去了, 有压力'),
-        CoachMessageCategory.mindset,
-      );
+      expect(classifier.classify('坚持不下去了, 有压力'), CoachMessageCategory.mindset);
     });
 
     test('unrecognized text falls back to unknown', () {

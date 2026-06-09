@@ -51,18 +51,22 @@ class RecentMealChips extends StatelessWidget {
                     child: SizedBox(
                       width: 28,
                       height: 28,
-                      child: meal.imagePath != null &&
+                      child:
+                          meal.imagePath != null &&
                               File(meal.imagePath!).existsSync()
                           ? Image.file(
                               File(meal.imagePath!),
                               fit: BoxFit.cover,
-                              errorBuilder: (
-                                BuildContext context,
-                                Object error,
-                                StackTrace? stack,
-                              ) {
-                                return _emojiPlaceholder(meal.emoji ?? '🍱');
-                              },
+                              errorBuilder:
+                                  (
+                                    BuildContext context,
+                                    Object error,
+                                    StackTrace? stack,
+                                  ) {
+                                    return _emojiPlaceholder(
+                                      meal.emoji ?? '🍱',
+                                    );
+                                  },
                             )
                           : _emojiPlaceholder(meal.emoji ?? '🍱'),
                     ),

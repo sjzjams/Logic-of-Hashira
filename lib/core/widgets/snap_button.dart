@@ -75,9 +75,7 @@ class _SnapButtonState extends State<SnapButton>
                     : AppColors.inkBlue,
                 boxShadow: [
                   BoxShadow(
-                    color: pulse.withValues(
-                      alpha: 0.4 + _pulse.value * 0.3,
-                    ),
+                    color: pulse.withValues(alpha: 0.4 + _pulse.value * 0.3),
                     blurRadius: 12 + _pulse.value * 8,
                     offset: const Offset(0, 4),
                   ),

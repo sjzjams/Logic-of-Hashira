@@ -51,10 +51,7 @@ void main() {
     const recognizer = NcnnSnapshotRecognizer();
 
     test('throws when class info is missing', () async {
-      const seg = SegmentationResult(
-        originalPath: '/a',
-        foregroundPath: '/a',
-      );
+      const seg = SegmentationResult(originalPath: '/a', foregroundPath: '/a');
       expect(
         () => recognizer.recognize(seg),
         throwsA(isA<SnapshotRecognitionException>()),

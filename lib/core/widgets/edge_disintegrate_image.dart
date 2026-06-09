@@ -17,6 +17,7 @@ class EdgeDisintegrateImage extends StatefulWidget {
     required this.imagePath,
     this.duration = const Duration(milliseconds: 1800),
     this.borderRadius = 24,
+
     /// V1.1 升级：动效强度倍率。
     /// - 0.0 = 完全关闭消融与发光,只显示原图；
     /// - 1.0 = 标准动效 (与 V1 一致)；
@@ -90,8 +91,9 @@ class _EdgeDisintegrateImageState extends State<EdgeDisintegrateImage>
   /// 此时启动 controller，避免动画在第一帧缺图。
   Future<void> _load() async {
     try {
-      final ui.FragmentProgram program =
-          await ui.FragmentProgram.fromAsset(_shaderAsset);
+      final ui.FragmentProgram program = await ui.FragmentProgram.fromAsset(
+        _shaderAsset,
+      );
       final File file = File(widget.imagePath);
       if (!file.existsSync()) {
         throw FileSystemException('Image file missing', widget.imagePath);
@@ -178,9 +180,11 @@ class _EdgeDisintegratePainter extends CustomPainter {
     //   0.0–0.4  像素消融上升（uDisintegrate: 0 → 0.55）
     //   0.4–0.6  稳定期（uDisintegrate 慢慢回到 0.05）
     //   0.6–1.0  边缘发光脉冲（uGlowIntensity: 0.4 → 0.9 → 0.5）
-    final double disintegrate = _mapRange(progress, 0.0, 0.4, 0.0, 0.55) -
+    final double disintegrate =
+        _mapRange(progress, 0.0, 0.4, 0.0, 0.55) -
         _mapRange(progress, 0.4, 0.6, 0.0, 0.50);
-    final double glow = _mapRange(progress, 0.6, 0.85, 0.4, 0.9) -
+    final double glow =
+        _mapRange(progress, 0.6, 0.85, 0.4, 0.9) -
         _mapRange(progress, 0.85, 1.0, 0.0, 0.4);
     // 把 intensity 限制在合理区间,避免负数或极端值破坏视觉。
     final double k = intensity.clamp(0.0, 1.5);
@@ -196,7 +200,13 @@ class _EdgeDisintegratePainter extends CustomPainter {
   }
 
   /// 把 [t] 在 [start,end] 区间线性映射到 0..1；越界时返回 0 或 1。
-  static double _mapRange(double t, double start, double end, double min, double max) {
+  static double _mapRange(
+    double t,
+    double start,
+    double end,
+    double min,
+    double max,
+  ) {
     if (t <= start) {
       return min;
     }
