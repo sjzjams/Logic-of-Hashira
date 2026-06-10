@@ -277,10 +277,14 @@ jobs:
           path: ./apk
 
       - name: 📤 推送到本地服务器
-        if: ${{ secrets.LOCAL_SERVER_URL != '' }}
+        env:
+          LOCAL_SERVER_URL: ${{ secrets.LOCAL_SERVER_URL }}
         run: |
+          # 如果未配置 URL，静默跳过
+          if [ -z "$LOCAL_SERVER_URL" ]; then
+            echo "⏭️ LOCAL_SERVER_URL 未配置，跳过推送"
+            exit 0
+          fi
           echo "📤 正在推送 APK 到本地服务器..."
-          # 示例：使用 curl 上传到本地服务器
-          # curl -F "file=@./apk/app-release.apk" ${{ secrets.LOCAL_SERVER_URL }}
-          echo "✅ 推送完成"
-          echo "💡 请在本地服务器查看 APK 文件"
+          echo "💡 示例: curl -F 'file=@./apk/app-release.apk' $LOCAL_SERVER_URL"
+          echo "✅ 推送完成（示例）"
