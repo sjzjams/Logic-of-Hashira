@@ -110,7 +110,7 @@ void main() {
       await b.init(prefs);
       expect(b.meals, hasLength(1));
       expect(b.meals.first.foodName, 'Persisted Pizza');
-      expect(b.todaySummary().totalCalories, 700);
+      expect(b.todaySummary(now: DateTime(2026, 6, 4, 23)).totalCalories, 700);
     });
   });
 }
